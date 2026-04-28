@@ -119,6 +119,7 @@ canvas { display:block; position:fixed; inset:0; }
 
 <div id="ratchet">
   <div>rate decline: <span id="r-decline">—</span></div>
+  <div>H floor: <span id="r-hfloor">—</span></div>
   <div>peak RAF: <span id="r-raf">—</span></div>
   <div>peak orbit: <span id="r-cyc">—</span></div>
 </div>
@@ -132,7 +133,7 @@ resize();
 window.addEventListener('resize', resize);
 
 // ── State ─────────────────────────────────────────────────────────────────────
-const state  = { ops:100, H:2.3, raf:1300, cyc:9, unique:500, epoch:0, rate:5500, edges:2700 };
+const state  = { ops:100, H:2.3, raf:1300, cyc:9, unique:500, epoch:0, rate:5500, edges:2700, peakRate:6013, hFloor:null };
 const target = { ...state };
 function lerpState(dt) {
   const k = 1 - Math.pow(0.02, dt/1000);
@@ -265,9 +266,11 @@ function onMegaCharge(p) {
 }
 function updateRatchetHUD() {
   const rDecline=document.getElementById('r-decline');
+  const rHfloor=document.getElementById('r-hfloor');
   const rRaf=document.getElementById('r-raf');
   const rCyc=document.getElementById('r-cyc');
-  if (state.rate) { const pct=((6013-state.rate)/6013*100).toFixed(1); rDecline.textContent=`-${pct}% from peak`; }
+  if (state.rate&&state.peakRate) { const pct=((state.peakRate-state.rate)/state.peakRate*100).toFixed(1); rDecline.textContent=pct>0?`-${pct}% from peak`:`+${Math.abs(pct)}% above prev peak`; }
+  if (state.hFloor!=null) rHfloor.textContent=state.hFloor.toFixed(3)+' (record low)';
   if (megaCharges.length) {
     rRaf.textContent=Math.max(...megaCharges.map(m=>m.raf)).toFixed(0);
     rCyc.textContent=Math.max(...megaCharges.map(m=>m.cyc));
@@ -526,7 +529,7 @@ function updateHUD(p) {
 // ── ops/int timeline ──────────────────────────────────────────────────────────
 const phaseC=document.getElementById('phase-canvas');
 const phaseCtx=phaseC.getContext('2d');
-function drawPhasePortrait(history) {
+function drawPhasePortrait(history, hFloor) {
   const CW=250,CH=160,padL=36,padR=12,padT=18,padB=28;
   phaseCtx.clearRect(0,0,CW,CH);
   phaseCtx.fillStyle='rgba(0,0,10,0.97)'; phaseCtx.fillRect(0,0,CW,CH);
@@ -572,6 +575,25 @@ function drawPhasePortrait(history) {
   phaseCtx.fillStyle='rgba(255,220,60,0.95)'; phaseCtx.fill();
   phaseCtx.fillStyle='rgba(255,220,60,0.9)'; phaseCtx.font='bold 9px monospace';
   phaseCtx.textAlign='right'; phaseCtx.fillText(cur.toFixed(1),CW-padR,padT+10);
+  // H ratchet floor line
+  if (hFloor != null) {
+    const Hs = history.map(p=>p.H);
+    const hMin = Math.min(...Hs), hMax = Math.max(...Hs);
+    const hRange = hMax - hMin || 1;
+    // Draw H as a faint overlay on the same chart (right axis, scaled to fit)
+    const toYH = v => padT + (1 - (v - hMin) / hRange) * (CH - padT - padB);
+    phaseCtx.beginPath();
+    Hs.forEach((v,i)=>i===0?phaseCtx.moveTo(toX(i),toYH(v)):phaseCtx.lineTo(toX(i),toYH(v)));
+    phaseCtx.strokeStyle='rgba(64,220,255,0.28)'; phaseCtx.lineWidth=1; phaseCtx.setLineDash([3,3]); phaseCtx.stroke();
+    phaseCtx.setLineDash([]);
+    // Floor ratchet label
+    const floorY = toYH(hFloor);
+    phaseCtx.beginPath(); phaseCtx.moveTo(padL,floorY); phaseCtx.lineTo(CW-padR,floorY);
+    phaseCtx.strokeStyle='rgba(64,220,255,0.55)'; phaseCtx.lineWidth=1; phaseCtx.setLineDash([2,5]); phaseCtx.stroke();
+    phaseCtx.setLineDash([]);
+    phaseCtx.fillStyle='rgba(64,220,255,0.8)'; phaseCtx.font='7px monospace';
+    phaseCtx.textAlign='right'; phaseCtx.fillText('H⌊'+hFloor.toFixed(3),CW-padR,floorY-2);
+  }
   phaseCtx.fillStyle='rgba(100,140,200,0.5)'; phaseCtx.font='7px monospace';
   phaseCtx.textAlign='center'; phaseCtx.fillText('ops/int — reductions per interaction',CW/2+padL/2,CH-4);
   phaseCtx.textAlign='left';
@@ -631,9 +653,11 @@ async function fetchData() {
       Object.assign(target,{...state});
       prevCyc=last.cyc; updateHUD(last);
     }
+    if (d.peak_rate) { state.peakRate = d.peak_rate; target.peakRate = d.peak_rate; }
+    if (d.h_floor != null) { state.hFloor = d.h_floor; target.hFloor = d.h_floor; }
     if (d.latest) ingestPoint(d.latest);
     updateRatchetHUD();
-    if (d.history) drawPhasePortrait(d.history);
+    if (d.history) drawPhasePortrait(d.history, d.h_floor);
     if (d.tape_distribution) applyDistribution(d.tape_distribution);
     else if (d.sample_tapes) applyTapes(d.sample_tapes);
     if (d.sample_tapes) drawGenome(d.sample_tapes);
