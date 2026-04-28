@@ -110,12 +110,10 @@ canvas { display:block; position:fixed; inset:0; }
 <div id="panel">
   <div id="charges">mega-charges: <span id="charge-list">—</span></div>
   <div id="story">
-    <strong>4096 tiny programs</strong> evolving in real time. Each is a sequence of 8 instructions
-    from the simplest complete programming language ever discovered. When two meet, one applies
-    the other as a function. The <strong>pink core</strong> is the autocatalytic heart — programs
-    that help each other replicate. The <strong>purple orbit</strong> is a closed catalytic cycle:
-    A makes B, B makes C… Z makes A. A <strong>mega-charge</strong> is when the orbit crystallizes,
-    then detonates, seeding new complexity.
+    <strong>4096 programs</strong> — every dot is one. Green is the prey monoculture (SSSSSSSS),
+    the dominant replicator. The vivid cluster at center is the <strong>autocatalytic core</strong>:
+    programs that catalyze each other. Each dot's color encodes its full 8-instruction tape.
+    When two programs interact, you see it. When the orbit discharges — everything changes.
   </div>
 </div>
 
@@ -134,76 +132,93 @@ resize();
 window.addEventListener('resize', resize);
 
 // ── State ─────────────────────────────────────────────────────────────────────
-const state  = { ops:100, H:2.3, raf:1300, cyc:9, unique:500, epoch:0, rate:5500 };
+const state  = { ops:100, H:2.3, raf:1300, cyc:9, unique:500, epoch:0, rate:5500, edges:2700 };
 const target = { ...state };
 function lerpState(dt) {
   const k = 1 - Math.pow(0.02, dt/1000);
   for (const key in target) state[key] = state[key] + (target[key] - state[key]) * k;
 }
 
-// ── Particles ─────────────────────────────────────────────────────────────────
-const N = 280, particles = [];
-function mkParticle(i) {
-  const angle = Math.random() * Math.PI * 2;
-  const r = Math.random() * 0.35 + 0.05;
-  const initKind = i < N*.65 ? 'prey' : i < N*.85 ? 'catalyst' : 'core';
-  const initZ = initKind==='core'?.5:initKind==='catalyst'?.1:-.35;
-  return { x:.5+Math.cos(angle)*r*.8, y:.5+Math.sin(angle)*r*.8,
-           vx:(Math.random()-.5)*.002, vy:(Math.random()-.5)*.002,
-           phase:Math.random()*Math.PI*2, freq:.3+Math.random()*.7,
-           baseR:2.5+Math.random()*3.5, kind:initKind,
-           z:initZ+Math.random()*.15-.075,
-           trail:[], tape:null, tapeHue:200 };
-}
-for (let i=0;i<N;i++) particles.push(mkParticle(i));
+// ── Combinator color system ────────────────────────────────────────────────────
+const COMB_HUE   = {S:140, K:220, W:30, B:0, I:185};
+const COMB_NAMES = {S:'S (copy)',K:'K (discard)',W:'W (double)',B:'B (pipe)',I:'I (wire)'};
+const TAPE_COLORS= {S:'#3cb854',K:'#3c64dc',W:'#dc8c28',B:'#b43c3c',I:'#808080'};
+const COMBS      = ['S','K','W','B','I'];
 
-// Real tape coloring: dominant combinator → hue
-const COMB_HUE = {S:140, K:220, W:30, B:0, I:180};
+function tapeToHSL(tape) {
+  // Circular mean of position-weighted hues — position 0 dominates
+  let hx=0, hy=0, wSum=0;
+  for (let i=0; i<tape.length; i++) {
+    const w = tape.length - i;
+    const hr = ((COMB_HUE[tape[i]] ?? 160) * Math.PI) / 180;
+    hx += Math.cos(hr) * w;
+    hy += Math.sin(hr) * w;
+    wSum += w;
+  }
+  const hue = ((Math.atan2(hy/wSum, hx/wSum) * 180/Math.PI) + 360) % 360;
+  const distinct = new Set(tape).size;
+  const sat = 12 + distinct * 14; // uniform=26%, fully mixed=82%
+  return {h: hue, s: sat, l: 58};
+}
+
+function synthTape(seed, sFrac) {
+  return Array.from({length:8}, (_, i) => {
+    const r = ((Math.imul((seed ^ (i*2654435761+1))|0, 1664525)|0) >>> 0) / 0x100000000;
+    if (r < sFrac) return 'S';
+    return COMBS[Math.floor(r * 5) % 5];
+  });
+}
+
+// ── Pool: 4096 dots ───────────────────────────────────────────────────────────
+const N_POOL = 4096;
+const dots   = [];
+
+function mkDot(i) {
+  const angle = Math.random() * Math.PI * 2;
+  const r = Math.sqrt(Math.random()) * 0.44;
+  const tape = synthTape(i*7919 + 31337, 0.82);
+  const {h,s,l} = tapeToHSL(tape);
+  return {
+    x: 0.5 + Math.cos(angle)*r,
+    y: 0.5 + Math.sin(angle)*r,
+    vx: (Math.random()-.5)*.0006,
+    vy: (Math.random()-.5)*.0006,
+    tape, h, s, l,
+    kind: 'prey',
+    phase: Math.random()*Math.PI*2,
+    baseR: 0.7 + Math.random()*.6,
+    flash: 0
+  };
+}
+for (let i=0; i<N_POOL; i++) dots.push(mkDot(i));
+
 function applyTapes(tapes) {
-  // Assign to the LAST tapes.length particles — these are core/catalyst indexed
-  const start = Math.max(0, N - tapes.length);
-  for (let i=0;i<tapes.length&&(start+i)<N;i++) {
-    const tape=tapes[i];
-    const p=particles[start+i];
-    p.tape=tape;
-    const counts={};
-    for (const c of tape) counts[c]=(counts[c]||0)+1;
-    const dom=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0];
-    p.tapeHue=COMB_HUE[dom]??200;
+  const start = Math.max(0, N_POOL - tapes.length);
+  for (let i=0; i<tapes.length && (start+i)<N_POOL; i++) {
+    const d = dots[start+i];
+    d.tape = tapes[i];
+    const {h,s,l} = tapeToHSL(tapes[i]);
+    d.h=h; d.s=s; d.l=l;
+  }
+}
+
+function updateKinds() {
+  const rafFrac = Math.min(state.raf/2000, 1);
+  const nCore = Math.max(8, Math.round(rafFrac * N_POOL * 0.006));
+  const nCat  = Math.max(20, Math.round(rafFrac * N_POOL * 0.022));
+  for (let i=0; i<N_POOL; i++) {
+    const d = dots[i];
+    if      (i >= N_POOL - nCore)       d.kind = 'core';
+    else if (i >= N_POOL - nCore - nCat) d.kind = 'catalyst';
+    else                                 d.kind = 'prey';
   }
 }
 
 function poolCX() { return W*.5; }
 function poolCY() { return H_px*.5; }
 function poolR()  { return Math.min(W,H_px)*.42; }
-function hsl(h,s,l,a=1) { return `hsla(${h},${s}%,${l}%,${a})`; }
 
-function particleHSL(p, t) {
-  const hSpread=Math.min(state.H/4,1);
-  if (p.tape) {
-    return {h:p.tapeHue, s:52+hSpread*22, l:p.kind==='core'?60:p.kind==='catalyst'?53:46};
-  }
-  // Muted stable hue from phase — no hot pink
-  const baseH={core:175,catalyst:215,prey:148}[p.kind]??160;
-  const h=(p.phase*110+baseH)%360;
-  return {h, s:p.kind==='prey'?52:38, l:50};
-}
-function particleColor(p,t) { const {h,s,l}=particleHSL(p,t); return hsl(h,s,l); }
-
-const COMBS=['S','K','W','B','I'];
-function pseudoTape(p) {
-  const seed=(p.phase*9973|0)*37+(p.freq*9973|0)*13001;
-  return Array.from({length:8},(_,i)=>COMBS[((Math.imul(seed,(i+1)*2654435761)>>>0))%5]);
-}
-
-// Semantic z-depth: core near, prey far
-function zTarget(p) {
-  if (p.kind==='core')     return 0.45 + Math.sin(p.phase)*.08;
-  if (p.kind==='catalyst') return 0.08 + Math.sin(p.phase+1)*.12;
-  return -0.32 + Math.sin(p.phase+2)*.08;
-}
-
-// ── Shockwaves ────────────────────────────────────────────────────────────────
+// ── Shockwaves ─────────────────────────────────────────────────────────────────
 const shockwaves = [];
 function emitShockwave() { shockwaves.push({r:0,maxR:poolR()*1.5,alpha:1}); }
 function drawShockwaves() {
@@ -216,35 +231,37 @@ function drawShockwaves() {
   }
 }
 
-// ── Mega-charge ───────────────────────────────────────────────────────────────
+// ── Mega-charge ────────────────────────────────────────────────────────────────
 const megaCharges = [];
 let megaLabelTimer = 0;
 function onMegaCharge(p) {
   megaCharges.push({epoch:p.epoch, cyc:p.cyc, raf:p.raf});
   emitShockwave(); setTimeout(emitShockwave,200); setTimeout(emitShockwave,500);
+  // Scatter all dots briefly
+  for (const d of dots) {
+    const kick = d.kind==='core' ? 0.008 : d.kind==='catalyst' ? 0.005 : 0.002;
+    d.vx += (Math.random()-.5)*kick;
+    d.vy += (Math.random()-.5)*kick;
+    d.flash = Math.min(d.flash + (d.kind==='prey'?0.15:0.6), 1);
+  }
   const el=document.getElementById('mega-label');
   el.style.opacity='1'; megaLabelTimer=120;
   updateRatchetHUD();
 }
 function updateRatchetHUD() {
-  const rDecline = document.getElementById('r-decline');
-  const rRaf    = document.getElementById('r-raf');
-  const rCyc    = document.getElementById('r-cyc');
-  if (state.rate) {
-    const pct = ((6013 - state.rate)/6013*100).toFixed(1);
-    rDecline.textContent = `-${pct}% from peak`;
-  }
+  const rDecline=document.getElementById('r-decline');
+  const rRaf=document.getElementById('r-raf');
+  const rCyc=document.getElementById('r-cyc');
+  if (state.rate) { const pct=((6013-state.rate)/6013*100).toFixed(1); rDecline.textContent=`-${pct}% from peak`; }
   if (megaCharges.length) {
-    rRaf.textContent = Math.max(...megaCharges.map(m=>m.raf)).toFixed(0);
-    rCyc.textContent = Math.max(...megaCharges.map(m=>m.cyc));
+    rRaf.textContent=Math.max(...megaCharges.map(m=>m.raf)).toFixed(0);
+    rCyc.textContent=Math.max(...megaCharges.map(m=>m.cyc));
   }
-  const list = document.getElementById('charge-list');
-  if (megaCharges.length) {
-    list.textContent = megaCharges.map((m,i)=>`MC${i+1} E${(m.epoch/1e6).toFixed(0)}M cyc=${m.cyc}`).join('  ·  ');
-  }
+  const list=document.getElementById('charge-list');
+  if (megaCharges.length) list.textContent=megaCharges.map((m,i)=>`MC${i+1} E${(m.epoch/1e6).toFixed(0)}M cyc=${m.cyc}`).join('  ·  ');
 }
 
-// ── Cyc ring ──────────────────────────────────────────────────────────────────
+// ── Cyc ring ───────────────────────────────────────────────────────────────────
 function drawCycRing(t) {
   const cyc=state.cyc; if(cyc<4) return;
   const cx=poolCX(),cy=poolCY();
@@ -266,29 +283,29 @@ function drawCycRing(t) {
   }
 }
 
-// ── RAF web ───────────────────────────────────────────────────────────────────
+// ── RAF web ────────────────────────────────────────────────────────────────────
 function drawRAFWeb() {
   const rafFrac=Math.min(state.raf/2000,1); if(rafFrac<.1) return;
-  const cats=particles.filter(p=>p.kind!=='prey');
   const cx=poolCX(),cy=poolCY(),pr=poolR();
+  const cats=dots.filter(d=>d.kind!=='prey');
   const maxLinks=Math.round(rafFrac*60); let drawn=0;
   for (let i=0;i<cats.length&&drawn<maxLinks;i++) {
     for (let j=i+1;j<cats.length&&drawn<maxLinks;j++) {
       const a=cats[i],b=cats[j];
-      const dx=(a.x-b.x)*pr,dy=(a.y-b.y)*pr;
+      const dx=(a.x-b.x)*pr*2, dy=(a.y-b.y)*pr*2;
       const dist=Math.sqrt(dx*dx+dy*dy);
-      if (dist<pr*.25) {
-        ctx.beginPath();
-        ctx.moveTo(cx+a.x*pr*2-pr,cy+a.y*pr*2-pr);
-        ctx.lineTo(cx+b.x*pr*2-pr,cy+b.y*pr*2-pr);
-        ctx.strokeStyle=`rgba(100,200,255,${(1-dist/(pr*.25))*rafFrac*.15})`;
+      if (dist<pr*.3) {
+        const ax=cx+(a.x-.5)*pr*2, ay=cy+(a.y-.5)*pr*2;
+        const bx=cx+(b.x-.5)*pr*2, by=cy+(b.y-.5)*pr*2;
+        ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by);
+        ctx.strokeStyle=`rgba(100,200,255,${(1-dist/(pr*.3))*rafFrac*.18})`;
         ctx.lineWidth=.5; ctx.stroke(); drawn++;
       }
     }
   }
 }
 
-// ── Pool ──────────────────────────────────────────────────────────────────────
+// ── Pool background ────────────────────────────────────────────────────────────
 function drawPool(t) {
   const cx=poolCX(),cy=poolCY(),pr=poolR();
   const intensity=Math.min(state.cyc/30,1);
@@ -305,286 +322,132 @@ function drawPool(t) {
   ctx.fillStyle=rimGrad; ctx.fill();
 }
 
-// ── Particle physics ──────────────────────────────────────────────────────────
-function stepParticles(dt) {
-  const cx=poolCX(),cy=poolCY(),pr=poolR();
-  const speedMul=.5+(state.ops-95)/40;
-  const rafFrac=Math.min(state.raf/2000,1);
-  const hDrive=Math.min(state.H/3,1);
-  for (const p of particles) {
-    const i=particles.indexOf(p);
-    const preyFrac=1-rafFrac;
-    p.kind = i<preyFrac*.65*N?'prey': i<(preyFrac*.65+rafFrac*.25)*N?'catalyst':'core';
-    p.trail.push({x:p.x,y:p.y});
-    if (p.trail.length>6) p.trail.shift();
-    p.vx+=(Math.random()-.5)*.0004*speedMul;
-    p.vy+=(Math.random()-.5)*.0004*speedMul;
-    const px=(p.x-.5)*pr*2, py=(p.y-.5)*pr*2;
-    const dist=Math.sqrt(px*px+py*py);
-    const preyOrbit=.65+hDrive*.27;
-    const maxD=pr*(p.kind==='core'?.45:p.kind==='catalyst'?.7:preyOrbit);
-    if (dist>maxD) { p.vx-=px/dist*.0003; p.vy-=py/dist*.0003; }
-    if (p.kind==='catalyst'&&rafFrac>.3) { p.vx-=px/(dist+1)*rafFrac*.00015; p.vy-=py/(dist+1)*rafFrac*.00015; }
-    p.vx*=.97; p.vy*=.97; p.x+=p.vx; p.y+=p.vy;
-    p.z += (zTarget(p) - p.z) * 0.004;
-  }
-}
-
-// ── Cell rendering ─────────────────────────────────────────────────────────────
-function tapeHash(tape) {
-  let h=17;
-  for (const c of tape) h=(h*31+c.charCodeAt(0))&0xFFFFFF;
-  return h;
-}
-
-function drawOrganelle(c2d, ox, oy, or2, ch) {
-  c2d.fillStyle=TAPE_COLORS[ch]||'#555';
-  if (ch==='S') {
-    c2d.beginPath(); c2d.moveTo(ox,oy-or2); c2d.lineTo(ox+or2,oy); c2d.lineTo(ox,oy+or2); c2d.lineTo(ox-or2,oy); c2d.closePath(); c2d.fill();
-  } else if (ch==='K') {
-    c2d.beginPath(); c2d.moveTo(ox,oy-or2); c2d.lineTo(ox+or2*.87,oy+or2*.5); c2d.lineTo(ox-or2*.87,oy+or2*.5); c2d.closePath(); c2d.fill();
-  } else if (ch==='W') {
-    c2d.beginPath(); c2d.arc(ox-or2*.38,oy,or2*.62,0,Math.PI*2); c2d.fill();
-    c2d.beginPath(); c2d.arc(ox+or2*.38,oy,or2*.62,0,Math.PI*2); c2d.fill();
-  } else if (ch==='B') {
-    c2d.beginPath(); c2d.ellipse(ox,oy,or2,or2*.5,0,0,Math.PI*2); c2d.fill();
-  } else {
-    c2d.beginPath(); c2d.arc(ox,oy,or2*.7,0,Math.PI*2); c2d.fill();
-  }
-}
-
-function drawMembranePath(c2d, cx, cy, r, hash, t) {
-  const nPts=20;
-  const f1=3+(hash%3), f2=5+((hash>>4)%3);
-  const a1=0.06+(hash%5)*.01, a2=0.025+((hash>>8)%4)*.007;
-  const ph1=(hash&0xFF)*.0245;
-  const ph2=((hash>>8)&0xFF)*.0245;
-  const bw=0.055*Math.sin(t*.0016+hash*.001);
-  c2d.beginPath();
-  for (let i=0;i<=nPts;i++) {
-    const a=(i/nPts)*Math.PI*2;
-    const w=1+a1*Math.sin(f1*a+ph1)+a2*Math.sin(f2*a+ph2)+bw;
-    const pr=r*w;
-    i===0?c2d.moveTo(cx+Math.cos(a)*pr,cy+Math.sin(a)*pr)
-         :c2d.lineTo(cx+Math.cos(a)*pr,cy+Math.sin(a)*pr);
-  }
-  c2d.closePath();
-  return (hash&0xFF)*.0245; // return ph1 for organelle placement
-}
-
-function drawCell(c2d, cx, cy, r, tape, ch, cs, cl, t, richOrganelles) {
-  if (r<2.5) return;
-  const hash=tapeHash(tape);
-  const rgb=`${ch|0},${cs|0}%,${cl|0}%`;
-
-  // Outer diffuse halo (Lenia-like)
-  if (r>5) {
-    const og=c2d.createRadialGradient(cx,cy,r*.3,cx,cy,r*2.6);
-    og.addColorStop(0,`hsla(${rgb},0.13)`);
-    og.addColorStop(0.4,`hsla(${rgb},0.04)`);
-    og.addColorStop(1,`hsla(${rgb},0)`);
-    c2d.beginPath(); c2d.arc(cx,cy,r*2.6,0,Math.PI*2);
-    c2d.fillStyle=og; c2d.fill();
-  }
-
-  const ph1=drawMembranePath(c2d,cx,cy,r,hash,t);
-
-  // Cytoplasm gradient — bright ring near membrane, swirling center
-  const ph2=ph1+1.0;
-  const swirl=r*.18;
-  const sx=cx+swirl*Math.sin(t*.00035+ph1);
-  const sy=cy+swirl*Math.cos(t*.00035+ph2);
-  const cg=c2d.createRadialGradient(sx,sy,0,cx,cy,r*1.05);
-  cg.addColorStop(0,   `hsla(${rgb},0.08)`);
-  cg.addColorStop(0.5, `hsla(${rgb},0.05)`);
-  cg.addColorStop(0.82,`hsla(${rgb},0.26)`);
-  cg.addColorStop(1,   `hsla(${rgb},0.04)`);
-  c2d.fillStyle=cg; c2d.fill();
-  c2d.strokeStyle=`hsla(${rgb},0.50)`; c2d.lineWidth=r>6?1.1:.6; c2d.stroke();
-
-  if (r<4) return;
-  // Nucleus — 3D sphere with highlight
-  const nR=Math.max(1.4, r*.20);
-  const nh=COMB_HUE[tape[0]]??ch;
-  const ng=c2d.createRadialGradient(cx-nR*.35,cy-nR*.35,0,cx,cy,nR);
-  ng.addColorStop(0,'rgba(255,255,255,0.75)');
-  ng.addColorStop(0.3,`hsla(${nh},70%,65%,0.9)`);
-  ng.addColorStop(1,`hsla(${nh},60%,22%,0.85)`);
-  c2d.beginPath(); c2d.arc(cx,cy,nR,0,Math.PI*2);
-  c2d.fillStyle=ng; c2d.fill();
-
-  if (r<6||tape.length<2) return;
-  // Organelles orbit nucleus — inner faster, alternating directions
-  const goldenA=Math.PI*(3-Math.sqrt(5));
-  for (let i=1;i<tape.length;i++) {
-    const frac=i/tape.length;
-    const orbitR=r*(.27+frac*.50);
-    const dir=i%2===0?1:-1;
-    const speed=0.00025*(1.9-frac);
-    const angle=i*goldenA+ph1+dir*t*speed;
-    const ox=cx+Math.cos(angle)*orbitR, oy=cy+Math.sin(angle)*orbitR;
-    const oR=Math.max(1.0,nR*.48);
-    if (richOrganelles) {
-      const oh=COMB_HUE[tape[i]]??ch;
-      const ogg=c2d.createRadialGradient(ox,oy,0,ox,oy,oR*2.5);
-      ogg.addColorStop(0,`hsla(${oh},70%,65%,0.28)`);
-      ogg.addColorStop(1,`hsla(${oh},70%,65%,0)`);
-      c2d.beginPath(); c2d.arc(ox,oy,oR*2.5,0,Math.PI*2);
-      c2d.fillStyle=ogg; c2d.fill();
+// ── Dot physics ────────────────────────────────────────────────────────────────
+function stepDots(dt) {
+  const pr=poolR();
+  const speedMul=0.4+(state.ops-95)/60;
+  for (const d of dots) {
+    d.vx += (Math.random()-.5)*.00018*speedMul;
+    d.vy += (Math.random()-.5)*.00018*speedMul;
+    const px=(d.x-.5)*pr*2, py=(d.y-.5)*pr*2;
+    const dist=Math.sqrt(px*px+py*py)+.001;
+    const targetR = d.kind==='core'    ? pr*.10
+                  : d.kind==='catalyst'? pr*.28
+                  :                      pr*.68;
+    if (dist > targetR) {
+      const pull = d.kind==='core'?.0010:d.kind==='catalyst'?.0004:.00008;
+      d.vx -= px/dist*pull; d.vy -= py/dist*pull;
     }
-    drawOrganelle(c2d,ox,oy,oR,tape[i]);
+    if (dist > pr*.95) { d.vx -= px/dist*.002; d.vy -= py/dist*.002; }
+    d.vx *= .965; d.vy *= .965;
+    d.x += d.vx; d.y += d.vy;
+    if (d.flash > 0) d.flash = Math.max(0, d.flash - dt*.004);
   }
 }
 
-function drawPreyCell(c2d, cx, cy, r, ch, cs, cl, t, phase) {
-  const rgb=`${ch|0},${cs|0}%,${cl|0}%`;
-  if (r<1.5) {
-    c2d.beginPath(); c2d.arc(cx,cy,r,0,Math.PI*2);
-    c2d.fillStyle=`hsla(${rgb},0.55)`; c2d.fill(); return;
-  }
-  const bw=0.022*Math.sin(t*.001+phase);
-  const nPts=10;
-  c2d.beginPath();
-  for (let i=0;i<=nPts;i++) {
-    const a=(i/nPts)*Math.PI*2;
-    const w=1+0.032*Math.sin(3*a+phase)+bw;
-    const pr=r*w;
-    i===0?c2d.moveTo(cx+Math.cos(a)*pr,cy+Math.sin(a)*pr)
-         :c2d.lineTo(cx+Math.cos(a)*pr,cy+Math.sin(a)*pr);
-  }
-  c2d.closePath();
-  const cg=c2d.createRadialGradient(cx,cy,0,cx,cy,r);
-  cg.addColorStop(0,`hsla(${rgb},0.06)`);
-  cg.addColorStop(0.78,`hsla(${rgb},0.18)`);
-  cg.addColorStop(1,`hsla(${rgb},0.03)`);
-  c2d.fillStyle=cg; c2d.fill();
-  c2d.strokeStyle=`hsla(${rgb},0.38)`; c2d.lineWidth=.5; c2d.stroke();
-  if (r>2.5) {
-    c2d.beginPath(); c2d.arc(cx,cy,r*.18,0,Math.PI*2);
-    c2d.fillStyle=`hsla(${rgb},0.65)`; c2d.fill();
-  }
-}
-
-function drawParticles(t) {
-  const cx=poolCX(),cy=poolCY(),pr=poolR();
+// ── Draw all dots ──────────────────────────────────────────────────────────────
+function drawDots(t) {
+  const cx=poolCX(), cy=poolCY(), pr=poolR();
   const opsFrac=Math.max(0,Math.min((state.ops-95)/30,1));
-  const FOV=1.8;
-  // Painter's algorithm: back (low z) → front (high z)
-  const sorted=[...particles].sort((a,b)=>a.z-b.z);
-  for (const p of sorted) {
-    const zScale = FOV / (FOV - p.z * 0.55);
-    const fogAlpha = Math.max(0.18, Math.min(1, 0.28 + 0.72 * (p.z + 0.5)));
-    const px=cx+(p.x-.5)*pr*2*zScale, py=cy+(p.y-.5)*pr*2*zScale;
-    const {h,s,l}=particleHSL(p,t);
-    if (p.trail.length>1) {
-      for (let i=1;i<p.trail.length;i++) {
-        const a=p.trail[i-1],b=p.trail[i];
-        const alpha=(i/p.trail.length)*(p.kind==='prey'?.07:.20)*fogAlpha;
-        ctx.beginPath();
-        ctx.moveTo(cx+(a.x-.5)*pr*2,cy+(a.y-.5)*pr*2);
-        ctx.lineTo(cx+(b.x-.5)*pr*2,cy+(b.y-.5)*pr*2);
-        ctx.strokeStyle=`hsla(${h|0},${s|0}%,${l|0}%,${alpha})`;
-        ctx.lineWidth=p.kind==='prey'?.3:.7; ctx.stroke();
+
+  for (const d of dots) {
+    const px=cx+(d.x-.5)*pr*2, py=cy+(d.y-.5)*pr*2;
+    const breath=1+.12*Math.sin(d.phase+t*d.baseR*.0008);
+
+    let r, alpha;
+    if (d.kind==='core') {
+      r = (d.baseR*2.8+opsFrac*1.8)*breath;
+      alpha = 0.85 + d.flash*.15;
+    } else if (d.kind==='catalyst') {
+      r = (d.baseR*1.5)*breath;
+      alpha = 0.55 + d.flash*.2;
+    } else {
+      r = d.baseR*.9;
+      alpha = 0.22 + d.flash*.25;
+    }
+
+    // Glow halo for active/flashing dots
+    if (d.flash > 0.05 || d.kind==='core') {
+      const glowR = r*(d.kind==='core'?3.5:2.5);
+      const glowAlpha = (d.kind==='core'?.08:0) + d.flash*.12;
+      if (glowAlpha > 0.01) {
+        const gg=ctx.createRadialGradient(px,py,0,px,py,glowR);
+        gg.addColorStop(0,`hsla(${d.h|0},${d.s|0}%,${d.l+15|0}%,${glowAlpha})`);
+        gg.addColorStop(1,`hsla(${d.h|0},${d.s|0}%,${d.l|0}%,0)`);
+        ctx.beginPath(); ctx.arc(px,py,glowR,0,Math.PI*2);
+        ctx.fillStyle=gg; ctx.fill();
       }
     }
-    const breathSwing=.20+opsFrac*.38;
-    const breath=1-breathSwing+breathSwing*Math.abs(Math.sin(p.phase+t*p.freq*.001));
-    const r=p.baseR*breath*(p.kind==='core'?3.5:p.kind==='catalyst'?2.2:1)*zScale;
-    ctx.globalAlpha = fogAlpha;
-    ctx.shadowBlur=0;
-    if (p.kind==='prey') {
-      drawPreyCell(ctx,px,py,r,h,s,l,t,p.phase);
-    } else {
-      const tape=p.tape||pseudoTape(p);
-      drawCell(ctx,px,py,r,tape,h,s,l,t,!!p.tape);
+
+    ctx.beginPath();
+    ctx.arc(px,py,r,0,Math.PI*2);
+    ctx.fillStyle=`hsla(${d.h|0},${d.s|0}%,${d.l|0}%,${alpha})`;
+    ctx.fill();
+  }
+}
+
+// ── Interactions (visible reduction events) ───────────────────────────────────
+const interactions = [];
+function stepInteractions() {
+  const cx=poolCX(), cy=poolCY(), pr=poolR();
+  const cats=dots.filter(d=>d.kind!=='prey');
+  const prey=dots.filter(d=>d.kind==='prey');
+  const n=Math.round(state.ops*.07);
+  for (let i=0;i<n&&cats.length&&prey.length;i++) {
+    const c=cats[Math.floor(Math.random()*cats.length)];
+    const p=prey[Math.floor(Math.random()*prey.length)];
+    const ax=cx+(c.x-.5)*pr*2, ay=cy+(c.y-.5)*pr*2;
+    const bx=cx+(p.x-.5)*pr*2, by=cy+(p.y-.5)*pr*2;
+    if (Math.hypot(ax-bx,ay-by)<pr*.38) {
+      interactions.push({ax,ay,bx,by,alpha:.75,h:c.h,s:c.s});
+      c.flash=Math.min(c.flash+.35,1);
+      p.flash=Math.min(p.flash+.12,.45);
     }
-    ctx.globalAlpha = 1;
+  }
+  for (let i=interactions.length-1;i>=0;i--) {
+    interactions[i].alpha-=.06;
+    if (interactions[i].alpha<=0) interactions.splice(i,1);
   }
 }
 
-// ── Interaction sparks ─────────────────────────────────────────────────────────
-function drawSparks() {
-  if (state.ops<97) return;
-  const cx=poolCX(),cy=poolCY(),pr=poolR();
-  const cats=particles.filter(p=>p.kind!=='prey');
-  const n=Math.round((state.ops-96)*0.8);
-  for (let iter=0;iter<n&&cats.length>1;iter++) {
-    const i=Math.floor(Math.random()*cats.length);
-    const j=(i+1+Math.floor(Math.random()*(cats.length-1)))%cats.length;
-    const a=cats[i],b=cats[j];
-    const ax=cx+(a.x-.5)*pr*2,ay=cy+(a.y-.5)*pr*2;
-    const bx=cx+(b.x-.5)*pr*2,by=cy+(b.y-.5)*pr*2;
-    const d=Math.hypot(ax-bx,ay-by);
-    if (d>pr*.28) continue;
-    const alpha=(1-d/(pr*.28))*.2;
+function drawInteractions() {
+  for (const {ax,ay,bx,by,alpha,h,s} of interactions) {
     ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by);
-    ctx.strokeStyle=`rgba(180,240,255,${alpha})`;
-    ctx.lineWidth=.5; ctx.stroke();
+    ctx.strokeStyle=`hsla(${h|0},${Math.min(s+20,100)|0}%,72%,${alpha*.45})`;
+    ctx.lineWidth=.4; ctx.stroke();
   }
 }
 
-// ── Topology edges (interaction graph, driven by live edges count) ─────────────
-const topoEdges = []; // [particleA, particleB, age, maxAge]
-let topoFrame = 0;
+// ── Topology edges ─────────────────────────────────────────────────────────────
+const topoEdges=[];
+let topoFrame=0;
 function updateTopoEdges() {
-  const cats = particles.filter(p=>p.kind!=='prey');
-  if (cats.length < 2) return;
-  const target = Math.min(80, Math.round(state.edges / 34));
-  // Age + expire
-  for (let i=topoEdges.length-1;i>=0;i--) {
-    topoEdges[i][2]++;
-    if (topoEdges[i][2] >= topoEdges[i][3]) topoEdges.splice(i,1);
-  }
-  // Trim
-  while (topoEdges.length > target) topoEdges.shift();
-  // Grow
+  const cats=dots.filter(d=>d.kind!=='prey');
+  if (cats.length<2) return;
+  const tgt=Math.min(60,Math.round(state.edges/46));
+  for (let i=topoEdges.length-1;i>=0;i--) { topoEdges[i][2]++; if(topoEdges[i][2]>=topoEdges[i][3])topoEdges.splice(i,1); }
+  while(topoEdges.length>tgt)topoEdges.shift();
   let tries=0;
-  while (topoEdges.length < target && tries++ < 30) {
+  while(topoEdges.length<tgt&&tries++<30){
     const ai=Math.floor(Math.random()*cats.length);
     const bi=Math.floor(Math.random()*cats.length);
-    if (ai!==bi) topoEdges.push([cats[ai],cats[bi],0,50+Math.floor(Math.random()*80)]);
+    if(ai!==bi)topoEdges.push([cats[ai],cats[bi],0,50+Math.floor(Math.random()*80)]);
   }
 }
 function drawTopoEdges() {
   const cx=poolCX(),cy=poolCY(),pr=poolR();
   for (const [a,b,age,max] of topoEdges) {
     const life=Math.sin(Math.PI*age/max);
-    const ax=cx+(a.x-.5)*pr*2,ay=cy+(a.y-.5)*pr*2;
-    const bx=cx+(b.x-.5)*pr*2,by=cy+(b.y-.5)*pr*2;
+    const ax=cx+(a.x-.5)*pr*2, ay=cy+(a.y-.5)*pr*2;
+    const bx=cx+(b.x-.5)*pr*2, by=cy+(b.y-.5)*pr*2;
     ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by);
-    ctx.strokeStyle=`rgba(80,140,255,${life*.14})`; ctx.lineWidth=.6; ctx.stroke();
-  }
-}
-
-// ── Collision flashes — visible interactions ────────────────────────────────────
-const collisions = []; // {x,y,alpha}
-function stepCollisions() {
-  const cx=poolCX(),cy=poolCY(),pr=poolR();
-  const cats=particles.filter(p=>p.kind!=='prey');
-  const prey=particles.filter(p=>p.kind==='prey');
-  const n=Math.round(state.ops*0.04);
-  for (let i=0;i<n;i++) {
-    if (!cats.length||!prey.length) break;
-    const c=cats[Math.floor(Math.random()*cats.length)];
-    const p=prey[Math.floor(Math.random()*prey.length)];
-    const mx=(c.x+p.x)/2, my=(c.y+p.y)/2;
-    collisions.push({x:cx+(mx-.5)*pr*2, y:cy+(my-.5)*pr*2, alpha:.7});
-  }
-  for (let i=collisions.length-1;i>=0;i--) {
-    collisions[i].alpha-=.055;
-    if (collisions[i].alpha<=0) collisions.splice(i,1);
-  }
-}
-function drawCollisions() {
-  for (const c of collisions) {
-    ctx.beginPath(); ctx.arc(c.x,c.y,2,0,Math.PI*2);
-    ctx.fillStyle=`rgba(255,240,140,${c.alpha})`; ctx.fill();
+    ctx.strokeStyle=`rgba(80,140,255,${life*.12})`; ctx.lineWidth=.5; ctx.stroke();
   }
 }
 
 // ── Zoom / Pan ─────────────────────────────────────────────────────────────────
-let zoom=1, panX=0, panY=0, isPanning=false, lastMouse={x:0,y:0};
-canvas.addEventListener('wheel', e=>{
+let zoom=1,panX=0,panY=0,isPanning=false,lastMouse={x:0,y:0};
+canvas.addEventListener('wheel',e=>{
   e.preventDefault();
   const f=e.deltaY<0?1.13:1/1.13;
   const rect=canvas.getBoundingClientRect();
@@ -609,7 +472,7 @@ function frame(now) {
   requestAnimationFrame(frame);
   const dt=now-last; last=now; t+=dt; frameN++;
   lerpState(dt);
-  ctx.fillStyle='rgba(0,0,6,0.25)';
+  ctx.fillStyle='rgba(0,0,6,0.20)';
   ctx.fillRect(0,0,W,H_px);
 
   ctx.save();
@@ -617,14 +480,14 @@ function frame(now) {
   ctx.scale(zoom,zoom);
 
   drawPool(t);
+  if (frameN%6===0) updateKinds();
   if (frameN%8===0) updateTopoEdges();
   drawTopoEdges();
   drawRAFWeb();
-  stepParticles(dt);
-  stepCollisions();
-  drawParticles(t);
-  drawCollisions();
-  drawSparks();
+  stepDots(dt);
+  stepInteractions();
+  drawDots(t);
+  drawInteractions();
   drawCycRing(t);
   drawShockwaves();
 
@@ -635,8 +498,8 @@ requestAnimationFrame(frame);
 
 // ── HUD ───────────────────────────────────────────────────────────────────────
 function updateHUD(p) {
-  document.getElementById('ops-v').textContent = p.ops.toFixed(1);
-  document.getElementById('H-v').textContent   = p.H.toFixed(3);
+  document.getElementById('ops-v').textContent  = p.ops.toFixed(1);
+  document.getElementById('H-v').textContent    = p.H.toFixed(3);
   document.getElementById('raf-v').textContent  = p.raf.toFixed(0);
   document.getElementById('cyc-v').textContent  = p.cyc;
   document.getElementById('epoch-v').textContent= (p.epoch/1e6).toFixed(0)+'M';
@@ -645,35 +508,20 @@ function updateHUD(p) {
   document.getElementById('cyc-v').style.color=`hsl(${300-hi*60},90%,${60+hi*25}%)`;
 }
 
-// ── Data fetch ────────────────────────────────────────────────────────────────
-let prevCyc=0;
-function ingestPoint(p) {
-  if (p.cyc>=20&&prevCyc<20) onMegaCharge(p);
-  prevCyc=p.cyc;
-  Object.assign(target,{ops:p.ops,H:p.H,raf:p.raf,cyc:p.cyc,unique:p.unique,epoch:p.epoch,rate:p.rate});
-  updateHUD(p);
-}
-
 // ── ops/int timeline ──────────────────────────────────────────────────────────
-const phaseC   = document.getElementById('phase-canvas');
-const phaseCtx = phaseC.getContext('2d');
-
+const phaseC=document.getElementById('phase-canvas');
+const phaseCtx=phaseC.getContext('2d');
 function drawPhasePortrait(history) {
-  const CW=250, CH=160, padL=36, padR=12, padT=18, padB=28;
+  const CW=250,CH=160,padL=36,padR=12,padT=18,padB=28;
   phaseCtx.clearRect(0,0,CW,CH);
-  phaseCtx.fillStyle='rgba(0,0,10,0.97)';
-  phaseCtx.fillRect(0,0,CW,CH);
+  phaseCtx.fillStyle='rgba(0,0,10,0.97)'; phaseCtx.fillRect(0,0,CW,CH);
   if (!history||history.length<2) return;
-
-  const ops = history.map(p=>p.ops);
-  const opsMin = Math.floor(Math.min(...ops))-1;
-  const opsMax = Math.ceil(Math.max(...ops))+1;
-  const toX = i => padL + i/(history.length-1)*(CW-padL-padR);
-  const toY = v => padT + (1-(v-opsMin)/(opsMax-opsMin))*(CH-padT-padB);
-
-  // Ceiling line at 121 (the target to break)
-  const ceilY = toY(121);
-  if (ceilY > padT && ceilY < CH-padB) {
+  const ops=history.map(p=>p.ops);
+  const opsMin=Math.floor(Math.min(...ops))-1, opsMax=Math.ceil(Math.max(...ops))+1;
+  const toX=i=>padL+i/(history.length-1)*(CW-padL-padR);
+  const toY=v=>padT+(1-(v-opsMin)/(opsMax-opsMin))*(CH-padT-padB);
+  const ceilY=toY(121);
+  if (ceilY>padT&&ceilY<CH-padB) {
     phaseCtx.setLineDash([4,4]);
     phaseCtx.beginPath(); phaseCtx.moveTo(padL,ceilY); phaseCtx.lineTo(CW-padR,ceilY);
     phaseCtx.strokeStyle='rgba(255,160,60,0.35)'; phaseCtx.lineWidth=1; phaseCtx.stroke();
@@ -681,127 +529,92 @@ function drawPhasePortrait(history) {
     phaseCtx.fillStyle='rgba(255,160,60,0.5)'; phaseCtx.font='7px monospace';
     phaseCtx.fillText('121 ceiling',padL+2,ceilY-3);
   }
-
-  // Horizontal grid + y labels
-  const step = Math.max(1, Math.round((opsMax-opsMin)/4));
-  for (let v=Math.ceil(opsMin/step)*step; v<=opsMax; v+=step) {
+  const step=Math.max(1,Math.round((opsMax-opsMin)/4));
+  for (let v=Math.ceil(opsMin/step)*step;v<=opsMax;v+=step) {
     const y=toY(v);
     phaseCtx.beginPath(); phaseCtx.moveTo(padL,y); phaseCtx.lineTo(CW-padR,y);
     phaseCtx.strokeStyle='rgba(50,55,90,0.5)'; phaseCtx.lineWidth=.5; phaseCtx.stroke();
     phaseCtx.fillStyle='rgba(110,120,180,0.7)'; phaseCtx.font='8px monospace';
     phaseCtx.textAlign='right'; phaseCtx.fillText(v,padL-3,y+3);
   }
-
-  // Fill under line
   phaseCtx.beginPath();
   phaseCtx.moveTo(toX(0),toY(ops[0]));
   ops.forEach((v,i)=>phaseCtx.lineTo(toX(i),toY(v)));
-  phaseCtx.lineTo(toX(ops.length-1),CH-padB);
-  phaseCtx.lineTo(toX(0),CH-padB);
-  phaseCtx.closePath();
+  phaseCtx.lineTo(toX(ops.length-1),CH-padB); phaseCtx.lineTo(toX(0),CH-padB); phaseCtx.closePath();
   phaseCtx.fillStyle='rgba(80,140,255,0.07)'; phaseCtx.fill();
-
-  // Line
   phaseCtx.beginPath();
-  ops.forEach((v,i)=> i===0 ? phaseCtx.moveTo(toX(i),toY(v)) : phaseCtx.lineTo(toX(i),toY(v)));
-  phaseCtx.strokeStyle='rgba(100,180,255,0.85)'; phaseCtx.lineWidth=1.5;
-  phaseCtx.lineJoin='round'; phaseCtx.stroke();
-
-  // Mega-charge markers
+  ops.forEach((v,i)=>i===0?phaseCtx.moveTo(toX(i),toY(v)):phaseCtx.lineTo(toX(i),toY(v)));
+  phaseCtx.strokeStyle='rgba(100,180,255,0.85)'; phaseCtx.lineWidth=1.5; phaseCtx.lineJoin='round'; phaseCtx.stroke();
   history.forEach((p,i)=>{
     if (p.cyc>=20&&(i===0||history[i-1].cyc<20)) {
       phaseCtx.beginPath(); phaseCtx.arc(toX(i),toY(p.ops),4,0,Math.PI*2);
       phaseCtx.fillStyle='rgba(220,80,255,0.9)'; phaseCtx.fill();
     }
   });
-
-  // Current dot + value
   const cur=ops[ops.length-1];
-  const cx=toX(ops.length-1), cy=toY(cur);
-  phaseCtx.beginPath(); phaseCtx.arc(cx,cy,5,0,Math.PI*2);
+  const ccx=toX(ops.length-1), ccy=toY(cur);
+  phaseCtx.beginPath(); phaseCtx.arc(ccx,ccy,5,0,Math.PI*2);
   phaseCtx.fillStyle='rgba(255,220,60,0.95)'; phaseCtx.fill();
   phaseCtx.fillStyle='rgba(255,220,60,0.9)'; phaseCtx.font='bold 9px monospace';
-  phaseCtx.textAlign='right';
-  phaseCtx.fillText(cur.toFixed(1), CW-padR, padT+10);
-
-  // Axis label
+  phaseCtx.textAlign='right'; phaseCtx.fillText(cur.toFixed(1),CW-padR,padT+10);
   phaseCtx.fillStyle='rgba(100,140,200,0.5)'; phaseCtx.font='7px monospace';
-  phaseCtx.textAlign='center';
-  phaseCtx.fillText('ops/int — reductions per interaction',CW/2+padL/2,CH-4);
+  phaseCtx.textAlign='center'; phaseCtx.fillText('ops/int — reductions per interaction',CW/2+padL/2,CH-4);
   phaseCtx.textAlign='left';
 }
 
 // ── Pool composition bar chart ─────────────────────────────────────────────────
-const genomeC   = document.getElementById('genome-canvas');
-const genomeCtx = genomeC.getContext('2d');
-const TAPE_COLORS = {S:'#3cb854',K:'#3c64dc',W:'#dc8c28',B:'#b43c3c',I:'#808080'};
-const COMB_NAMES = {S:'S (copy)',K:'K (discard)',W:'W (double)',B:'B (pipe)',I:'I (wire)'};
-
+const genomeC=document.getElementById('genome-canvas');
+const genomeCtx=genomeC.getContext('2d');
 function drawGenome(tapes) {
-  const CW=250, CH=130, padL=60, padR=12, padT=10, padB=10;
-  genomeCtx.clearRect(0,0,CW,CH);
-  genomeCtx.fillStyle='rgba(0,0,10,0.97)';
-  genomeCtx.fillRect(0,0,CW,CH);
+  const CW=250,CH=130,padL=60,padR=12,padT=10,padB=10;
+  genomeCtx.clearRect(0,0,CW,CH); genomeCtx.fillStyle='rgba(0,0,10,0.97)'; genomeCtx.fillRect(0,0,CW,CH);
   if (!tapes||!tapes.length) return;
-
-  // Count combinators across all tapes
-  const counts={S:0,K:0,W:0,B:0,I:0};
-  let total=0;
-  for (const tape of tapes) {
-    for (const ch of tape) { if (counts[ch]!==undefined){counts[ch]++;total++;} }
-  }
+  const counts={S:0,K:0,W:0,B:0,I:0}; let total=0;
+  for (const tape of tapes) for (const ch of tape) if (counts[ch]!==undefined){counts[ch]++;total++;}
   if (!total) return;
-
   const combs=['S','K','W','B','I'];
   const rowH=(CH-padT-padB)/combs.length;
   const barArea=CW-padL-padR;
-
   combs.forEach((c,i)=>{
     const frac=counts[c]/total;
     const y=padT+i*rowH;
     const barW=Math.round(frac*barArea);
-
-    // Background track
-    genomeCtx.fillStyle='rgba(30,32,50,0.7)';
-    genomeCtx.fillRect(padL,y+3,barArea,rowH-6);
-
-    // Bar
-    genomeCtx.fillStyle=TAPE_COLORS[c];
-    genomeCtx.fillRect(padL,y+3,barW,rowH-6);
-
-    // Name label
+    genomeCtx.fillStyle='rgba(30,32,50,0.7)'; genomeCtx.fillRect(padL,y+3,barArea,rowH-6);
+    genomeCtx.fillStyle=TAPE_COLORS[c]; genomeCtx.fillRect(padL,y+3,barW,rowH-6);
     genomeCtx.fillStyle='rgba(200,210,240,0.85)'; genomeCtx.font='8px monospace';
-    genomeCtx.textAlign='right';
-    genomeCtx.fillText(COMB_NAMES[c],padL-4,y+rowH/2+3);
-
-    // Pct label
+    genomeCtx.textAlign='right'; genomeCtx.fillText(COMB_NAMES[c],padL-4,y+rowH/2+3);
     genomeCtx.fillStyle='rgba(220,230,255,0.7)'; genomeCtx.font='8px monospace';
-    genomeCtx.textAlign='left';
-    genomeCtx.fillText((frac*100).toFixed(0)+'%',padL+barW+3,y+rowH/2+3);
+    genomeCtx.textAlign='left'; genomeCtx.fillText((frac*100).toFixed(0)+'%',padL+barW+3,y+rowH/2+3);
   });
   genomeCtx.textAlign='left';
 }
 
+// ── Data fetch ─────────────────────────────────────────────────────────────────
+let prevCyc=0;
+function ingestPoint(p) {
+  if (p.cyc>=20&&prevCyc<20) onMegaCharge(p);
+  prevCyc=p.cyc;
+  Object.assign(target,{ops:p.ops,H:p.H,raf:p.raf,cyc:p.cyc,unique:p.unique,epoch:p.epoch,rate:p.rate,edges:p.edges||state.edges});
+  updateHUD(p);
+}
+
 async function fetchData() {
   try {
-    const r = await fetch('data.json?_='+Date.now());
+    const r=await fetch('data.json?_='+Date.now());
     if (!r.ok) return;
-    const d = await r.json();
-    const now = new Date(d.updated_iso);
-    document.getElementById('updated').textContent = 'updated '+now.toLocaleTimeString();
-
-    // Seed history on first load
-    if (prevCyc===0 && d.history && d.history.length) {
+    const d=await r.json();
+    const now=new Date(d.updated_iso);
+    document.getElementById('updated').textContent='updated '+now.toLocaleTimeString();
+    if (prevCyc===0&&d.history&&d.history.length) {
       for (let i=0;i<d.history.length;i++) {
-        const cur=d.history[i], prev=i>0?d.history[i-1]:cur;
+        const cur=d.history[i],prev=i>0?d.history[i-1]:cur;
         if (cur.cyc>=20&&prev.cyc<20) megaCharges.push({epoch:cur.epoch,cyc:cur.cyc,raf:cur.raf});
       }
       updateRatchetHUD();
       const last=d.history[d.history.length-1];
-      Object.assign(state,{ops:last.ops,H:last.H,raf:last.raf,cyc:last.cyc,unique:last.unique,epoch:last.epoch,rate:last.rate});
+      Object.assign(state,{ops:last.ops,H:last.H,raf:last.raf,cyc:last.cyc,unique:last.unique,epoch:last.epoch,rate:last.rate,edges:last.edges||state.edges});
       Object.assign(target,{...state});
-      prevCyc=last.cyc;
-      updateHUD(last);
+      prevCyc=last.cyc; updateHUD(last);
     }
     if (d.latest) ingestPoint(d.latest);
     updateRatchetHUD();
@@ -811,7 +624,7 @@ async function fetchData() {
 }
 
 fetchData();
-setInterval(fetchData, 30000);
+setInterval(fetchData,30000);
 </script>
 </body>
 </html>
