@@ -9,6 +9,21 @@
 body { background:#000; color:#fff; font-family:'SF Mono',monospace; overflow:hidden; width:100vw; height:100vh; }
 canvas { display:block; position:fixed; inset:0; }
 
+#view-toggle {
+  position:fixed; top:10px; right:20px;
+  display:flex; gap:6px; z-index:30; pointer-events:all;
+}
+.vt-btn {
+  font:700 8px 'SF Mono',monospace; letter-spacing:.1em; text-transform:uppercase;
+  padding:4px 10px; border:1px solid rgba(80,60,160,0.5); border-radius:3px;
+  background:rgba(0,0,16,0.85); color:rgba(140,120,220,0.7); cursor:pointer;
+  transition:all .15s;
+}
+.vt-btn.active { background:rgba(80,40,160,0.4); color:#c090ff; border-color:rgba(160,80,255,0.7); }
+.vt-btn:hover { color:#e0c0ff; }
+
+#ts-canvas { display:none; position:fixed; inset:0; background:#000008; z-index:5; }
+
 #hud {
   position:fixed; top:0; left:0; right:0;
   display:flex; align-items:center; gap:24px; flex-wrap:wrap;
@@ -83,6 +98,12 @@ canvas { display:block; position:fixed; inset:0; }
 </head>
 <body>
 <canvas id="c"></canvas>
+<canvas id="ts-canvas"></canvas>
+
+<div id="view-toggle">
+  <button class="vt-btn active" id="btn-pool" onclick="setView('pool')">Pool</button>
+  <button class="vt-btn" id="btn-tape" onclick="setView('tape')">Tape Space</button>
+</div>
 
 <div id="hud">
   <div class="hud-item"><div class="hud-label">ops/interaction</div><div class="hud-val" id="ops-v">—</div></div>
@@ -658,10 +679,130 @@ async function fetchData() {
     if (d.latest) ingestPoint(d.latest);
     updateRatchetHUD();
     if (d.history) drawPhasePortrait(d.history, d.h_floor);
-    if (d.tape_distribution) applyDistribution(d.tape_distribution);
-    else if (d.sample_tapes) applyTapes(d.sample_tapes);
+    if (d.tape_distribution) {
+      lastDist = d.tape_distribution;
+      applyDistribution(d.tape_distribution);
+      if (currentView==='tape') drawTapeSpace(d.tape_distribution);
+    } else if (d.sample_tapes) applyTapes(d.sample_tapes);
     if (d.sample_tapes) drawGenome(d.sample_tapes);
   } catch(e) { console.warn('fetch error',e); }
+}
+
+// ── View toggle ───────────────────────────────────────────────────────────────
+let currentView = 'pool';
+const tsCanvas = document.getElementById('ts-canvas');
+const tsCtx = tsCanvas.getContext('2d');
+let lastDist = null;
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('btn-pool').classList.toggle('active', v==='pool');
+  document.getElementById('btn-tape').classList.toggle('active', v==='tape');
+  document.getElementById('c').style.display   = v==='pool' ? '' : 'none';
+  tsCanvas.style.display = v==='tape' ? 'block' : 'none';
+  document.getElementById('side').style.display = v==='pool' ? '' : 'none';
+  if (v==='tape' && lastDist) drawTapeSpace(lastDist);
+}
+
+// ── Tape Space ─────────────────────────────────────────────────────────────────
+function drawTapeSpace(dist) {
+  const W = tsCanvas.width = window.innerWidth;
+  const H = tsCanvas.height = window.innerHeight;
+  const padL=70, padR=50, padT=60, padB=60;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+
+  tsCtx.fillStyle = '#000008';
+  tsCtx.fillRect(0, 0, W, H);
+
+  // Grid lines
+  for (let v = 0; v <= 1; v += 0.25) {
+    const x = padL + v * plotW;
+    const y = padT + (1-v) * plotH;
+    tsCtx.beginPath(); tsCtx.moveTo(x, padT); tsCtx.lineTo(x, padT+plotH);
+    tsCtx.strokeStyle='rgba(40,45,80,0.6)'; tsCtx.lineWidth=.5; tsCtx.stroke();
+    tsCtx.beginPath(); tsCtx.moveTo(padL, y); tsCtx.lineTo(padL+plotW, y);
+    tsCtx.stroke();
+    tsCtx.fillStyle='rgba(80,90,140,0.6)'; tsCtx.font='8px SF Mono,monospace';
+    tsCtx.textAlign='center';
+    tsCtx.fillText((v*100).toFixed(0)+'%', x, padT+plotH+14);
+    tsCtx.textAlign='right';
+    tsCtx.fillText((v*100).toFixed(0)+'%', padL-6, padT+(1-v)*plotH+3);
+  }
+
+  // Axis labels
+  tsCtx.fillStyle='rgba(100,140,200,0.6)'; tsCtx.font='9px SF Mono,monospace';
+  tsCtx.textAlign='center';
+  tsCtx.fillText('← diverse  ·  S fraction  ·  prey →', padL + plotW/2, padT+plotH+30);
+  tsCtx.save(); tsCtx.translate(16, padT+plotH/2);
+  tsCtx.rotate(-Math.PI/2);
+  tsCtx.fillText('K fraction', 0, 0);
+  tsCtx.restore();
+
+  // Title
+  tsCtx.fillStyle='rgba(160,120,255,0.8)'; tsCtx.font='bold 11px SF Mono,monospace';
+  tsCtx.textAlign='left';
+  tsCtx.fillText('TAPE SPACE  ·  each point = one tape type  ·  size = log(population)', padL, 22);
+
+  // Corner labels
+  tsCtx.fillStyle='rgba(60,200,90,0.5)'; tsCtx.font='8px SF Mono,monospace';
+  tsCtx.textAlign='right';
+  tsCtx.fillText('SSSSSSSS (prey)', padL+plotW-4, padT+plotH-6);
+  tsCtx.fillStyle='rgba(60,120,220,0.5)';
+  tsCtx.textAlign='left';
+  tsCtx.fillText('KKKKKKKK', padL+4, padT+14);
+
+  // Compute total and centroid
+  let totalN = 0, cxSum = 0, cySum = 0;
+  for (const {t, n} of dist) {
+    const tape = t.split('');
+    const fS = tape.filter(c=>c==='S').length / tape.length;
+    const fK = tape.filter(c=>c==='K').length / tape.length;
+    cxSum += fS * n; cySum += fK * n; totalN += n;
+  }
+  const centX = padL + (cxSum/totalN) * plotW;
+  const centY = padT + (1 - cySum/totalN) * plotH;
+
+  // Draw dots — smallest first so big dots render on top
+  const sorted = [...dist].sort((a,b)=>a.n-b.n);
+  for (const {t, n} of sorted) {
+    const tape = t.split('');
+    const fS = tape.filter(c=>c==='S').length / tape.length;
+    const fK = tape.filter(c=>c==='K').length / tape.length;
+    const x = padL + fS * plotW;
+    const y = padT + (1 - fK) * plotH;
+    const r = 3 + 5 * Math.log10(n + 1);
+    const {h, s, l} = tapeToHSL(tape);
+
+    // Glow for large dots
+    if (n > 50) {
+      const g = tsCtx.createRadialGradient(x, y, 0, x, y, r*2.5);
+      g.addColorStop(0, `hsla(${h},${s}%,${l}%,0.12)`);
+      g.addColorStop(1, `hsla(${h},${s}%,${l}%,0)`);
+      tsCtx.beginPath(); tsCtx.arc(x, y, r*2.5, 0, Math.PI*2);
+      tsCtx.fillStyle = g; tsCtx.fill();
+    }
+
+    tsCtx.beginPath(); tsCtx.arc(x, y, r, 0, Math.PI*2);
+    tsCtx.fillStyle = `hsla(${h},${s}%,${l}%,0.85)`;
+    tsCtx.fill();
+  }
+
+  // Centroid crosshair
+  tsCtx.strokeStyle='rgba(255,220,60,0.8)'; tsCtx.lineWidth=1; tsCtx.setLineDash([3,4]);
+  tsCtx.beginPath(); tsCtx.moveTo(centX-14,centY); tsCtx.lineTo(centX+14,centY); tsCtx.stroke();
+  tsCtx.beginPath(); tsCtx.moveTo(centX,centY-14); tsCtx.lineTo(centX,centY+14); tsCtx.stroke();
+  tsCtx.setLineDash([]);
+  tsCtx.beginPath(); tsCtx.arc(centX,centY,4,0,Math.PI*2);
+  tsCtx.fillStyle='rgba(255,220,60,0.9)'; tsCtx.fill();
+  tsCtx.fillStyle='rgba(255,220,60,0.8)'; tsCtx.font='8px SF Mono,monospace';
+  tsCtx.textAlign='left';
+  tsCtx.fillText(`centroid  H=${state.H.toFixed(3)}`, centX+8, centY-6);
+
+  // Unique count
+  tsCtx.fillStyle='rgba(100,140,200,0.5)'; tsCtx.font='8px SF Mono,monospace';
+  tsCtx.textAlign='right';
+  tsCtx.fillText(`${dist.length} unique tapes  ·  ${totalN} total`, padL+plotW, padT-8);
 }
 
 fetchData();
