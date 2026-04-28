@@ -26,8 +26,23 @@ canvas { display:block; position:fixed; inset:0; }
 #epoch-v{ color:#8080ff; font-size:12px; }
 #rate-v { color:rgba(160,120,255,0.7); font-size:11px; }
 
+#side {
+  position:fixed; right:0; top:48px; bottom:80px;
+  width:270px;
+  background:rgba(0,0,12,0.82);
+  backdrop-filter:blur(6px);
+  border-left:1px solid rgba(80,60,160,0.25);
+  z-index:10; padding:10px;
+  display:flex; flex-direction:column; gap:8px;
+  pointer-events:none;
+}
+@media(max-width:600px){ #side{ display:none; } }
+.side-label { font-size:7px; color:rgba(100,140,200,0.5); text-transform:uppercase; letter-spacing:.1em; margin-bottom:2px; }
+#phase-canvas { width:250px; height:180px; }
+#genome-canvas { width:250px; height:130px; }
+
 #updated {
-  position:fixed; top:10px; right:16px;
+  position:fixed; top:10px; right:286px;
   font-size:9px; color:rgba(100,100,160,0.6);
   pointer-events:none; z-index:10;
 }
@@ -79,6 +94,17 @@ canvas { display:block; position:fixed; inset:0; }
 </div>
 
 <div id="updated">updating every 30s</div>
+
+<div id="side">
+  <div>
+    <div class="side-label">phase portrait — H vs ops/int</div>
+    <canvas id="phase-canvas" width="250" height="180"></canvas>
+  </div>
+  <div>
+    <div class="side-label">tape pool — real sequences (S=green K=blue W=orange B=red I=gray)</div>
+    <canvas id="genome-canvas" width="250" height="130"></canvas>
+  </div>
+</div>
 <div id="mega-label">MEGA-CHARGE</div>
 
 <div id="panel">
@@ -316,6 +342,94 @@ function ingestPoint(p) {
   updateHUD(p);
 }
 
+// ── Phase portrait ────────────────────────────────────────────────────────────
+const phaseC  = document.getElementById('phase-canvas');
+const phaseCtx = phaseC.getContext('2d');
+
+function drawPhasePortrait(history, megaChargeSet) {
+  const W=250, H=180, pad=24;
+  phaseCtx.clearRect(0,0,W,H);
+  phaseCtx.fillStyle='rgba(0,0,10,0.95)';
+  phaseCtx.fillRect(0,0,W,H);
+  if (!history || history.length<2) return;
+
+  const opsMin=98, opsMax=105, hMin=1.8, hMax=2.7;
+  const toX = h  => pad + (h   - hMin)/(hMax-hMin)*(W-pad*2);
+  const toY = op => (H-pad) - (op - opsMin)/(opsMax-opsMin)*(H-pad*2);
+
+  // Grid lines
+  phaseCtx.strokeStyle='rgba(60,60,100,0.4)'; phaseCtx.lineWidth=.5;
+  [2.0,2.2,2.4,2.6].forEach(h=>{
+    phaseCtx.beginPath(); phaseCtx.moveTo(toX(h),pad); phaseCtx.lineTo(toX(h),H-pad); phaseCtx.stroke();
+    phaseCtx.fillStyle='rgba(80,80,140,0.6)'; phaseCtx.font='6px monospace';
+    phaseCtx.fillText(h.toFixed(1), toX(h)-6, H-pad+10);
+  });
+  [100,101,102,103,104].forEach(op=>{
+    phaseCtx.beginPath(); phaseCtx.moveTo(pad,toY(op)); phaseCtx.lineTo(W-pad,toY(op)); phaseCtx.stroke();
+    phaseCtx.fillStyle='rgba(80,80,140,0.6)'; phaseCtx.font='6px monospace';
+    phaseCtx.fillText(op, 2, toY(op)+3);
+  });
+
+  // Axis labels
+  phaseCtx.fillStyle='rgba(100,140,200,0.5)'; phaseCtx.font='7px monospace';
+  phaseCtx.fillText('H →', W/2-8, H-2);
+  phaseCtx.save(); phaseCtx.translate(8, H/2); phaseCtx.rotate(-Math.PI/2);
+  phaseCtx.fillText('ops →', -16, 0); phaseCtx.restore();
+
+  // Trajectory
+  const n = history.length;
+  for (let i=1; i<n; i++) {
+    const a=history[i-1], b=history[i];
+    const age = i/n;
+    phaseCtx.beginPath();
+    phaseCtx.moveTo(toX(a.H), toY(a.ops));
+    phaseCtx.lineTo(toX(b.H), toY(b.ops));
+    phaseCtx.strokeStyle=`rgba(${Math.round(60+age*160)},${Math.round(80+age*80)},${Math.round(200-age*80)},${0.2+age*0.6})`;
+    phaseCtx.lineWidth = age>0.8?1.5:.7;
+    phaseCtx.stroke();
+  }
+
+  // Mega-charge markers
+  history.forEach((p,i)=>{
+    if (p.cyc>=20 && (i===0||history[i-1].cyc<20)) {
+      phaseCtx.beginPath(); phaseCtx.arc(toX(p.H),toY(p.ops),4,0,Math.PI*2);
+      phaseCtx.fillStyle='rgba(220,80,255,0.9)'; phaseCtx.fill();
+    }
+  });
+
+  // Current position
+  const cur=history[n-1];
+  phaseCtx.beginPath(); phaseCtx.arc(toX(cur.H),toY(cur.ops),5,0,Math.PI*2);
+  phaseCtx.fillStyle='rgba(255,200,80,0.95)'; phaseCtx.fill();
+  phaseCtx.strokeStyle='rgba(255,255,255,0.4)'; phaseCtx.lineWidth=1; phaseCtx.stroke();
+
+  // H=2.0 line highlight
+  phaseCtx.beginPath(); phaseCtx.moveTo(toX(2.0),pad); phaseCtx.lineTo(toX(2.0),H-pad);
+  phaseCtx.strokeStyle='rgba(255,100,100,0.3)'; phaseCtx.lineWidth=1; phaseCtx.stroke();
+}
+
+// ── Tape genome strip ─────────────────────────────────────────────────────────
+const genomeC   = document.getElementById('genome-canvas');
+const genomeCtx = genomeC.getContext('2d');
+const TAPE_COLORS = {S:'#3cb854',K:'#3c64dc',W:'#dc8c28',B:'#b43c3c',I:'#808080'};
+
+function drawGenome(tapes) {
+  const W=250, H=130;
+  genomeCtx.clearRect(0,0,W,H);
+  genomeCtx.fillStyle='rgba(0,0,10,0.95)';
+  genomeCtx.fillRect(0,0,W,H);
+  if (!tapes||!tapes.length) return;
+  const tapeH=4, gap=1, cellW=Math.floor((W-4)/8);
+  tapes.slice(0,Math.floor(H/(tapeH+gap))).forEach((tape,row)=>{
+    const y=2+row*(tapeH+gap);
+    for (let c=0;c<8&&c<tape.length;c++) {
+      const ch=tape[c].toUpperCase();
+      genomeCtx.fillStyle=TAPE_COLORS[ch]||'#444';
+      genomeCtx.fillRect(2+c*cellW, y, cellW-1, tapeH);
+    }
+  });
+}
+
 async function fetchData() {
   try {
     const r = await fetch('data.json?_='+Date.now());
@@ -339,6 +453,8 @@ async function fetchData() {
     }
     if (d.latest) ingestPoint(d.latest);
     updateRatchetHUD();
+    if (d.history) drawPhasePortrait(d.history);
+    if (d.sample_tapes) drawGenome(d.sample_tapes);
   } catch(e) { console.warn('fetch error',e); }
 }
 
