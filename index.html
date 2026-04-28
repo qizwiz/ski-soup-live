@@ -349,7 +349,7 @@ function drawMembranePath(c2d, cx, cy, r, hash, t) {
   const a1=0.06+(hash%5)*.01, a2=0.025+((hash>>8)%4)*.007;
   const ph1=(hash&0xFF)*.0245;
   const ph2=((hash>>8)&0xFF)*.0245;
-  const bw=0.038*Math.sin(t*.0007+hash*.001);
+  const bw=0.055*Math.sin(t*.0016+hash*.001);
   c2d.beginPath();
   for (let i=0;i<=nPts;i++) {
     const a=(i/nPts)*Math.PI*2;
@@ -379,11 +379,14 @@ function drawCell(c2d, cx, cy, r, tape, ch, cs, cl, t, richOrganelles) {
 
   const ph1=drawMembranePath(c2d,cx,cy,r,hash,t);
 
-  // Cytoplasm gradient — bright ring near membrane, dark interior
-  const cg=c2d.createRadialGradient(cx,cy,0,cx,cy,r*1.05);
-  cg.addColorStop(0,   `hsla(${rgb},0.04)`);
-  cg.addColorStop(0.55,`hsla(${rgb},0.07)`);
-  cg.addColorStop(0.83,`hsla(${rgb},0.24)`);
+  // Cytoplasm gradient — bright ring near membrane, swirling center
+  const swirl=r*.18;
+  const sx=cx+swirl*Math.sin(t*.00035+ph1);
+  const sy=cy+swirl*Math.cos(t*.00035+ph2);
+  const cg=c2d.createRadialGradient(sx,sy,0,cx,cy,r*1.05);
+  cg.addColorStop(0,   `hsla(${rgb},0.08)`);
+  cg.addColorStop(0.5, `hsla(${rgb},0.05)`);
+  cg.addColorStop(0.82,`hsla(${rgb},0.26)`);
   cg.addColorStop(1,   `hsla(${rgb},0.04)`);
   c2d.fillStyle=cg; c2d.fill();
   c2d.strokeStyle=`hsla(${rgb},0.50)`; c2d.lineWidth=r>6?1.1:.6; c2d.stroke();
@@ -400,12 +403,14 @@ function drawCell(c2d, cx, cy, r, tape, ch, cs, cl, t, richOrganelles) {
   c2d.fillStyle=ng; c2d.fill();
 
   if (r<6||tape.length<2) return;
-  // Organelles in golden-angle spiral
+  // Organelles orbit nucleus — inner faster, alternating directions
   const goldenA=Math.PI*(3-Math.sqrt(5));
   for (let i=1;i<tape.length;i++) {
     const frac=i/tape.length;
     const orbitR=r*(.27+frac*.50);
-    const angle=i*goldenA+ph1;
+    const dir=i%2===0?1:-1;
+    const speed=0.00025*(1.9-frac);
+    const angle=i*goldenA+ph1+dir*t*speed;
     const ox=cx+Math.cos(angle)*orbitR, oy=cy+Math.sin(angle)*orbitR;
     const oR=Math.max(1.0,nR*.48);
     if (richOrganelles) {
@@ -598,12 +603,12 @@ function frame(now) {
   if (frameN%8===0) updateTopoEdges();
   drawTopoEdges();
   drawRAFWeb();
-  drawCycRing(t);
   stepParticles(dt);
   stepCollisions();
   drawParticles(t);
   drawCollisions();
   drawSparks();
+  drawCycRing(t);
   drawShockwaves();
 
   ctx.restore();
