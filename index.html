@@ -23,6 +23,7 @@ canvas { display:block; position:fixed; inset:0; }
 .vt-btn:hover { color:#e0c0ff; }
 
 #ts-canvas { display:none; position:fixed; inset:0; background:#000008; z-index:5; }
+#gr-canvas { display:none; position:fixed; inset:0; background:#000008; z-index:5; }
 
 #hud {
   position:fixed; top:0; left:0; right:0;
@@ -99,10 +100,12 @@ canvas { display:block; position:fixed; inset:0; }
 <body>
 <canvas id="c"></canvas>
 <canvas id="ts-canvas"></canvas>
+<canvas id="gr-canvas"></canvas>
 
 <div id="view-toggle">
   <button class="vt-btn active" id="btn-pool" onclick="setView('pool')">Pool</button>
   <button class="vt-btn" id="btn-tape" onclick="setView('tape')">Tape Space</button>
+  <button class="vt-btn" id="btn-graph" onclick="setView('graph')">Graph</button>
 </div>
 
 <div id="hud">
@@ -679,6 +682,10 @@ async function fetchData() {
     if (d.latest) ingestPoint(d.latest);
     updateRatchetHUD();
     if (d.history) drawPhasePortrait(d.history, d.h_floor);
+    if (d.graph_nodes) {
+      lastGraph = d.graph_nodes;
+      if (currentView==='graph') drawPoincareGraph(d.graph_nodes);
+    }
     if (d.tape_distribution) {
       lastDist = d.tape_distribution;
       applyDistribution(d.tape_distribution);
@@ -692,16 +699,22 @@ async function fetchData() {
 let currentView = 'pool';
 const tsCanvas = document.getElementById('ts-canvas');
 const tsCtx = tsCanvas.getContext('2d');
+const grCanvas = document.getElementById('gr-canvas');
+const grCtx = grCanvas.getContext('2d');
 let lastDist = null;
+let lastGraph = null;
 
 function setView(v) {
   currentView = v;
-  document.getElementById('btn-pool').classList.toggle('active', v==='pool');
-  document.getElementById('btn-tape').classList.toggle('active', v==='tape');
-  document.getElementById('c').style.display   = v==='pool' ? '' : 'none';
-  tsCanvas.style.display = v==='tape' ? 'block' : 'none';
-  document.getElementById('side').style.display = v==='pool' ? '' : 'none';
-  if (v==='tape' && lastDist) drawTapeSpace(lastDist);
+  document.getElementById('btn-pool').classList.toggle('active',  v==='pool');
+  document.getElementById('btn-tape').classList.toggle('active',  v==='tape');
+  document.getElementById('btn-graph').classList.toggle('active', v==='graph');
+  document.getElementById('c').style.display    = v==='pool'  ? '' : 'none';
+  tsCanvas.style.display = v==='tape'  ? 'block' : 'none';
+  grCanvas.style.display = v==='graph' ? 'block' : 'none';
+  document.getElementById('side').style.display = v==='pool'  ? '' : 'none';
+  if (v==='tape'  && lastDist)  drawTapeSpace(lastDist);
+  if (v==='graph' && lastGraph) drawPoincareGraph(lastGraph);
 }
 
 // ── Tape Space ─────────────────────────────────────────────────────────────────
@@ -803,6 +816,89 @@ function drawTapeSpace(dist) {
   tsCtx.fillStyle='rgba(100,140,200,0.5)'; tsCtx.font='8px SF Mono,monospace';
   tsCtx.textAlign='right';
   tsCtx.fillText(`${dist.length} unique tapes  ·  ${totalN} total`, padL+plotW, padT-8);
+}
+
+// ── Poincaré Disk (actual graph topology) ─────────────────────────────────────
+function drawPoincareGraph(nodes) {
+  const W = grCanvas.width  = window.innerWidth;
+  const H = grCanvas.height = window.innerHeight;
+  grCtx.fillStyle = '#000008';
+  grCtx.fillRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2;
+  const diskR = Math.min(W, H) * 0.43;
+
+  // Disk boundary
+  grCtx.beginPath(); grCtx.arc(cx, cy, diskR, 0, Math.PI*2);
+  grCtx.strokeStyle = 'rgba(60,40,120,0.5)'; grCtx.lineWidth = 1; grCtx.stroke();
+  const rimG = grCtx.createRadialGradient(cx,cy,diskR*0.85,cx,cy,diskR);
+  rimG.addColorStop(0,'rgba(40,20,80,0)'); rimG.addColorStop(1,'rgba(80,40,160,0.07)');
+  grCtx.beginPath(); grCtx.arc(cx,cy,diskR,0,Math.PI*2);
+  grCtx.fillStyle=rimG; grCtx.fill();
+
+  // Radial grid rings
+  for (const rr of [0.25, 0.5, 0.75]) {
+    grCtx.beginPath(); grCtx.arc(cx, cy, diskR*rr, 0, Math.PI*2);
+    grCtx.strokeStyle='rgba(40,40,80,0.35)'; grCtx.lineWidth=.5; grCtx.stroke();
+  }
+
+  // Separate connected core from boundary sea
+  const connected = nodes.filter(n => n.r < 0.95);
+  const boundary  = nodes.filter(n => n.r >= 0.95);
+
+  // Draw boundary (disconnected) nodes — dim, small
+  for (const n of boundary) {
+    const x = cx + Math.cos(n.a) * n.r * diskR;
+    const y = cy + Math.sin(n.a) * n.r * diskR;
+    const tape = n.t.split('');
+    const {h, s, l} = tapeToHSL(tape);
+    grCtx.beginPath(); grCtx.arc(x, y, 1.2, 0, Math.PI*2);
+    grCtx.fillStyle = `hsla(${h},${s}%,${l}%,0.18)`;
+    grCtx.fill();
+  }
+
+  // Draw connected core — bright, sized by degree
+  for (const n of connected) {
+    const x = cx + Math.cos(n.a) * n.r * diskR;
+    const y = cy + Math.sin(n.a) * n.r * diskR;
+    const tape = n.t.split('');
+    const {h, s, l} = tapeToHSL(tape);
+    const r = 3 + n.d * 1.8;
+
+    // Glow
+    const g = grCtx.createRadialGradient(x,y,0,x,y,r*3);
+    g.addColorStop(0,`hsla(${h},${s}%,${l+15}%,0.25)`);
+    g.addColorStop(1,`hsla(${h},${s}%,${l}%,0)`);
+    grCtx.beginPath(); grCtx.arc(x,y,r*3,0,Math.PI*2);
+    grCtx.fillStyle=g; grCtx.fill();
+
+    grCtx.beginPath(); grCtx.arc(x, y, r, 0, Math.PI*2);
+    grCtx.fillStyle = `hsla(${h},${s}%,${l}%,0.9)`;
+    grCtx.fill();
+
+    // Label for high-degree nodes
+    if (n.d >= 4) {
+      grCtx.fillStyle='rgba(220,200,255,0.7)'; grCtx.font='7px SF Mono,monospace';
+      grCtx.textAlign='left';
+      grCtx.fillText(`${n.t} d=${n.d}`, x+r+3, y+3);
+    }
+  }
+
+  // Labels
+  grCtx.fillStyle='rgba(160,120,255,0.8)'; grCtx.font='bold 11px SF Mono,monospace';
+  grCtx.textAlign='left';
+  grCtx.fillText('POINCARÉ DISK  ·  actual graph topology  ·  center = most connected', 20, 22);
+  grCtx.fillStyle='rgba(100,140,200,0.5)'; grCtx.font='8px SF Mono,monospace';
+  grCtx.fillText(`${connected.length} connected  ·  ${boundary.length} isolated  ·  center node = max degree ${Math.max(...nodes.map(n=>n.d))}`, 20, 36);
+
+  // Center crosshair
+  const cNode = nodes.find(n=>n.r===0);
+  if (cNode) {
+    grCtx.strokeStyle='rgba(255,220,60,0.5)'; grCtx.lineWidth=.5; grCtx.setLineDash([2,4]);
+    grCtx.beginPath(); grCtx.moveTo(cx-diskR*.95,cy); grCtx.lineTo(cx+diskR*.95,cy); grCtx.stroke();
+    grCtx.beginPath(); grCtx.moveTo(cx,cy-diskR*.95); grCtx.lineTo(cx,cy+diskR*.95); grCtx.stroke();
+    grCtx.setLineDash([]);
+  }
 }
 
 fetchData();
