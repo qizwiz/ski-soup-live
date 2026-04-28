@@ -1,5 +1,5 @@
 {
-  "updated_iso": "2026-04-28T13:24:01+00:00",
+  "updated_iso": "2026-04-28T13:26:15+00:00",
   "latest": {
     "epoch": 350000000,
     "H": 2.746,
@@ -3410,5 +3410,6 @@
     }
   ],
   "run_label": "continuous_v1",
-  "peak_rate": 6013
+  "peak_rate": 6597.0,
+  "h_floor": 1.446
 }
