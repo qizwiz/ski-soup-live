@@ -97,11 +97,11 @@ canvas { display:block; position:fixed; inset:0; }
 
 <div id="side">
   <div>
-    <div class="side-label">limit cycle — entropy (x) vs ops/int (y) · purple dot = mega-charge</div>
-    <canvas id="phase-canvas" width="250" height="180"></canvas>
+    <div class="side-label">ops/int over time &nbsp;·&nbsp; how catalytic is the pool? higher = more complex</div>
+    <canvas id="phase-canvas" width="250" height="160"></canvas>
   </div>
-  <div>
-    <div class="side-label">real tapes from pool · each row = one tape (8 combinators) · S=green K=blue W=orange B=red I=gray</div>
+  <div style="margin-top:6px">
+    <div class="side-label">pool composition &nbsp;·&nbsp; what combinators dominate right now?</div>
     <canvas id="genome-canvas" width="250" height="130"></canvas>
   </div>
 </div>
@@ -409,92 +409,132 @@ function ingestPoint(p) {
   updateHUD(p);
 }
 
-// ── Phase portrait ────────────────────────────────────────────────────────────
-const phaseC  = document.getElementById('phase-canvas');
+// ── ops/int timeline ──────────────────────────────────────────────────────────
+const phaseC   = document.getElementById('phase-canvas');
 const phaseCtx = phaseC.getContext('2d');
 
-function drawPhasePortrait(history, megaChargeSet) {
-  const W=250, H=180, pad=24;
-  phaseCtx.clearRect(0,0,W,H);
-  phaseCtx.fillStyle='rgba(0,0,10,0.95)';
-  phaseCtx.fillRect(0,0,W,H);
-  if (!history || history.length<2) return;
+function drawPhasePortrait(history) {
+  const CW=250, CH=160, padL=36, padR=12, padT=18, padB=28;
+  phaseCtx.clearRect(0,0,CW,CH);
+  phaseCtx.fillStyle='rgba(0,0,10,0.97)';
+  phaseCtx.fillRect(0,0,CW,CH);
+  if (!history||history.length<2) return;
 
-  const opsMin=98, opsMax=105, hMin=1.8, hMax=2.7;
-  const toX = h  => pad + (h   - hMin)/(hMax-hMin)*(W-pad*2);
-  const toY = op => (H-pad) - (op - opsMin)/(opsMax-opsMin)*(H-pad*2);
+  const ops = history.map(p=>p.ops);
+  const opsMin = Math.floor(Math.min(...ops))-1;
+  const opsMax = Math.ceil(Math.max(...ops))+1;
+  const toX = i => padL + i/(history.length-1)*(CW-padL-padR);
+  const toY = v => padT + (1-(v-opsMin)/(opsMax-opsMin))*(CH-padT-padB);
 
-  // Grid lines
-  phaseCtx.strokeStyle='rgba(60,60,100,0.4)'; phaseCtx.lineWidth=.5;
-  [2.0,2.2,2.4,2.6].forEach(h=>{
-    phaseCtx.beginPath(); phaseCtx.moveTo(toX(h),pad); phaseCtx.lineTo(toX(h),H-pad); phaseCtx.stroke();
-    phaseCtx.fillStyle='rgba(80,80,140,0.6)'; phaseCtx.font='6px monospace';
-    phaseCtx.fillText(h.toFixed(1), toX(h)-6, H-pad+10);
-  });
-  [100,101,102,103,104].forEach(op=>{
-    phaseCtx.beginPath(); phaseCtx.moveTo(pad,toY(op)); phaseCtx.lineTo(W-pad,toY(op)); phaseCtx.stroke();
-    phaseCtx.fillStyle='rgba(80,80,140,0.6)'; phaseCtx.font='6px monospace';
-    phaseCtx.fillText(op, 2, toY(op)+3);
-  });
-
-  // Axis labels
-  phaseCtx.fillStyle='rgba(100,140,200,0.5)'; phaseCtx.font='7px monospace';
-  phaseCtx.fillText('H →', W/2-8, H-2);
-  phaseCtx.save(); phaseCtx.translate(8, H/2); phaseCtx.rotate(-Math.PI/2);
-  phaseCtx.fillText('ops →', -16, 0); phaseCtx.restore();
-
-  // Trajectory
-  const n = history.length;
-  for (let i=1; i<n; i++) {
-    const a=history[i-1], b=history[i];
-    const age = i/n;
-    phaseCtx.beginPath();
-    phaseCtx.moveTo(toX(a.H), toY(a.ops));
-    phaseCtx.lineTo(toX(b.H), toY(b.ops));
-    phaseCtx.strokeStyle=`rgba(${Math.round(60+age*160)},${Math.round(80+age*80)},${Math.round(200-age*80)},${0.2+age*0.6})`;
-    phaseCtx.lineWidth = age>0.8?1.5:.7;
-    phaseCtx.stroke();
+  // Ceiling line at 121 (the target to break)
+  const ceilY = toY(121);
+  if (ceilY > padT && ceilY < CH-padB) {
+    phaseCtx.setLineDash([4,4]);
+    phaseCtx.beginPath(); phaseCtx.moveTo(padL,ceilY); phaseCtx.lineTo(CW-padR,ceilY);
+    phaseCtx.strokeStyle='rgba(255,160,60,0.35)'; phaseCtx.lineWidth=1; phaseCtx.stroke();
+    phaseCtx.setLineDash([]);
+    phaseCtx.fillStyle='rgba(255,160,60,0.5)'; phaseCtx.font='7px monospace';
+    phaseCtx.fillText('121 ceiling',padL+2,ceilY-3);
   }
+
+  // Horizontal grid + y labels
+  const step = Math.max(1, Math.round((opsMax-opsMin)/4));
+  for (let v=Math.ceil(opsMin/step)*step; v<=opsMax; v+=step) {
+    const y=toY(v);
+    phaseCtx.beginPath(); phaseCtx.moveTo(padL,y); phaseCtx.lineTo(CW-padR,y);
+    phaseCtx.strokeStyle='rgba(50,55,90,0.5)'; phaseCtx.lineWidth=.5; phaseCtx.stroke();
+    phaseCtx.fillStyle='rgba(110,120,180,0.7)'; phaseCtx.font='8px monospace';
+    phaseCtx.textAlign='right'; phaseCtx.fillText(v,padL-3,y+3);
+  }
+
+  // Fill under line
+  phaseCtx.beginPath();
+  phaseCtx.moveTo(toX(0),toY(ops[0]));
+  ops.forEach((v,i)=>phaseCtx.lineTo(toX(i),toY(v)));
+  phaseCtx.lineTo(toX(ops.length-1),CH-padB);
+  phaseCtx.lineTo(toX(0),CH-padB);
+  phaseCtx.closePath();
+  phaseCtx.fillStyle='rgba(80,140,255,0.07)'; phaseCtx.fill();
+
+  // Line
+  phaseCtx.beginPath();
+  ops.forEach((v,i)=> i===0 ? phaseCtx.moveTo(toX(i),toY(v)) : phaseCtx.lineTo(toX(i),toY(v)));
+  phaseCtx.strokeStyle='rgba(100,180,255,0.85)'; phaseCtx.lineWidth=1.5;
+  phaseCtx.lineJoin='round'; phaseCtx.stroke();
 
   // Mega-charge markers
   history.forEach((p,i)=>{
-    if (p.cyc>=20 && (i===0||history[i-1].cyc<20)) {
-      phaseCtx.beginPath(); phaseCtx.arc(toX(p.H),toY(p.ops),4,0,Math.PI*2);
+    if (p.cyc>=20&&(i===0||history[i-1].cyc<20)) {
+      phaseCtx.beginPath(); phaseCtx.arc(toX(i),toY(p.ops),4,0,Math.PI*2);
       phaseCtx.fillStyle='rgba(220,80,255,0.9)'; phaseCtx.fill();
     }
   });
 
-  // Current position
-  const cur=history[n-1];
-  phaseCtx.beginPath(); phaseCtx.arc(toX(cur.H),toY(cur.ops),5,0,Math.PI*2);
-  phaseCtx.fillStyle='rgba(255,200,80,0.95)'; phaseCtx.fill();
-  phaseCtx.strokeStyle='rgba(255,255,255,0.4)'; phaseCtx.lineWidth=1; phaseCtx.stroke();
+  // Current dot + value
+  const cur=ops[ops.length-1];
+  const cx=toX(ops.length-1), cy=toY(cur);
+  phaseCtx.beginPath(); phaseCtx.arc(cx,cy,5,0,Math.PI*2);
+  phaseCtx.fillStyle='rgba(255,220,60,0.95)'; phaseCtx.fill();
+  phaseCtx.fillStyle='rgba(255,220,60,0.9)'; phaseCtx.font='bold 9px monospace';
+  phaseCtx.textAlign='right';
+  phaseCtx.fillText(cur.toFixed(1), CW-padR, padT+10);
 
-  // H=2.0 line highlight
-  phaseCtx.beginPath(); phaseCtx.moveTo(toX(2.0),pad); phaseCtx.lineTo(toX(2.0),H-pad);
-  phaseCtx.strokeStyle='rgba(255,100,100,0.3)'; phaseCtx.lineWidth=1; phaseCtx.stroke();
+  // Axis label
+  phaseCtx.fillStyle='rgba(100,140,200,0.5)'; phaseCtx.font='7px monospace';
+  phaseCtx.textAlign='center';
+  phaseCtx.fillText('ops/int — reductions per interaction',CW/2+padL/2,CH-4);
+  phaseCtx.textAlign='left';
 }
 
-// ── Tape genome strip ─────────────────────────────────────────────────────────
+// ── Pool composition bar chart ─────────────────────────────────────────────────
 const genomeC   = document.getElementById('genome-canvas');
 const genomeCtx = genomeC.getContext('2d');
 const TAPE_COLORS = {S:'#3cb854',K:'#3c64dc',W:'#dc8c28',B:'#b43c3c',I:'#808080'};
+const COMB_NAMES = {S:'S (copy)',K:'K (discard)',W:'W (double)',B:'B (pipe)',I:'I (wire)'};
 
 function drawGenome(tapes) {
-  const W=250, H=130;
-  genomeCtx.clearRect(0,0,W,H);
-  genomeCtx.fillStyle='rgba(0,0,10,0.95)';
-  genomeCtx.fillRect(0,0,W,H);
+  const CW=250, CH=130, padL=60, padR=12, padT=10, padB=10;
+  genomeCtx.clearRect(0,0,CW,CH);
+  genomeCtx.fillStyle='rgba(0,0,10,0.97)';
+  genomeCtx.fillRect(0,0,CW,CH);
   if (!tapes||!tapes.length) return;
-  const tapeH=4, gap=1, cellW=Math.floor((W-4)/8);
-  tapes.slice(0,Math.floor(H/(tapeH+gap))).forEach((tape,row)=>{
-    const y=2+row*(tapeH+gap);
-    for (let c=0;c<8&&c<tape.length;c++) {
-      const ch=tape[c].toUpperCase();
-      genomeCtx.fillStyle=TAPE_COLORS[ch]||'#444';
-      genomeCtx.fillRect(2+c*cellW, y, cellW-1, tapeH);
-    }
+
+  // Count combinators across all tapes
+  const counts={S:0,K:0,W:0,B:0,I:0};
+  let total=0;
+  for (const tape of tapes) {
+    for (const ch of tape) { if (counts[ch]!==undefined){counts[ch]++;total++;} }
+  }
+  if (!total) return;
+
+  const combs=['S','K','W','B','I'];
+  const rowH=(CH-padT-padB)/combs.length;
+  const barArea=CW-padL-padR;
+
+  combs.forEach((c,i)=>{
+    const frac=counts[c]/total;
+    const y=padT+i*rowH;
+    const barW=Math.round(frac*barArea);
+
+    // Background track
+    genomeCtx.fillStyle='rgba(30,32,50,0.7)';
+    genomeCtx.fillRect(padL,y+3,barArea,rowH-6);
+
+    // Bar
+    genomeCtx.fillStyle=TAPE_COLORS[c];
+    genomeCtx.fillRect(padL,y+3,barW,rowH-6);
+
+    // Name label
+    genomeCtx.fillStyle='rgba(200,210,240,0.85)'; genomeCtx.font='8px monospace';
+    genomeCtx.textAlign='right';
+    genomeCtx.fillText(COMB_NAMES[c],padL-4,y+rowH/2+3);
+
+    // Pct label
+    genomeCtx.fillStyle='rgba(220,230,255,0.7)'; genomeCtx.font='8px monospace';
+    genomeCtx.textAlign='left';
+    genomeCtx.fillText((frac*100).toFixed(0)+'%',padL+barW+3,y+rowH/2+3);
   });
+  genomeCtx.textAlign='left';
 }
 
 async function fetchData() {
