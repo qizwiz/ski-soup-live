@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SKI Soup · Live Evolution</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap');
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#000; color:#fff; font-family:'SF Mono',monospace; overflow:hidden; width:100vw; height:100vh; }
+body { background:#000; color:#fff; font-family:'Space Mono',monospace; overflow:hidden; width:100vw; height:100vh; }
 canvas { display:block; position:fixed; inset:0; }
 
 #view-toggle {
@@ -14,7 +15,7 @@ canvas { display:block; position:fixed; inset:0; }
   display:flex; gap:6px; z-index:30; pointer-events:all;
 }
 .vt-btn {
-  font:700 8px 'SF Mono',monospace; letter-spacing:.1em; text-transform:uppercase;
+  font:700 8px 'Space Mono',monospace; letter-spacing:.1em; text-transform:uppercase;
   padding:4px 10px; border:1px solid rgba(80,60,160,0.5); border-radius:3px;
   background:rgba(0,0,16,0.85); color:rgba(140,120,220,0.7); cursor:pointer;
   transition:all .15s;
@@ -28,19 +29,19 @@ canvas { display:block; position:fixed; inset:0; }
 #hud {
   position:fixed; top:0; left:0; right:0;
   display:flex; align-items:center; gap:24px; flex-wrap:wrap;
-  padding:10px 20px;
-  background:linear-gradient(to bottom,rgba(0,0,12,0.92) 0%,transparent 100%);
+  padding:14px 20px 10px;
+  background:linear-gradient(to bottom,rgba(0,0,12,0.96) 0%,transparent 100%);
   pointer-events:none; z-index:10;
 }
 .hud-item { display:flex; flex-direction:column; }
-.hud-label { font-size:7px; color:rgba(100,140,200,0.5); text-transform:uppercase; letter-spacing:.12em; margin-bottom:2px; }
+.hud-label { font-size:9px; color:rgba(140,175,235,0.85); text-transform:uppercase; letter-spacing:.12em; margin-bottom:3px; }
 .hud-val { font-size:15px; font-weight:700; }
 #ops-v  { color:#ffa040; }
 #H-v    { color:#40d0ff; }
 #raf-v  { color:#60ff80; }
 #cyc-v  { color:#e060ff; }
-#epoch-v{ color:#8080ff; font-size:12px; }
-#rate-v { color:rgba(160,120,255,0.7); font-size:11px; }
+#epoch-v{ color:#8080ff; font-size:13px; }
+#rate-v { color:rgba(180,145,255,0.85); font-size:12px; }
 
 #side {
   position:fixed; right:0; top:48px; bottom:80px;
@@ -53,7 +54,7 @@ canvas { display:block; position:fixed; inset:0; }
   pointer-events:none;
 }
 @media(max-width:600px){ #side{ display:none; } }
-.side-label { font-size:7px; color:rgba(100,140,200,0.5); text-transform:uppercase; letter-spacing:.1em; margin-bottom:2px; }
+.side-label { font-size:9px; color:rgba(140,175,235,0.85); text-transform:uppercase; letter-spacing:.1em; margin-bottom:4px; line-height:1.4; }
 #phase-canvas { width:250px; height:180px; }
 #genome-canvas { width:250px; height:130px; }
 
@@ -65,7 +66,7 @@ canvas { display:block; position:fixed; inset:0; }
 
 #mega-label {
   position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-  font:bold 48px/1 'SF Mono',monospace;
+  font:bold 48px/1 'Space Mono',monospace;
   color:#e060ff;
   text-shadow:0 0 40px #e060ff, 0 0 80px #8020ff;
   opacity:0; pointer-events:none; z-index:20;
@@ -83,24 +84,37 @@ canvas { display:block; position:fixed; inset:0; }
   letter-spacing:.08em; margin-bottom:6px;
 }
 #story {
-  font-size:10px; line-height:1.6;
-  color:rgba(140,160,220,0.65);
+  font-size:11px; line-height:1.7;
+  color:rgba(165,185,235,0.88);
   max-width:700px;
 }
-#story strong { color:rgba(200,160,255,0.9); }
+#story strong { color:rgba(210,175,255,0.97); }
 
 #ratchet {
   position:fixed; bottom:14px; right:20px;
-  font-size:9px; color:rgba(100,80,160,0.6);
+  font-size:10px; color:rgba(140,115,195,0.85);
   pointer-events:none; z-index:11; text-align:right;
+  line-height:1.6;
 }
-#ratchet span { color:rgba(180,120,255,0.9); }
+#ratchet span { color:rgba(200,155,255,0.97); }
+
+#subtitle {
+  position:fixed; top:0; left:0; right:0;
+  text-align:center;
+  padding-top:11px;
+  font-family:'Syne',sans-serif; font-size:10px; font-weight:400; letter-spacing:.22em;
+  text-transform:uppercase;
+  color:rgba(130,155,220,0.55);
+  pointer-events:none; z-index:9;
+}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <canvas id="ts-canvas"></canvas>
 <canvas id="gr-canvas"></canvas>
+
+<div id="subtitle">4096 programs — watching for spontaneous self-organization</div>
 
 <div id="view-toggle">
   <button class="vt-btn active" id="btn-pool" onclick="setView('pool')">Pool</button>
