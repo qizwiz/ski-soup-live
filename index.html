@@ -157,8 +157,8 @@ function tapeToHSL(tape) {
   }
   const hue = ((Math.atan2(hy/wSum, hx/wSum) * 180/Math.PI) + 360) % 360;
   const distinct = new Set(tape).size;
-  const sat = 12 + distinct * 14; // uniform=26%, fully mixed=82%
-  return {h: hue, s: sat, l: 58};
+  const sat = 18 + distinct * 16; // uniform=34%, fully mixed=98%
+  return {h: hue, s: sat, l: 66};
 }
 
 function synthTape(seed, sFrac) {
