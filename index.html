@@ -311,6 +311,51 @@ function stepParticles(dt) {
   }
 }
 
+function getDominant(tape) {
+  if (!tape) return 'S';
+  const c={};
+  for (const ch of tape) c[ch]=(c[ch]||0)+1;
+  return Object.entries(c).sort((a,b)=>b[1]-a[1])[0][0];
+}
+
+function drawShape(c2d, px, py, r, dom, col) {
+  c2d.fillStyle=col;
+  c2d.strokeStyle=col;
+  if (dom==='K') {
+    // Triangle (discard — one branch pruned)
+    c2d.beginPath();
+    c2d.moveTo(px, py-r); c2d.lineTo(px+r*.87, py+r*.5); c2d.lineTo(px-r*.87, py+r*.5);
+    c2d.closePath(); c2d.fill();
+  } else if (dom==='W') {
+    // Two overlapping circles (double — W doubles its argument)
+    c2d.beginPath(); c2d.arc(px-r*.35,py,r*.65,0,Math.PI*2); c2d.fill();
+    c2d.beginPath(); c2d.arc(px+r*.35,py,r*.65,0,Math.PI*2); c2d.fill();
+  } else if (dom==='B') {
+    // Pill (pipeline — B chains functions)
+    const rr=r*.55;
+    c2d.beginPath(); c2d.roundRect(px-r,py-rr,r*2,rr*2,rr); c2d.fill();
+  } else if (dom==='I') {
+    // Thin horizontal ellipse (wire — I is identity)
+    c2d.beginPath(); c2d.ellipse(px,py,r,r*.38,0,0,Math.PI*2); c2d.fill();
+  } else {
+    // Diamond for S (copy — branches everywhere)
+    c2d.beginPath();
+    c2d.moveTo(px,py-r); c2d.lineTo(px+r,py); c2d.lineTo(px,py+r); c2d.lineTo(px-r,py);
+    c2d.closePath(); c2d.fill();
+  }
+}
+
+function drawTapeStrip(c2d, px, py, r, tape) {
+  if (!tape||r<4) return;
+  const sw=Math.min(r*.42,5), sh=Math.max(1.5,r*.18);
+  const totalW=tape.length*sw;
+  const x0=px-totalW/2, y0=py-sh/2;
+  for (let i=0;i<tape.length;i++) {
+    c2d.fillStyle=TAPE_COLORS[tape[i]]||'#555';
+    c2d.fillRect(x0+i*sw, y0, sw-0.5, sh);
+  }
+}
+
 function drawParticles(t) {
   const cx=poolCX(),cy=poolCY(),pr=poolR();
   const catGlow=Math.min(state.cat*4,1);
@@ -331,19 +376,31 @@ function drawParticles(t) {
       }
     }
     // Glow bloom driven by cat score
-    if (p.kind!=='prey') {
-      ctx.shadowBlur=6+catGlow*20; ctx.shadowColor=col;
-    }
+    if (p.kind!=='prey') { ctx.shadowBlur=6+catGlow*20; ctx.shadowColor=col; }
     // Pulse amplitude grows with ops/int
     const breathSwing=.28+opsFrac*.52;
     const breath=1-breathSwing+breathSwing*Math.abs(Math.sin(p.phase+t*p.freq*.001));
     const r=p.baseR*breath*(p.kind==='core'?2.2:p.kind==='catalyst'?1.6:1);
-    ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
-    ctx.fillStyle=col; ctx.fill();
-    ctx.shadowBlur=0;
-    if (p.kind!=='prey') {
-      ctx.beginPath(); ctx.arc(px,py,r*2.5,0,Math.PI*2);
-      ctx.fillStyle=col.replace(/,\s*[\d.]+\)$/,',0.08)'); ctx.fill();
+
+    if (p.tape && p.kind!=='prey') {
+      // Shaped glyph with tape strip overlay
+      const dom=getDominant(p.tape);
+      drawShape(ctx, px, py, r, dom, col);
+      ctx.shadowBlur=0;
+      // Soft outer halo
+      ctx.beginPath(); ctx.arc(px,py,r*2.2,0,Math.PI*2);
+      ctx.fillStyle=col.replace(/,\s*[\d.]+\)$/,',0.06)'); ctx.fill();
+      // Tape sequence strip
+      drawTapeStrip(ctx, px, py, r, p.tape);
+    } else {
+      // Plain circle for untaped particles
+      ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
+      ctx.fillStyle=col; ctx.fill();
+      ctx.shadowBlur=0;
+      if (p.kind!=='prey') {
+        ctx.beginPath(); ctx.arc(px,py,r*2.5,0,Math.PI*2);
+        ctx.fillStyle=col.replace(/,\s*[\d.]+\)$/,',0.08)'); ctx.fill();
+      }
     }
   }
 }
