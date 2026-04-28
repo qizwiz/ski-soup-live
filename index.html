@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SKI Soup · Live Evolution</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#000; color:#fff; font-family:'SF Mono',monospace; overflow:hidden; width:100vw; height:100vh; }
+canvas { display:block; position:fixed; inset:0; }
+
+#hud {
+  position:fixed; top:0; left:0; right:0;
+  display:flex; align-items:center; gap:24px; flex-wrap:wrap;
+  padding:10px 20px;
+  background:linear-gradient(to bottom,rgba(0,0,12,0.92) 0%,transparent 100%);
+  pointer-events:none; z-index:10;
+}
+.hud-item { display:flex; flex-direction:column; }
+.hud-label { font-size:7px; color:rgba(100,140,200,0.5); text-transform:uppercase; letter-spacing:.12em; margin-bottom:2px; }
+.hud-val { font-size:15px; font-weight:700; }
+#ops-v  { color:#ffa040; }
+#H-v    { color:#40d0ff; }
+#raf-v  { color:#60ff80; }
+#cyc-v  { color:#e060ff; }
+#epoch-v{ color:#8080ff; font-size:12px; }
+#rate-v { color:rgba(160,120,255,0.7); font-size:11px; }
+
+#updated {
+  position:fixed; top:10px; right:16px;
+  font-size:9px; color:rgba(100,100,160,0.6);
+  pointer-events:none; z-index:10;
+}
+
+#mega-label {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  font:bold 48px/1 'SF Mono',monospace;
+  color:#e060ff;
+  text-shadow:0 0 40px #e060ff, 0 0 80px #8020ff;
+  opacity:0; pointer-events:none; z-index:20;
+  letter-spacing:.1em; transition:opacity .15s;
+}
+
+#panel {
+  position:fixed; bottom:0; left:0; right:0;
+  padding:12px 20px 14px;
+  background:linear-gradient(to top,rgba(0,0,12,0.95) 60%,transparent 100%);
+  z-index:10; pointer-events:none;
+}
+#charges {
+  font-size:9px; color:rgba(180,100,255,0.8);
+  letter-spacing:.08em; margin-bottom:6px;
+}
+#story {
+  font-size:10px; line-height:1.6;
+  color:rgba(140,160,220,0.65);
+  max-width:700px;
+}
+#story strong { color:rgba(200,160,255,0.9); }
+
+#ratchet {
+  position:fixed; bottom:14px; right:20px;
+  font-size:9px; color:rgba(100,80,160,0.6);
+  pointer-events:none; z-index:11; text-align:right;
+}
+#ratchet span { color:rgba(180,120,255,0.9); }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="hud">
+  <div class="hud-item"><div class="hud-label">ops/interaction</div><div class="hud-val" id="ops-v">—</div></div>
+  <div class="hud-item"><div class="hud-label">entropy H</div><div class="hud-val" id="H-v">—</div></div>
+  <div class="hud-item"><div class="hud-label">RAF</div><div class="hud-val" id="raf-v">—</div></div>
+  <div class="hud-item"><div class="hud-label">orbit size</div><div class="hud-val" id="cyc-v">—</div></div>
+  <div class="hud-item"><div class="hud-label">epoch</div><div class="hud-val" id="epoch-v">—</div></div>
+  <div class="hud-item"><div class="hud-label">rate</div><div class="hud-val" id="rate-v">—</div></div>
+</div>
+
+<div id="updated">updating every 30s</div>
+<div id="mega-label">MEGA-CHARGE</div>
+
+<div id="panel">
+  <div id="charges">mega-charges: <span id="charge-list">—</span></div>
+  <div id="story">
+    <strong>4096 tiny programs</strong> evolving in real time. Each is a sequence of 8 instructions
+    from the simplest complete programming language ever discovered. When two meet, one applies
+    the other as a function. The <strong>pink core</strong> is the autocatalytic heart — programs
+    that help each other replicate. The <strong>purple orbit</strong> is a closed catalytic cycle:
+    A makes B, B makes C… Z makes A. A <strong>mega-charge</strong> is when the orbit crystallizes,
+    then detonates, seeding new complexity.
+  </div>
+</div>
+
+<div id="ratchet">
+  <div>rate decline: <span id="r-decline">—</span></div>
+  <div>peak RAF: <span id="r-raf">—</span></div>
+  <div>peak orbit: <span id="r-cyc">—</span></div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H_px;
+function resize() { W = canvas.width = window.innerWidth; H_px = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+// ── State ─────────────────────────────────────────────────────────────────────
+const state  = { ops:100, H:2.3, raf:1300, cyc:9, unique:500, epoch:0, rate:5500 };
+const target = { ...state };
+function lerpState(dt) {
+  const k = 1 - Math.pow(0.02, dt/1000);
+  for (const key in target) state[key] = state[key] + (target[key] - state[key]) * k;
+}
+
+// ── Particles ─────────────────────────────────────────────────────────────────
+const N = 280, particles = [];
+function mkParticle(i) {
+  const angle = Math.random() * Math.PI * 2;
+  const r = Math.random() * 0.35 + 0.05;
+  return { x:.5+Math.cos(angle)*r*.8, y:.5+Math.sin(angle)*r*.8,
+           vx:(Math.random()-.5)*.002, vy:(Math.random()-.5)*.002,
+           phase:Math.random()*Math.PI*2, freq:.3+Math.random()*.7,
+           baseR:1.5+Math.random()*3, kind:'prey' };
+}
+for (let i=0;i<N;i++) particles.push(mkParticle(i));
+
+function poolCX() { return W*.5; }
+function poolCY() { return H_px*.5; }
+function poolR()  { return Math.min(W,H_px)*.42; }
+function hsl(h,s,l,a=1) { return `hsla(${h},${s}%,${l}%,${a})`; }
+
+function particleColor(p, t) {
+  const hSpread = Math.min(state.H/4,1);
+  if (p.kind==='prey')     return hsl(200+hSpread*(Math.sin(p.phase+t*.0003)*80),70,55+Math.sin(p.phase+t*.001)*10);
+  if (p.kind==='catalyst') return hsl(270+hSpread*(Math.sin(p.phase)*40),80,60);
+  const intensity = Math.min(state.cyc/30,1);
+  return hsl(300-intensity*60,90,50+intensity*30);
+}
+
+// ── Shockwaves ────────────────────────────────────────────────────────────────
+const shockwaves = [];
+function emitShockwave() { shockwaves.push({r:0,maxR:poolR()*1.5,alpha:1}); }
+function drawShockwaves() {
+  for (let i=shockwaves.length-1;i>=0;i--) {
+    const s=shockwaves[i];
+    s.r += (s.maxR-s.r)*.08; s.alpha *= .94;
+    if (s.alpha<.01){shockwaves.splice(i,1);continue;}
+    ctx.beginPath(); ctx.arc(poolCX(),poolCY(),s.r,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(200,80,255,${s.alpha*.6})`; ctx.lineWidth=3; ctx.stroke();
+  }
+}
+
+// ── Mega-charge ───────────────────────────────────────────────────────────────
+const megaCharges = [];
+let megaLabelTimer = 0;
+function onMegaCharge(p) {
+  megaCharges.push({epoch:p.epoch, cyc:p.cyc, raf:p.raf});
+  emitShockwave(); setTimeout(emitShockwave,200); setTimeout(emitShockwave,500);
+  const el=document.getElementById('mega-label');
+  el.style.opacity='1'; megaLabelTimer=120;
+  updateRatchetHUD();
+}
+function updateRatchetHUD() {
+  const rDecline = document.getElementById('r-decline');
+  const rRaf    = document.getElementById('r-raf');
+  const rCyc    = document.getElementById('r-cyc');
+  if (state.rate) {
+    const pct = ((6013 - state.rate)/6013*100).toFixed(1);
+    rDecline.textContent = `-${pct}% from peak`;
+  }
+  if (megaCharges.length) {
+    rRaf.textContent = Math.max(...megaCharges.map(m=>m.raf)).toFixed(0);
+    rCyc.textContent = Math.max(...megaCharges.map(m=>m.cyc));
+  }
+  const list = document.getElementById('charge-list');
+  if (megaCharges.length) {
+    list.textContent = megaCharges.map((m,i)=>`MC${i+1} E${(m.epoch/1e6).toFixed(0)}M cyc=${m.cyc}`).join('  ·  ');
+  }
+}
+
+// ── Cyc ring ──────────────────────────────────────────────────────────────────
+function drawCycRing(t) {
+  const cyc=state.cyc; if(cyc<4) return;
+  const cx=poolCX(),cy=poolCY();
+  const ringR=Math.min(cyc/32,1)*poolR()*.55;
+  const intensity=Math.min(cyc/30,1);
+  const nDots=Math.round(cyc);
+  ctx.beginPath(); ctx.arc(cx,cy,ringR,0,Math.PI*2);
+  ctx.strokeStyle=`rgba(200,80,255,${intensity*.15})`; ctx.lineWidth=1; ctx.stroke();
+  for (let i=0;i<nDots;i++) {
+    const a=(i/nDots)*Math.PI*2+t*.0005;
+    const x=cx+Math.cos(a)*ringR, y=cy+Math.sin(a)*ringR;
+    const r=2.5+intensity*2;
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(220,100,255,${.4+intensity*.5})`; ctx.fill();
+    const a2=((i+1)/nDots)*Math.PI*2+t*.0005;
+    const x2=cx+Math.cos(a2)*ringR, y2=cy+Math.sin(a2)*ringR;
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x2,y2);
+    ctx.strokeStyle=`rgba(180,60,255,${intensity*.3})`; ctx.lineWidth=1; ctx.stroke();
+  }
+}
+
+// ── RAF web ───────────────────────────────────────────────────────────────────
+function drawRAFWeb() {
+  const rafFrac=Math.min(state.raf/2000,1); if(rafFrac<.1) return;
+  const cats=particles.filter(p=>p.kind!=='prey');
+  const cx=poolCX(),cy=poolCY(),pr=poolR();
+  const maxLinks=Math.round(rafFrac*60); let drawn=0;
+  for (let i=0;i<cats.length&&drawn<maxLinks;i++) {
+    for (let j=i+1;j<cats.length&&drawn<maxLinks;j++) {
+      const a=cats[i],b=cats[j];
+      const dx=(a.x-b.x)*pr,dy=(a.y-b.y)*pr;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if (dist<pr*.25) {
+        ctx.beginPath();
+        ctx.moveTo(cx+a.x*pr*2-pr,cy+a.y*pr*2-pr);
+        ctx.lineTo(cx+b.x*pr*2-pr,cy+b.y*pr*2-pr);
+        ctx.strokeStyle=`rgba(100,200,255,${(1-dist/(pr*.25))*rafFrac*.15})`;
+        ctx.lineWidth=.5; ctx.stroke(); drawn++;
+      }
+    }
+  }
+}
+
+// ── Pool ──────────────────────────────────────────────────────────────────────
+function drawPool(t) {
+  const cx=poolCX(),cy=poolCY(),pr=poolR();
+  const intensity=Math.min(state.cyc/30,1);
+  const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,pr*1.1);
+  grad.addColorStop(0,'rgba(2,4,18,0.85)');
+  grad.addColorStop(.7,'rgba(1,2,10,0.92)');
+  grad.addColorStop(1,'rgba(0,0,5,0.98)');
+  ctx.beginPath(); ctx.arc(cx,cy,pr*1.05,0,Math.PI*2);
+  ctx.fillStyle=grad; ctx.fill();
+  const rimGrad=ctx.createRadialGradient(cx,cy,pr*.85,cx,cy,pr*1.05);
+  rimGrad.addColorStop(0,'rgba(80,40,160,0)');
+  rimGrad.addColorStop(1,`rgba(120,60,220,${.08+intensity*.25})`);
+  ctx.beginPath(); ctx.arc(cx,cy,pr*1.05,0,Math.PI*2);
+  ctx.fillStyle=rimGrad; ctx.fill();
+}
+
+// ── Particle physics ──────────────────────────────────────────────────────────
+function stepParticles(dt) {
+  const cx=poolCX(),cy=poolCY(),pr=poolR();
+  const speedMul=.5+(state.ops-95)/40;
+  const rafFrac=Math.min(state.raf/2000,1);
+  for (const p of particles) {
+    const i=particles.indexOf(p);
+    const preyFrac=1-rafFrac;
+    p.kind = i<preyFrac*.65*N?'prey': i<(preyFrac*.65+rafFrac*.25)*N?'catalyst':'core';
+    p.vx+=(Math.random()-.5)*.0004*speedMul;
+    p.vy+=(Math.random()-.5)*.0004*speedMul;
+    const px=(p.x-.5)*pr*2, py=(p.y-.5)*pr*2;
+    const dist=Math.sqrt(px*px+py*py);
+    const maxD=pr*(p.kind==='core'?.45:p.kind==='catalyst'?.7:.92);
+    if (dist>maxD) { p.vx-=px/dist*.0003; p.vy-=py/dist*.0003; }
+    if (p.kind==='catalyst'&&rafFrac>.3) { p.vx-=px/(dist+1)*rafFrac*.00015; p.vy-=py/(dist+1)*rafFrac*.00015; }
+    p.vx*=.97; p.vy*=.97; p.x+=p.vx; p.y+=p.vy;
+  }
+}
+
+function drawParticles(t) {
+  const cx=poolCX(),cy=poolCY(),pr=poolR();
+  for (const p of particles) {
+    const px=cx+(p.x-.5)*pr*2, py=cy+(p.y-.5)*pr*2;
+    const breath=.7+.3*Math.sin(p.phase+t*p.freq*.001);
+    const r=p.baseR*breath*(p.kind==='core'?2.2:p.kind==='catalyst'?1.6:1);
+    ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
+    ctx.fillStyle=particleColor(p,t); ctx.fill();
+    if (p.kind!=='prey') {
+      ctx.beginPath(); ctx.arc(px,py,r*2.5,0,Math.PI*2);
+      ctx.fillStyle=particleColor(p,t).replace(/,\s*[\d.]+\)$/,',0.08)'); ctx.fill();
+    }
+  }
+}
+
+// ── Render loop ───────────────────────────────────────────────────────────────
+let last=performance.now(), t=0;
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt=now-last; last=now; t+=dt;
+  lerpState(dt);
+  ctx.fillStyle='rgba(0,0,6,0.25)';
+  ctx.fillRect(0,0,W,H_px);
+  drawPool(t);
+  drawRAFWeb();
+  drawCycRing(t);
+  stepParticles(dt);
+  drawParticles(t);
+  drawShockwaves();
+  if (megaLabelTimer>0&&--megaLabelTimer===0) document.getElementById('mega-label').style.opacity='0';
+}
+requestAnimationFrame(frame);
+
+// ── HUD ───────────────────────────────────────────────────────────────────────
+function updateHUD(p) {
+  document.getElementById('ops-v').textContent = p.ops.toFixed(1);
+  document.getElementById('H-v').textContent   = p.H.toFixed(3);
+  document.getElementById('raf-v').textContent  = p.raf.toFixed(0);
+  document.getElementById('cyc-v').textContent  = p.cyc;
+  document.getElementById('epoch-v').textContent= (p.epoch/1e6).toFixed(0)+'M';
+  document.getElementById('rate-v').textContent = (p.rate/1000).toFixed(2)+'k/s';
+  const hi=Math.min(p.cyc/30,1);
+  document.getElementById('cyc-v').style.color=`hsl(${300-hi*60},90%,${60+hi*25}%)`;
+}
+
+// ── Data fetch ────────────────────────────────────────────────────────────────
+let prevCyc=0;
+function ingestPoint(p) {
+  if (p.cyc>=20&&prevCyc<20) onMegaCharge(p);
+  prevCyc=p.cyc;
+  Object.assign(target,{ops:p.ops,H:p.H,raf:p.raf,cyc:p.cyc,unique:p.unique,epoch:p.epoch,rate:p.rate});
+  updateHUD(p);
+}
+
+async function fetchData() {
+  try {
+    const r = await fetch('data.json?_='+Date.now());
+    if (!r.ok) return;
+    const d = await r.json();
+    const now = new Date(d.updated_iso);
+    document.getElementById('updated').textContent = 'updated '+now.toLocaleTimeString();
+
+    // Seed history on first load
+    if (prevCyc===0 && d.history && d.history.length) {
+      for (let i=0;i<d.history.length;i++) {
+        const cur=d.history[i], prev=i>0?d.history[i-1]:cur;
+        if (cur.cyc>=20&&prev.cyc<20) megaCharges.push({epoch:cur.epoch,cyc:cur.cyc,raf:cur.raf});
+      }
+      updateRatchetHUD();
+      const last=d.history[d.history.length-1];
+      Object.assign(state,{ops:last.ops,H:last.H,raf:last.raf,cyc:last.cyc,unique:last.unique,epoch:last.epoch,rate:last.rate});
+      Object.assign(target,{...state});
+      prevCyc=last.cyc;
+      updateHUD(last);
+    }
+    if (d.latest) ingestPoint(d.latest);
+    updateRatchetHUD();
+  } catch(e) { console.warn('fetch error',e); }
+}
+
+fetchData();
+setInterval(fetchData, 30000);
+</script>
+</body>
+</html>
