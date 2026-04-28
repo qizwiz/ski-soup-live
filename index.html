@@ -23,25 +23,26 @@ canvas { display:block; position:fixed; inset:0; }
 .vt-btn.active { background:rgba(80,40,160,0.4); color:#c090ff; border-color:rgba(160,80,255,0.7); }
 .vt-btn:hover { color:#e0c0ff; }
 
-#ts-canvas { display:none; position:fixed; inset:0; background:#000008; z-index:5; }
-#gr-canvas { display:none; position:fixed; inset:0; background:#000008; z-index:5; }
+#ts-canvas   { display:none; position:fixed; inset:0; background:#000008; z-index:5; }
+#gr-canvas   { display:none; position:fixed; inset:0; background:#000008; z-index:5; }
+#hist-canvas { display:none; position:fixed; inset:0; background:#000008; z-index:5; }
 
 #hud {
   position:fixed; top:0; left:0; right:0;
   display:flex; align-items:center; gap:24px; flex-wrap:wrap;
   padding:14px 20px 10px;
-  background:linear-gradient(to bottom,rgba(0,0,12,0.96) 0%,transparent 100%);
+  background:linear-gradient(to bottom,rgba(0,0,12,0.97) 0%,rgba(0,0,12,0.6) 70%,transparent 100%);
   pointer-events:none; z-index:10;
 }
 .hud-item { display:flex; flex-direction:column; }
-.hud-label { font-size:9px; color:rgba(140,175,235,0.85); text-transform:uppercase; letter-spacing:.12em; margin-bottom:3px; }
-.hud-val { font-size:15px; font-weight:700; }
-#ops-v  { color:#ffa040; }
-#H-v    { color:#40d0ff; }
-#raf-v  { color:#60ff80; }
-#cyc-v  { color:#e060ff; }
-#epoch-v{ color:#8080ff; font-size:13px; }
-#rate-v { color:rgba(180,145,255,0.85); font-size:12px; }
+.hud-label { font-size:9px; color:rgba(180,210,255,0.95); text-transform:uppercase; letter-spacing:.12em; margin-bottom:3px; text-shadow:0 1px 4px rgba(0,0,20,0.9); }
+.hud-val { font-size:15px; font-weight:700; text-shadow:0 0 12px currentColor, 0 1px 3px rgba(0,0,0,0.9); }
+#ops-v  { color:#ffb050; }
+#H-v    { color:#50dcff; }
+#raf-v  { color:#70ff90; }
+#cyc-v  { color:#f070ff; }
+#epoch-v{ color:#9090ff; font-size:13px; }
+#rate-v { color:rgba(200,165,255,0.95); font-size:12px; }
 
 #side {
   position:fixed; right:0; top:48px; bottom:80px;
@@ -54,7 +55,7 @@ canvas { display:block; position:fixed; inset:0; }
   pointer-events:none;
 }
 @media(max-width:600px){ #side{ display:none; } }
-.side-label { font-size:9px; color:rgba(140,175,235,0.85); text-transform:uppercase; letter-spacing:.1em; margin-bottom:4px; line-height:1.4; }
+.side-label { font-size:9px; color:rgba(180,210,255,0.95); text-transform:uppercase; letter-spacing:.1em; margin-bottom:4px; line-height:1.4; text-shadow:0 1px 4px rgba(0,0,20,0.9); }
 #phase-canvas { width:250px; height:180px; }
 #genome-canvas { width:250px; height:130px; }
 
@@ -85,18 +86,19 @@ canvas { display:block; position:fixed; inset:0; }
 }
 #story {
   font-size:11px; line-height:1.7;
-  color:rgba(165,185,235,0.88);
+  color:rgba(195,210,248,0.95);
   max-width:700px;
+  text-shadow:0 1px 3px rgba(0,0,16,0.95);
 }
-#story strong { color:rgba(210,175,255,0.97); }
+#story strong { color:rgba(230,195,255,0.99); }
 
 #ratchet {
   position:fixed; bottom:14px; right:20px;
-  font-size:10px; color:rgba(140,115,195,0.85);
+  font-size:10px; color:rgba(180,155,225,0.95);
   pointer-events:none; z-index:11; text-align:right;
-  line-height:1.6;
+  line-height:1.6; text-shadow:0 1px 4px rgba(0,0,16,0.95);
 }
-#ratchet span { color:rgba(200,155,255,0.97); }
+#ratchet span { color:rgba(220,175,255,0.99); text-shadow:0 0 8px rgba(180,80,255,0.5); }
 
 #subtitle {
   position:fixed; top:0; left:0; right:0;
@@ -113,13 +115,15 @@ canvas { display:block; position:fixed; inset:0; }
 <canvas id="c"></canvas>
 <canvas id="ts-canvas"></canvas>
 <canvas id="gr-canvas"></canvas>
+<canvas id="hist-canvas"></canvas>
 
-<div id="subtitle">4096 programs — watching for spontaneous self-organization</div>
+<div id="subtitle">4096 SKI combinator programs evolving toward autocatalysis — a digital abiogenesis experiment</div>
 
 <div id="view-toggle">
   <button class="vt-btn active" id="btn-pool" onclick="setView('pool')">Pool</button>
   <button class="vt-btn" id="btn-tape" onclick="setView('tape')">Tape Space</button>
   <button class="vt-btn" id="btn-graph" onclick="setView('graph')">Graph</button>
+  <button class="vt-btn" id="btn-hist" onclick="setView('hist')">History</button>
 </div>
 
 <div id="hud">
@@ -695,7 +699,11 @@ async function fetchData() {
     if (d.h_floor != null) { state.hFloor = d.h_floor; target.hFloor = d.h_floor; }
     if (d.latest) ingestPoint(d.latest);
     updateRatchetHUD();
-    if (d.history) drawPhasePortrait(d.history, d.h_floor);
+    if (d.history) {
+      lastHistory = d.history;
+      drawPhasePortrait(d.history, d.h_floor);
+      if (currentView === 'hist') drawHistoryView(d.history);
+    }
     if (d.graph_nodes) {
       lastGraph = d.graph_nodes;
       if (currentView==='graph') drawPoincareGraph(d.graph_nodes);
@@ -715,20 +723,26 @@ const tsCanvas = document.getElementById('ts-canvas');
 const tsCtx = tsCanvas.getContext('2d');
 const grCanvas = document.getElementById('gr-canvas');
 const grCtx = grCanvas.getContext('2d');
+const histCanvas = document.getElementById('hist-canvas');
+const histCtx = histCanvas.getContext('2d');
 let lastDist = null;
 let lastGraph = null;
+let lastHistory = null;
 
 function setView(v) {
   currentView = v;
   document.getElementById('btn-pool').classList.toggle('active',  v==='pool');
   document.getElementById('btn-tape').classList.toggle('active',  v==='tape');
   document.getElementById('btn-graph').classList.toggle('active', v==='graph');
+  document.getElementById('btn-hist').classList.toggle('active',  v==='hist');
   document.getElementById('c').style.display    = v==='pool'  ? '' : 'none';
-  tsCanvas.style.display = v==='tape'  ? 'block' : 'none';
-  grCanvas.style.display = v==='graph' ? 'block' : 'none';
+  tsCanvas.style.display   = v==='tape'  ? 'block' : 'none';
+  grCanvas.style.display   = v==='graph' ? 'block' : 'none';
+  histCanvas.style.display = v==='hist'  ? 'block' : 'none';
   document.getElementById('side').style.display = v==='pool'  ? '' : 'none';
-  if (v==='tape'  && lastDist)  drawTapeSpace(lastDist);
-  if (v==='graph' && lastGraph) drawPoincareGraph(lastGraph);
+  if (v==='tape'  && lastDist)    drawTapeSpace(lastDist);
+  if (v==='graph' && lastGraph)   drawPoincareGraph(lastGraph);
+  if (v==='hist'  && lastHistory) drawHistoryView(lastHistory);
 }
 
 // ── Tape Space ─────────────────────────────────────────────────────────────────
@@ -830,6 +844,226 @@ function drawTapeSpace(dist) {
   tsCtx.fillStyle='rgba(100,140,200,0.5)'; tsCtx.font='8px SF Mono,monospace';
   tsCtx.textAlign='right';
   tsCtx.fillText(`${dist.length} unique tapes  ·  ${totalN} total`, padL+plotW, padT-8);
+}
+
+// ── History view: macro-cycle H + RAF timeline ────────────────────────────────
+function detectCycles(history) {
+  const troughs = [], peaks = [];
+  for (let i = 1; i < history.length - 1; i++) {
+    const prev = history[i-1].H, cur = history[i].H, next = history[i+1].H;
+    if (cur < prev && cur < next && cur < 1.7)  troughs.push(i);
+    if (cur > prev && cur > next && cur > 2.3)  peaks.push(i);
+  }
+  return { troughs, peaks };
+}
+
+function drawHistoryView(history) {
+  const VW = histCanvas.width  = window.innerWidth;
+  const VH = histCanvas.height = window.innerHeight;
+  histCtx.fillStyle = '#000008';
+  histCtx.fillRect(0, 0, VW, VH);
+  if (!history || history.length < 3) return;
+
+  const { troughs, peaks } = detectCycles(history);
+  const padL = 64, padR = 210, padT = 46, padB = 28;
+  const plotW = VW - padL - padR;
+
+  // ── Shared x-axis mapper ──────────────────────────────────────────────────
+  const toX = i => padL + (i / (history.length - 1)) * plotW;
+
+  // ── Top panel: Entropy H ──────────────────────────────────────────────────
+  const panH_top = Math.floor(VH * 0.50);
+  const Hs = history.map(p => p.H);
+  const hMin = Math.min(...Hs) - 0.05, hMax = Math.max(...Hs) + 0.05;
+  const hRange = hMax - hMin;
+  const toYH = v => padT + (1 - (v - hMin) / hRange) * (panH_top - padT - padB);
+
+  // Grid
+  const hStep = 0.25;
+  for (let v = Math.ceil(hMin / hStep) * hStep; v <= hMax; v += hStep) {
+    const y = toYH(v);
+    histCtx.beginPath(); histCtx.moveTo(padL, y); histCtx.lineTo(padL + plotW, y);
+    histCtx.strokeStyle = 'rgba(40,50,90,0.5)'; histCtx.lineWidth = 0.5; histCtx.stroke();
+    histCtx.fillStyle = 'rgba(140,165,220,0.85)'; histCtx.font = '9px Space Mono,monospace';
+    histCtx.textAlign = 'right'; histCtx.fillText(v.toFixed(2), padL - 5, y + 3);
+  }
+
+  // Trough / peak event lines + labels
+  for (const ti of troughs) {
+    const x = toX(ti), p = history[ti];
+    histCtx.beginPath(); histCtx.moveTo(x, padT); histCtx.lineTo(x, panH_top - padB);
+    histCtx.strokeStyle = 'rgba(80,190,255,0.3)'; histCtx.lineWidth = 1;
+    histCtx.setLineDash([3,4]); histCtx.stroke(); histCtx.setLineDash([]);
+    histCtx.fillStyle = 'rgba(80,200,255,0.85)'; histCtx.font = '7px Space Mono,monospace';
+    histCtx.textAlign = 'center';
+    histCtx.fillText('H⌊' + p.H.toFixed(3), x, panH_top - padB + 13);
+  }
+  for (const pi of peaks) {
+    const x = toX(pi), p = history[pi];
+    histCtx.beginPath(); histCtx.moveTo(x, padT); histCtx.lineTo(x, panH_top - padB);
+    histCtx.strokeStyle = 'rgba(80,255,130,0.25)'; histCtx.lineWidth = 1;
+    histCtx.setLineDash([3,4]); histCtx.stroke(); histCtx.setLineDash([]);
+    histCtx.fillStyle = 'rgba(100,255,150,0.85)'; histCtx.font = '7px Space Mono,monospace';
+    histCtx.textAlign = 'center';
+    histCtx.fillText('H⌈' + p.H.toFixed(3), x, padT - 5);
+  }
+
+  // H fill
+  histCtx.beginPath();
+  histCtx.moveTo(toX(0), toYH(Hs[0]));
+  Hs.forEach((v, i) => histCtx.lineTo(toX(i), toYH(v)));
+  histCtx.lineTo(toX(Hs.length - 1), panH_top - padB);
+  histCtx.lineTo(toX(0), panH_top - padB);
+  histCtx.closePath();
+  histCtx.fillStyle = 'rgba(60,190,255,0.07)'; histCtx.fill();
+
+  // H line
+  histCtx.beginPath();
+  Hs.forEach((v, i) => i === 0 ? histCtx.moveTo(toX(i), toYH(v)) : histCtx.lineTo(toX(i), toYH(v)));
+  histCtx.strokeStyle = 'rgba(60,210,255,0.92)'; histCtx.lineWidth = 2;
+  histCtx.lineJoin = 'round'; histCtx.stroke();
+
+  // Marker dots
+  for (const ti of troughs) { histCtx.beginPath(); histCtx.arc(toX(ti), toYH(Hs[ti]), 5, 0, Math.PI*2); histCtx.fillStyle='rgba(60,210,255,1)'; histCtx.fill(); }
+  for (const pi of peaks)   { histCtx.beginPath(); histCtx.arc(toX(pi), toYH(Hs[pi]), 5, 0, Math.PI*2); histCtx.fillStyle='rgba(100,255,150,1)'; histCtx.fill(); }
+  histCtx.beginPath(); histCtx.arc(toX(Hs.length-1), toYH(Hs[Hs.length-1]), 6, 0, Math.PI*2);
+  histCtx.fillStyle = 'rgba(255,220,60,0.95)'; histCtx.fill();
+
+  histCtx.fillStyle = 'rgba(80,210,255,0.9)'; histCtx.font = 'bold 11px Space Mono,monospace';
+  histCtx.textAlign = 'left'; histCtx.fillText('ENTROPY  H  ·  compression ↓  dispersal ↑', padL, 24);
+
+  // ── Bottom panel: RAF ─────────────────────────────────────────────────────
+  const botY0 = panH_top + 18;
+  const panH_bot = VH - botY0 - 36;
+  const RAFs = history.map(p => p.raf);
+  const rafMin = Math.min(...RAFs) - 50, rafMax = Math.max(...RAFs) + 50;
+  const rafRange = rafMax - rafMin;
+  const toYR = v => botY0 + padT * 0.6 + (1 - (v - rafMin) / rafRange) * (panH_bot - padT * 0.6 - padB);
+
+  // Grid
+  const rafStep = Math.round((rafMax - rafMin) / 4 / 100) * 100 || 100;
+  for (let v = Math.ceil(rafMin / rafStep) * rafStep; v <= rafMax; v += rafStep) {
+    const y = toYR(v);
+    histCtx.beginPath(); histCtx.moveTo(padL, y); histCtx.lineTo(padL + plotW, y);
+    histCtx.strokeStyle = 'rgba(40,50,90,0.5)'; histCtx.lineWidth = 0.5; histCtx.stroke();
+    histCtx.fillStyle = 'rgba(140,165,220,0.85)'; histCtx.font = '9px Space Mono,monospace';
+    histCtx.textAlign = 'right'; histCtx.fillText(v.toFixed(0), padL - 5, y + 3);
+  }
+
+  // RAF floor ratchet step function between consecutive troughs
+  const allTI = [...troughs];
+  if (allTI.length >= 2) {
+    for (let c = 1; c < allTI.length; c++) {
+      const t0 = allTI[c-1], t1 = allTI[c];
+      const floor0 = RAFs[t0], floor1 = RAFs[t1];
+      const x0 = toX(t0), x1 = toX(t1);
+      histCtx.beginPath();
+      histCtx.moveTo(x0, toYR(floor0));
+      histCtx.lineTo(x1, toYR(floor0));
+      histCtx.lineTo(x1, toYR(floor1));
+      histCtx.strokeStyle = 'rgba(100,255,130,0.55)'; histCtx.lineWidth = 2;
+      histCtx.setLineDash([5,3]); histCtx.stroke(); histCtx.setLineDash([]);
+    }
+    // Extend last floor to now
+    const lastFloor = RAFs[allTI[allTI.length - 1]];
+    histCtx.beginPath();
+    histCtx.moveTo(toX(allTI[allTI.length-1]), toYR(lastFloor));
+    histCtx.lineTo(toX(RAFs.length - 1), toYR(lastFloor));
+    histCtx.strokeStyle = 'rgba(100,255,130,0.4)'; histCtx.lineWidth = 1.5;
+    histCtx.setLineDash([5,4]); histCtx.stroke(); histCtx.setLineDash([]);
+  }
+
+  // RAF trough vertical lines
+  for (const ti of troughs) {
+    const x = toX(ti);
+    histCtx.beginPath(); histCtx.moveTo(x, botY0 + 8); histCtx.lineTo(x, botY0 + panH_bot - padB);
+    histCtx.strokeStyle = 'rgba(80,190,255,0.2)'; histCtx.lineWidth = 1;
+    histCtx.setLineDash([3,4]); histCtx.stroke(); histCtx.setLineDash([]);
+  }
+
+  // RAF fill
+  histCtx.beginPath();
+  histCtx.moveTo(toX(0), toYR(RAFs[0]));
+  RAFs.forEach((v, i) => histCtx.lineTo(toX(i), toYR(v)));
+  histCtx.lineTo(toX(RAFs.length - 1), botY0 + panH_bot - padB);
+  histCtx.lineTo(toX(0), botY0 + panH_bot - padB);
+  histCtx.closePath();
+  histCtx.fillStyle = 'rgba(80,255,120,0.06)'; histCtx.fill();
+
+  // RAF line
+  histCtx.beginPath();
+  RAFs.forEach((v, i) => i === 0 ? histCtx.moveTo(toX(i), toYR(v)) : histCtx.lineTo(toX(i), toYR(v)));
+  histCtx.strokeStyle = 'rgba(90,255,130,0.88)'; histCtx.lineWidth = 1.5;
+  histCtx.lineJoin = 'round'; histCtx.stroke();
+
+  histCtx.beginPath(); histCtx.arc(toX(RAFs.length-1), toYR(RAFs[RAFs.length-1]), 6, 0, Math.PI*2);
+  histCtx.fillStyle = 'rgba(255,220,60,0.95)'; histCtx.fill();
+
+  histCtx.fillStyle = 'rgba(90,255,130,0.9)'; histCtx.font = 'bold 11px Space Mono,monospace';
+  histCtx.textAlign = 'left'; histCtx.fillText('RAF  ·  autocatalytic core strength  ·  dashed = ratchet floor', padL, botY0 + 16);
+
+  // ── Shared epoch axis ─────────────────────────────────────────────────────
+  const nLabels = Math.min(10, history.length - 1);
+  for (let i = 0; i <= nLabels; i++) {
+    const idx = Math.round(i / nLabels * (history.length - 1));
+    const x = toX(idx);
+    histCtx.fillStyle = 'rgba(90,110,170,0.65)'; histCtx.font = '8px Space Mono,monospace';
+    histCtx.textAlign = 'center'; histCtx.fillText('E' + (history[idx].epoch / 1e6).toFixed(0) + 'M', x, VH - 8);
+  }
+
+  // ── Right stats panel ─────────────────────────────────────────────────────
+  const rx = VW - padR + 18;
+  let ry = 30;
+  const rowH = 13;
+  function rLine(txt, color) {
+    histCtx.fillStyle = color || 'rgba(190,200,240,0.9)';
+    histCtx.font = '9px Space Mono,monospace';
+    histCtx.textAlign = 'left';
+    histCtx.fillText(txt, rx, ry); ry += rowH;
+  }
+  function rHead(txt) {
+    histCtx.fillStyle = 'rgba(180,140,255,0.95)'; histCtx.font = 'bold 10px Space Mono,monospace';
+    histCtx.textAlign = 'left'; histCtx.fillText(txt, rx, ry); ry += rowH + 2;
+  }
+
+  rHead('MACRO-CYCLES');
+  rLine(`${troughs.length} trough(s)`);
+  rLine(`${peaks.length} peak(s)`);
+  rLine(`${history.length} checkpoints`);
+  ry += 8;
+
+  troughs.forEach((ti, ci) => {
+    const p = history[ti];
+    const rafFloor = p.raf.toFixed(0);
+    rHead(`── Trough ${ci + 1}  E${(p.epoch/1e6).toFixed(0)}M`);
+    rLine(`  H⌊  = ${p.H.toFixed(3)}`, 'rgba(80,210,255,0.9)');
+    rLine(`  RAF⌊ = ${rafFloor}`, 'rgba(90,255,130,0.85)');
+    rLine(`  ops  = ${p.ops.toFixed(1)}`, 'rgba(255,180,80,0.85)');
+    ry += 4;
+  });
+
+  // RAF ratchet summary
+  if (troughs.length >= 2) {
+    ry += 4;
+    rHead('── RAF RATCHET');
+    for (let c = 0; c < troughs.length; c++) {
+      const floor = RAFs[troughs[c]].toFixed(0);
+      const arrow = c === 0 ? '' : (RAFs[troughs[c]] > RAFs[troughs[c-1]] ? ' ↑' : ' ↓');
+      rLine(`  cycle ${c+1}: ${floor}${arrow}`, 'rgba(100,255,140,0.9)');
+    }
+  }
+
+  // Current position
+  ry += 10;
+  const cur = history[history.length - 1];
+  rHead('── NOW');
+  rLine(`  E${(cur.epoch/1e6).toFixed(0)}M`, 'rgba(255,220,60,0.9)');
+  rLine(`  H   = ${cur.H.toFixed(3)}`, 'rgba(80,210,255,0.9)');
+  rLine(`  RAF = ${cur.raf.toFixed(0)}`, 'rgba(90,255,130,0.85)');
+  rLine(`  ops = ${cur.ops.toFixed(1)}`, 'rgba(255,180,80,0.85)');
+  rLine(`  cyc = ${cur.cyc}`, 'rgba(240,100,255,0.85)');
+
+  histCtx.textAlign = 'left';
 }
 
 // ── Poincaré Disk (actual graph topology) ─────────────────────────────────────
