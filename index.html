@@ -147,10 +147,12 @@ function mkParticle(i) {
   const angle = Math.random() * Math.PI * 2;
   const r = Math.random() * 0.35 + 0.05;
   const initKind = i < N*.65 ? 'prey' : i < N*.85 ? 'catalyst' : 'core';
+  const initZ = initKind==='core'?.5:initKind==='catalyst'?.1:-.35;
   return { x:.5+Math.cos(angle)*r*.8, y:.5+Math.sin(angle)*r*.8,
            vx:(Math.random()-.5)*.002, vy:(Math.random()-.5)*.002,
            phase:Math.random()*Math.PI*2, freq:.3+Math.random()*.7,
            baseR:2.5+Math.random()*3.5, kind:initKind,
+           z:initZ+Math.random()*.15-.075,
            trail:[], tape:null, tapeHue:200 };
 }
 for (let i=0;i<N;i++) particles.push(mkParticle(i));
@@ -192,6 +194,13 @@ const COMBS=['S','K','W','B','I'];
 function pseudoTape(p) {
   const seed=(p.phase*9973|0)*37+(p.freq*9973|0)*13001;
   return Array.from({length:8},(_,i)=>COMBS[((Math.imul(seed,(i+1)*2654435761)>>>0))%5]);
+}
+
+// Semantic z-depth: core near, prey far
+function zTarget(p) {
+  if (p.kind==='core')     return 0.45 + Math.sin(p.phase)*.08;
+  if (p.kind==='catalyst') return 0.08 + Math.sin(p.phase+1)*.12;
+  return -0.32 + Math.sin(p.phase+2)*.08;
 }
 
 // ── Shockwaves ────────────────────────────────────────────────────────────────
@@ -317,6 +326,7 @@ function stepParticles(dt) {
     if (dist>maxD) { p.vx-=px/dist*.0003; p.vy-=py/dist*.0003; }
     if (p.kind==='catalyst'&&rafFrac>.3) { p.vx-=px/(dist+1)*rafFrac*.00015; p.vy-=py/(dist+1)*rafFrac*.00015; }
     p.vx*=.97; p.vy*=.97; p.x+=p.vx; p.y+=p.vy;
+    p.z += (zTarget(p) - p.z) * 0.004;
   }
 }
 
@@ -380,6 +390,7 @@ function drawCell(c2d, cx, cy, r, tape, ch, cs, cl, t, richOrganelles) {
   const ph1=drawMembranePath(c2d,cx,cy,r,hash,t);
 
   // Cytoplasm gradient — bright ring near membrane, swirling center
+  const ph2=ph1+1.0;
   const swirl=r*.18;
   const sx=cx+swirl*Math.sin(t*.00035+ph1);
   const sy=cy+swirl*Math.cos(t*.00035+ph2);
@@ -457,14 +468,18 @@ function drawPreyCell(c2d, cx, cy, r, ch, cs, cl, t, phase) {
 function drawParticles(t) {
   const cx=poolCX(),cy=poolCY(),pr=poolR();
   const opsFrac=Math.max(0,Math.min((state.ops-95)/30,1));
-  for (const p of particles) {
-    const px=cx+(p.x-.5)*pr*2, py=cy+(p.y-.5)*pr*2;
+  const FOV=1.8;
+  // Painter's algorithm: back (low z) → front (high z)
+  const sorted=[...particles].sort((a,b)=>a.z-b.z);
+  for (const p of sorted) {
+    const zScale = FOV / (FOV - p.z * 0.55);
+    const fogAlpha = Math.max(0.18, Math.min(1, 0.28 + 0.72 * (p.z + 0.5)));
+    const px=cx+(p.x-.5)*pr*2*zScale, py=cy+(p.y-.5)*pr*2*zScale;
     const {h,s,l}=particleHSL(p,t);
-    // Velocity trail
     if (p.trail.length>1) {
       for (let i=1;i<p.trail.length;i++) {
         const a=p.trail[i-1],b=p.trail[i];
-        const alpha=(i/p.trail.length)*(p.kind==='prey'?.07:.20);
+        const alpha=(i/p.trail.length)*(p.kind==='prey'?.07:.20)*fogAlpha;
         ctx.beginPath();
         ctx.moveTo(cx+(a.x-.5)*pr*2,cy+(a.y-.5)*pr*2);
         ctx.lineTo(cx+(b.x-.5)*pr*2,cy+(b.y-.5)*pr*2);
@@ -474,7 +489,8 @@ function drawParticles(t) {
     }
     const breathSwing=.20+opsFrac*.38;
     const breath=1-breathSwing+breathSwing*Math.abs(Math.sin(p.phase+t*p.freq*.001));
-    const r=p.baseR*breath*(p.kind==='core'?3.5:p.kind==='catalyst'?2.2:1);
+    const r=p.baseR*breath*(p.kind==='core'?3.5:p.kind==='catalyst'?2.2:1)*zScale;
+    ctx.globalAlpha = fogAlpha;
     ctx.shadowBlur=0;
     if (p.kind==='prey') {
       drawPreyCell(ctx,px,py,r,h,s,l,t,p.phase);
@@ -482,6 +498,7 @@ function drawParticles(t) {
       const tape=p.tape||pseudoTape(p);
       drawCell(ctx,px,py,r,tape,h,s,l,t,!!p.tape);
     }
+    ctx.globalAlpha = 1;
   }
 }
 
