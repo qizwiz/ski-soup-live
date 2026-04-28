@@ -314,40 +314,64 @@ function stepParticles(dt) {
   }
 }
 
-// Breadth weight per combinator — how much does this arg suggest branching?
-const BRANCH_W = {S:1.45, W:1.3, B:0.75, K:0.55, I:0.45};
+// ── Cell rendering ─────────────────────────────────────────────────────────────
+function tapeHash(tape) {
+  let h=17;
+  for (const c of tape) h=(h*31+c.charCodeAt(0))&0xFFFFFF;
+  return h;
+}
 
-function drawCombTree(c2d, cx, cy, r, tape) {
-  const L=tape.length;
-  if (!L||r<4) return;
-  const h=r*1.65;
-  const rowH=h/(L-1);
-  const nodeR=Math.max(1, Math.min(2.8, rowH*.42));
-  const tx=cx-r*.22;       // trunk x (left of center)
-  const yTop=cy-h/2;
+function drawOrganelle(c2d, ox, oy, or2, ch) {
+  c2d.fillStyle=TAPE_COLORS[ch]||'#555';
+  if (ch==='S') {
+    c2d.beginPath(); c2d.moveTo(ox,oy-or2); c2d.lineTo(ox+or2,oy); c2d.lineTo(ox,oy+or2); c2d.lineTo(ox-or2,oy); c2d.closePath(); c2d.fill();
+  } else if (ch==='K') {
+    c2d.beginPath(); c2d.moveTo(ox,oy-or2); c2d.lineTo(ox+or2*.87,oy+or2*.5); c2d.lineTo(ox-or2*.87,oy+or2*.5); c2d.closePath(); c2d.fill();
+  } else if (ch==='W') {
+    c2d.beginPath(); c2d.arc(ox-or2*.38,oy,or2*.62,0,Math.PI*2); c2d.fill();
+    c2d.beginPath(); c2d.arc(ox+or2*.38,oy,or2*.62,0,Math.PI*2); c2d.fill();
+  } else if (ch==='B') {
+    c2d.beginPath(); c2d.ellipse(ox,oy,or2,or2*.5,0,0,Math.PI*2); c2d.fill();
+  } else {
+    c2d.beginPath(); c2d.arc(ox,oy,or2*.7,0,Math.PI*2); c2d.fill();
+  }
+}
 
-  // Trunk
-  c2d.beginPath(); c2d.moveTo(tx,yTop); c2d.lineTo(tx,yTop+h);
-  c2d.strokeStyle='rgba(140,150,185,0.3)'; c2d.lineWidth=.6; c2d.stroke();
+function drawCell(c2d, cx, cy, r, tape, col, t) {
+  if (r<5) return;
+  const hash=tapeHash(tape);
+  const nPts=24;
+  const f1=3+(hash%3), f2=5+((hash>>4)%3);
+  const a1=0.07+(hash%5)*.01, a2=0.03+((hash>>8)%4)*.008;
+  const ph1=(hash&0xFF)*.0245, ph2=((hash>>8)&0xFF)*.0245;
+  const breathW=0.035*Math.sin(t*.0007+hash*.001);
 
-  // c0 at bottom of trunk — the innermost function
+  // Wobbly membrane — shape is unique per tape
+  c2d.beginPath();
+  for (let i=0;i<=nPts;i++) {
+    const a=(i/nPts)*Math.PI*2;
+    const w=1+a1*Math.sin(f1*a+ph1)+a2*Math.sin(f2*a+ph2)+breathW;
+    const pr=r*w;
+    i===0?c2d.moveTo(cx+Math.cos(a)*pr,cy+Math.sin(a)*pr)
+         :c2d.lineTo(cx+Math.cos(a)*pr,cy+Math.sin(a)*pr);
+  }
+  c2d.closePath();
+  c2d.fillStyle=col.replace(/,\s*[\d.]+\)$/,',0.14)'); c2d.fill();
+  c2d.strokeStyle=col; c2d.lineWidth=1.3; c2d.stroke();
+
+  // Nucleus — c0, the innermost function
+  const nR=Math.max(1.8, r*.22);
   c2d.fillStyle=TAPE_COLORS[tape[0]]||'#555';
-  c2d.beginPath(); c2d.arc(tx,yTop+h,nodeR*1.3,0,Math.PI*2); c2d.fill();
+  c2d.beginPath(); c2d.arc(cx,cy,nR,0,Math.PI*2); c2d.fill();
+  c2d.strokeStyle='rgba(255,255,255,0.2)'; c2d.lineWidth=.6; c2d.stroke();
 
-  // Levels: tape[1]..tape[L-1] as arguments, bottom to top
-  for (let lvl=0;lvl<L-1;lvl++) {
-    const y=yTop+(L-2-lvl)*rowH;
-    const argCh=tape[lvl+1];
-    const bw=BRANCH_W[argCh]??1;
-    const argX=tx+r*.6*bw;
-
-    // Connector
-    c2d.beginPath(); c2d.moveTo(tx,y); c2d.lineTo(argX,y);
-    c2d.strokeStyle='rgba(140,150,185,0.22)'; c2d.lineWidth=.5; c2d.stroke();
-
-    // Argument node — square colored by combinator type
-    c2d.fillStyle=TAPE_COLORS[argCh]||'#555';
-    c2d.fillRect(argX-nodeR, y-nodeR, nodeR*2, nodeR*2);
+  // Organelles — c1..c7, golden angle spiral, inner=deep args, outer=shallow
+  const goldenA=Math.PI*(3-Math.sqrt(5));
+  for (let i=1;i<tape.length;i++) {
+    const frac=i/tape.length;
+    const orbitR=r*(.28+frac*.52);
+    const angle=i*goldenA+ph1;
+    drawOrganelle(c2d, cx+Math.cos(angle)*orbitR, cy+Math.sin(angle)*orbitR, Math.max(1.2,nR*.52), tape[i]);
   }
 }
 
@@ -378,15 +402,12 @@ function drawParticles(t) {
     const r=p.baseR*breath*(p.kind==='core'?3.5:p.kind==='catalyst'?2.2:1);
 
     if (p.tape && p.kind!=='prey') {
-      // Dark backdrop so tree nodes are readable
-      ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
-      ctx.fillStyle='rgba(0,0,8,0.55)'; ctx.fill();
       ctx.shadowBlur=0;
-      // Soft outer halo (color-tinted)
-      ctx.beginPath(); ctx.arc(px,py,r*2.2,0,Math.PI*2);
-      ctx.fillStyle=col.replace(/,\s*[\d.]+\)$/,',0.07)'); ctx.fill();
-      // Application tree — this IS the particle
-      drawCombTree(ctx, px, py, r, p.tape);
+      // Outer halo
+      ctx.beginPath(); ctx.arc(px,py,r*2.4,0,Math.PI*2);
+      ctx.fillStyle=col.replace(/,\s*[\d.]+\)$/,',0.06)'); ctx.fill();
+      // Cell — wobbly membrane + nucleus + organelles
+      drawCell(ctx, px, py, r, p.tape, col, t);
     } else {
       // Plain circle for untaped particles
       ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
@@ -421,21 +442,112 @@ function drawSparks() {
   }
 }
 
+// ── Topology edges (interaction graph, driven by live edges count) ─────────────
+const topoEdges = []; // [particleA, particleB, age, maxAge]
+let topoFrame = 0;
+function updateTopoEdges() {
+  const cats = particles.filter(p=>p.kind!=='prey');
+  if (cats.length < 2) return;
+  const target = Math.min(80, Math.round(state.edges / 34));
+  // Age + expire
+  for (let i=topoEdges.length-1;i>=0;i--) {
+    topoEdges[i][2]++;
+    if (topoEdges[i][2] >= topoEdges[i][3]) topoEdges.splice(i,1);
+  }
+  // Trim
+  while (topoEdges.length > target) topoEdges.shift();
+  // Grow
+  let tries=0;
+  while (topoEdges.length < target && tries++ < 30) {
+    const ai=Math.floor(Math.random()*cats.length);
+    const bi=Math.floor(Math.random()*cats.length);
+    if (ai!==bi) topoEdges.push([cats[ai],cats[bi],0,50+Math.floor(Math.random()*80)]);
+  }
+}
+function drawTopoEdges() {
+  const cx=poolCX(),cy=poolCY(),pr=poolR();
+  for (const [a,b,age,max] of topoEdges) {
+    const life=Math.sin(Math.PI*age/max);
+    const ax=cx+(a.x-.5)*pr*2,ay=cy+(a.y-.5)*pr*2;
+    const bx=cx+(b.x-.5)*pr*2,by=cy+(b.y-.5)*pr*2;
+    ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by);
+    ctx.strokeStyle=`rgba(80,140,255,${life*.14})`; ctx.lineWidth=.6; ctx.stroke();
+  }
+}
+
+// ── Collision flashes — visible interactions ────────────────────────────────────
+const collisions = []; // {x,y,alpha}
+function stepCollisions() {
+  const cx=poolCX(),cy=poolCY(),pr=poolR();
+  const cats=particles.filter(p=>p.kind!=='prey');
+  const prey=particles.filter(p=>p.kind==='prey');
+  const n=Math.round(state.ops*0.04);
+  for (let i=0;i<n;i++) {
+    if (!cats.length||!prey.length) break;
+    const c=cats[Math.floor(Math.random()*cats.length)];
+    const p=prey[Math.floor(Math.random()*prey.length)];
+    const mx=(c.x+p.x)/2, my=(c.y+p.y)/2;
+    collisions.push({x:cx+(mx-.5)*pr*2, y:cy+(my-.5)*pr*2, alpha:.7});
+  }
+  for (let i=collisions.length-1;i>=0;i--) {
+    collisions[i].alpha-=.055;
+    if (collisions[i].alpha<=0) collisions.splice(i,1);
+  }
+}
+function drawCollisions() {
+  for (const c of collisions) {
+    ctx.beginPath(); ctx.arc(c.x,c.y,2,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,240,140,${c.alpha})`; ctx.fill();
+  }
+}
+
+// ── Zoom / Pan ─────────────────────────────────────────────────────────────────
+let zoom=1, panX=0, panY=0, isPanning=false, lastMouse={x:0,y:0};
+canvas.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const f=e.deltaY<0?1.13:1/1.13;
+  const rect=canvas.getBoundingClientRect();
+  const mx=(e.clientX-rect.left)*(W/rect.width);
+  const my=(e.clientY-rect.top)*(H_px/rect.height);
+  panX=mx-(mx-panX)*f; panY=my-(my-panY)*f;
+  zoom=Math.max(0.4,Math.min(14,zoom*f));
+},{passive:false});
+canvas.addEventListener('mousedown',e=>{isPanning=true;lastMouse={x:e.clientX,y:e.clientY};canvas.style.cursor='grabbing';});
+window.addEventListener('mousemove',e=>{
+  if(!isPanning)return;
+  const rect=canvas.getBoundingClientRect();
+  panX+=(e.clientX-lastMouse.x)*(W/rect.width);
+  panY+=(e.clientY-lastMouse.y)*(H_px/rect.height);
+  lastMouse={x:e.clientX,y:e.clientY};
+});
+window.addEventListener('mouseup',()=>{isPanning=false;canvas.style.cursor='default';});
+
 // ── Render loop ───────────────────────────────────────────────────────────────
-let last=performance.now(), t=0;
+let last=performance.now(), t=0, frameN=0;
 function frame(now) {
   requestAnimationFrame(frame);
-  const dt=now-last; last=now; t+=dt;
+  const dt=now-last; last=now; t+=dt; frameN++;
   lerpState(dt);
   ctx.fillStyle='rgba(0,0,6,0.25)';
   ctx.fillRect(0,0,W,H_px);
+
+  ctx.save();
+  ctx.translate(panX,panY);
+  ctx.scale(zoom,zoom);
+
   drawPool(t);
+  if (frameN%8===0) updateTopoEdges();
+  drawTopoEdges();
   drawRAFWeb();
   drawCycRing(t);
   stepParticles(dt);
+  stepCollisions();
   drawParticles(t);
+  drawCollisions();
   drawSparks();
   drawShockwaves();
+
+  ctx.restore();
   if (megaLabelTimer>0&&--megaLabelTimer===0) document.getElementById('mega-label').style.opacity='0';
 }
 requestAnimationFrame(frame);
