@@ -1,42 +1,18 @@
 {
-  "updated_iso": "2026-04-28T09:54:01+00:00",
+  "updated_iso": "2026-04-28T09:57:00+00:00",
   "latest": {
-    "epoch": 259000000,
-    "H": 2.521,
-    "unique": 624,
-    "ops": 101.757,
-    "reps": 119,
-    "cat": 0.2216,
-    "raf": 1309.55,
-    "cyc": 6,
-    "rate": 6018.0,
-    "edges": 2847
+    "epoch": 261000000,
+    "H": 2.321,
+    "unique": 574,
+    "ops": 101.178,
+    "reps": 110,
+    "cat": 0.2282,
+    "raf": 1348.766,
+    "cyc": 4,
+    "rate": 6036.0,
+    "edges": 2810
   },
   "history": [
-    {
-      "epoch": 200000000,
-      "H": 2.336,
-      "unique": 542,
-      "ops": 101.925,
-      "reps": 118,
-      "cat": 0.2195,
-      "raf": 1297.628,
-      "cyc": 3,
-      "rate": 5429.0,
-      "edges": 2839
-    },
-    {
-      "epoch": 201000000,
-      "H": 2.517,
-      "unique": 596,
-      "ops": 99.831,
-      "reps": 120,
-      "cat": 0.2439,
-      "raf": 1441.715,
-      "cyc": 15,
-      "rate": 5441.0,
-      "edges": 2822
-    },
     {
       "epoch": 202000000,
       "H": 2.428,
@@ -732,6 +708,30 @@
       "cyc": 6,
       "rate": 6018.0,
       "edges": 2847
+    },
+    {
+      "epoch": 260000000,
+      "H": 2.611,
+      "unique": 635,
+      "ops": 98.951,
+      "reps": 108,
+      "cat": 0.2537,
+      "raf": 1499.709,
+      "cyc": 4,
+      "rate": 6027.0,
+      "edges": 2824
+    },
+    {
+      "epoch": 261000000,
+      "H": 2.321,
+      "unique": 574,
+      "ops": 101.178,
+      "reps": 110,
+      "cat": 0.2282,
+      "raf": 1348.766,
+      "cyc": 4,
+      "rate": 6036.0,
+      "edges": 2810
     }
   ],
   "mega_charges": [
@@ -760,156 +760,100 @@
     "SSSSSSSS",
     "SSSSSSSS",
     "SSSSSSSS",
-    "SIKISSSK",
-    "SSSSSSKS",
-    "IIIIIIIS",
-    "SSISSISI",
-    "SSIIISII",
-    "SISSISSS",
-    "SSISSSSS",
-    "SSSKSIIK",
-    "SSISKKSK",
-    "KSIKSKII",
-    "ISSSSSIS",
-    "SIISSSSS",
-    "KSSKSIKK",
-    "SSKSSISI",
-    "ISIIISSS",
-    "KIKIIKII",
-    "SSISSIKI",
-    "SISIKIKK",
+    "SSSSSISI",
+    "SISSSSIS",
+    "IISIIKSS",
+    "SISIKIIS",
+    "SSSIKSSI",
+    "SSISSKSS",
+    "IIIIIIII",
+    "IISSSSIS",
+    "SISSSISS",
+    "IIISSSIS",
+    "SISSIISK",
+    "SKSISKIS",
+    "SIIKIIII",
+    "SISISISI",
+    "ISIIKSSS",
+    "IISIIIIS",
+    "ISSSSISS",
+    "ISSISSSS",
+    "SSSISSSS",
     "SSSSSSIS",
-    "SISSISSI",
-    "SSSSSSKI",
-    "SISIKSIK"
+    "SIKSSIII",
+    "ISIKSISI"
   ],
   "tape_distribution": [
     {
       "t": "SSSSSSSS",
-      "n": 3283
+      "n": 3346
     },
     {
       "t": "IIIIIIII",
-      "n": 16
-    },
-    {
-      "t": "ISSSSSIS",
-      "n": 7
-    },
-    {
-      "t": "SSSSSISS",
-      "n": 6
+      "n": 20
     },
     {
       "t": "SSSSSSSI",
-      "n": 6
-    },
-    {
-      "t": "SSSSSIII",
-      "n": 5
-    },
-    {
-      "t": "SISISSSS",
-      "n": 5
+      "n": 12
     },
     {
       "t": "SSSSSSIS",
-      "n": 5
+      "n": 8
     },
     {
-      "t": "IIIIIIIS",
-      "n": 5
-    },
-    {
-      "t": "SISSISSI",
-      "n": 5
-    },
-    {
-      "t": "SIIIIIII",
-      "n": 4
-    },
-    {
-      "t": "SSISSSSI",
-      "n": 4
-    },
-    {
-      "t": "SIIISISI",
-      "n": 4
+      "t": "SSSISSSS",
+      "n": 7
     },
     {
       "t": "ISSSSISS",
+      "n": 6
+    },
+    {
+      "t": "SSSSSIIS",
+      "n": 5
+    },
+    {
+      "t": "SSSSIIIS",
       "n": 4
     },
     {
-      "t": "ISSSSSSI",
+      "t": "SSSSSISI",
       "n": 4
-    },
-    {
-      "t": "SSSISISI",
-      "n": 4
-    },
-    {
-      "t": "SSKSISSI",
-      "n": 3
-    },
-    {
-      "t": "SSISSSIS",
-      "n": 3
-    },
-    {
-      "t": "ISSSISSS",
-      "n": 3
-    },
-    {
-      "t": "SIISSSSS",
-      "n": 3
-    },
-    {
-      "t": "IIIIISII",
-      "n": 3
-    },
-    {
-      "t": "IISIIIII",
-      "n": 3
-    },
-    {
-      "t": "SSSIISIS",
-      "n": 3
     },
     {
       "t": "SISISISI",
+      "n": 4
+    },
+    {
+      "t": "SSSSSIII",
+      "n": 4
+    },
+    {
+      "t": "SIIIIIII",
       "n": 3
     },
     {
-      "t": "ISISSISS",
+      "t": "ISSSSSSI",
       "n": 3
     },
     {
-      "t": "SSIISSSI",
+      "t": "SISISISS",
       "n": 3
     },
     {
-      "t": "ISSISISS",
+      "t": "SSISSSSS",
       "n": 3
     },
     {
-      "t": "IISISISS",
+      "t": "SIIIISSI",
       "n": 3
     },
     {
-      "t": "SIISSISI",
+      "t": "SSSSSISS",
       "n": 3
     },
     {
-      "t": "SSSISIIS",
-      "n": 3
-    },
-    {
-      "t": "SSISIIIS",
-      "n": 3
-    },
-    {
-      "t": "ISSSSSSS",
+      "t": "SSSSISIK",
       "n": 3
     },
     {
@@ -917,187 +861,39 @@
       "n": 3
     },
     {
-      "t": "SSSSSKII",
+      "t": "SISSIISK",
       "n": 3
     },
     {
-      "t": "IISISSSS",
-      "n": 2
+      "t": "SSSSISII",
+      "n": 3
     },
     {
-      "t": "ISISISSS",
-      "n": 2
+      "t": "SSSSIIII",
+      "n": 3
     },
     {
-      "t": "ISSIIIII",
-      "n": 2
+      "t": "ISSSSSSS",
+      "n": 3
     },
     {
-      "t": "SSIISIKS",
-      "n": 2
+      "t": "ISIIISIS",
+      "n": 3
     },
     {
-      "t": "SISSISKI",
-      "n": 2
-    },
-    {
-      "t": "SIIIKISS",
-      "n": 2
-    },
-    {
-      "t": "KSIKSSIS",
-      "n": 2
-    },
-    {
-      "t": "SSISSISI",
-      "n": 2
-    },
-    {
-      "t": "IIISISKI",
-      "n": 2
-    },
-    {
-      "t": "SSKSSKSI",
-      "n": 2
-    },
-    {
-      "t": "SISIISIS",
-      "n": 2
-    },
-    {
-      "t": "ISISISIS",
-      "n": 2
-    },
-    {
-      "t": "ISKSSSII",
-      "n": 2
-    },
-    {
-      "t": "SSSSKSSS",
-      "n": 2
-    },
-    {
-      "t": "IIIIISIS",
-      "n": 2
-    },
-    {
-      "t": "SSSSSSKI",
-      "n": 2
-    },
-    {
-      "t": "ISSSKSKI",
-      "n": 2
-    },
-    {
-      "t": "SSSISISK",
-      "n": 2
-    },
-    {
-      "t": "SISSISSS",
-      "n": 2
-    },
-    {
-      "t": "ISIISSIS",
-      "n": 2
-    },
-    {
-      "t": "SSIISISI",
-      "n": 2
-    },
-    {
-      "t": "SSSIISII",
-      "n": 2
-    },
-    {
-      "t": "SSSISSIK",
-      "n": 2
-    },
-    {
-      "t": "SSSSISKI",
-      "n": 2
-    },
-    {
-      "t": "KSSSIISS",
-      "n": 2
-    },
-    {
-      "t": "SIISISSI",
-      "n": 2
-    },
-    {
-      "t": "SSIIIISI",
-      "n": 2
-    },
-    {
-      "t": "SSSSISSI",
-      "n": 2
-    },
-    {
-      "t": "SSSSIIIS",
-      "n": 2
-    },
-    {
-      "t": "ISIIISSS",
-      "n": 2
-    },
-    {
-      "t": "SIISSISS",
-      "n": 2
-    },
-    {
-      "t": "SSIIIISS",
-      "n": 2
-    },
-    {
-      "t": "SSISKISI",
-      "n": 2
-    },
-    {
-      "t": "SIISISII",
-      "n": 2
-    },
-    {
-      "t": "SIISSSII",
-      "n": 2
-    },
-    {
-      "t": "SSISSIIS",
-      "n": 2
-    },
-    {
-      "t": "SKSSIISI",
-      "n": 2
-    },
-    {
-      "t": "KSSSIIIS",
-      "n": 2
-    },
-    {
-      "t": "SKKKSIIS",
-      "n": 2
-    },
-    {
-      "t": "SSISISSS",
-      "n": 2
+      "t": "SIIISISS",
+      "n": 3
     },
     {
       "t": "SSISSISS",
       "n": 2
     },
     {
-      "t": "SISSIIIS",
+      "t": "ISIIKSSS",
       "n": 2
     },
     {
-      "t": "SSSSISKK",
-      "n": 2
-    },
-    {
-      "t": "IISKISII",
-      "n": 2
-    },
-    {
-      "t": "SSSSKSSI",
+      "t": "SSSSSIKS",
       "n": 2
     },
     {
@@ -1105,67 +901,55 @@
       "n": 2
     },
     {
-      "t": "SISSIKII",
+      "t": "SSIISSSS",
       "n": 2
     },
     {
-      "t": "SIISIISS",
+      "t": "SSSIIISI",
       "n": 2
     },
     {
-      "t": "IIISIIII",
+      "t": "SSISIIII",
       "n": 2
     },
     {
-      "t": "SIKSKISS",
+      "t": "ISIKISII",
       "n": 2
     },
     {
-      "t": "ISISSIII",
+      "t": "KSISIISI",
       "n": 2
     },
     {
-      "t": "SKSKKKSI",
+      "t": "SSSIIIKS",
       "n": 2
     },
     {
-      "t": "SISSKSIS",
+      "t": "SSSISSII",
       "n": 2
     },
     {
-      "t": "KSIISSSS",
+      "t": "SSSISSSK",
       "n": 2
     },
     {
-      "t": "SSSIISSS",
+      "t": "IKSKIKIS",
       "n": 2
     },
     {
-      "t": "SISSIKIS",
+      "t": "ISKISIKI",
       "n": 2
     },
     {
-      "t": "KISSIKSS",
+      "t": "IISSIIII",
       "n": 2
     },
     {
-      "t": "KSISSSII",
+      "t": "ISKSIISS",
       "n": 2
     },
     {
-      "t": "SISISSIS",
-      "n": 2
-    },
-    {
-      "t": "SSISSSSK",
-      "n": 2
-    },
-    {
-      "t": "SIIKSIIS",
-      "n": 2
-    },
-    {
-      "t": "SISSIISS",
+      "t": "SSISIISK",
       "n": 2
     },
     {
@@ -1173,75 +957,207 @@
       "n": 2
     },
     {
-      "t": "ISSSISIS",
+      "t": "SIISISSS",
       "n": 2
     },
     {
-      "t": "SIIISISS",
+      "t": "SSSKSSSS",
       "n": 2
     },
     {
-      "t": "SSSSISSS",
+      "t": "SIIISISI",
       "n": 2
     },
     {
-      "t": "KIIISIKI",
+      "t": "IIISSSSI",
       "n": 2
     },
     {
-      "t": "SISISSSI",
+      "t": "IIIKISII",
       "n": 2
     },
     {
-      "t": "IISSSSIS",
+      "t": "SISIIIII",
       "n": 2
     },
     {
-      "t": "IKISSIII",
+      "t": "SIIISSSI",
       "n": 2
     },
     {
-      "t": "ISIIIIIS",
+      "t": "SISSSSII",
       "n": 2
     },
     {
-      "t": "KIIIISSI",
+      "t": "SISSISIS",
       "n": 2
     },
     {
-      "t": "KSSSSSSI",
+      "t": "SISSISSI",
       "n": 2
     },
     {
-      "t": "ISSIISSS",
+      "t": "KISIISII",
       "n": 2
     },
     {
-      "t": "SSSSSIIS",
+      "t": "SSISISKI",
       "n": 2
     },
     {
-      "t": "SSSSIIII",
+      "t": "SISSSSIS",
       "n": 2
     },
     {
-      "t": "SSSISSSS",
+      "t": "SSSIISKI",
       "n": 2
     },
     {
-      "t": "SSKSSSII",
+      "t": "SSSSSKSI",
       "n": 2
     },
     {
-      "t": "KSSSISIK",
+      "t": "IKIIISSS",
       "n": 2
     },
     {
-      "t": "SISISISS",
+      "t": "IIISIIKS",
       "n": 2
     },
     {
-      "t": "KKIIKSII",
+      "t": "ISSIIKIS",
+      "n": 2
+    },
+    {
+      "t": "SSSSIIIK",
+      "n": 2
+    },
+    {
+      "t": "SSISSIKI",
+      "n": 2
+    },
+    {
+      "t": "SSSSSSSK",
+      "n": 2
+    },
+    {
+      "t": "SKSSSISS",
+      "n": 2
+    },
+    {
+      "t": "SSSSKSSI",
+      "n": 2
+    },
+    {
+      "t": "SISIISSS",
+      "n": 2
+    },
+    {
+      "t": "IIISKIII",
+      "n": 2
+    },
+    {
+      "t": "ISISIIII",
+      "n": 2
+    },
+    {
+      "t": "SIIKISSS",
+      "n": 2
+    },
+    {
+      "t": "SSISSIII",
+      "n": 2
+    },
+    {
+      "t": "ISIISSII",
+      "n": 2
+    },
+    {
+      "t": "SISSSSSS",
+      "n": 2
+    },
+    {
+      "t": "ISKSSIIS",
+      "n": 2
+    },
+    {
+      "t": "SSISSKSS",
+      "n": 2
+    },
+    {
+      "t": "SISSISSK",
+      "n": 2
+    },
+    {
+      "t": "SSSIIISS",
+      "n": 2
+    },
+    {
+      "t": "SISISSSS",
+      "n": 2
+    },
+    {
+      "t": "SSIIIIIK",
+      "n": 2
+    },
+    {
+      "t": "SISSKKII",
+      "n": 2
+    },
+    {
+      "t": "IIIIIIIS",
+      "n": 2
+    },
+    {
+      "t": "IISSSKKI",
+      "n": 2
+    },
+    {
+      "t": "SSSIKSSI",
+      "n": 2
+    },
+    {
+      "t": "IISIIIIS",
+      "n": 2
+    },
+    {
+      "t": "SSISIIIS",
+      "n": 2
+    },
+    {
+      "t": "SSSISIII",
+      "n": 2
+    },
+    {
+      "t": "SKSIISIS",
+      "n": 2
+    },
+    {
+      "t": "KSIISIII",
+      "n": 2
+    },
+    {
+      "t": "KSIISSIS",
+      "n": 2
+    },
+    {
+      "t": "SSSKISSS",
+      "n": 2
+    },
+    {
+      "t": "SSIIIISI",
+      "n": 2
+    },
+    {
+      "t": "IIISISSS",
+      "n": 2
+    },
+    {
+      "t": "SISKSKIK",
+      "n": 2
+    },
+    {
+      "t": "IISSSISS",
       "n": 2
     },
     {
@@ -1249,491 +1165,67 @@
       "n": 2
     },
     {
-      "t": "IISIISSI",
+      "t": "SSSSISKS",
       "n": 2
     },
     {
-      "t": "IIIIIKSS",
+      "t": "SIISSISI",
       "n": 2
     },
     {
-      "t": "ISIKISSI",
+      "t": "SISSSISS",
       "n": 2
     },
     {
-      "t": "KSKSISSI",
-      "n": 1
+      "t": "ISISSIII",
+      "n": 2
     },
     {
-      "t": "ISIISSKI",
-      "n": 1
+      "t": "KSISSSSS",
+      "n": 2
     },
     {
-      "t": "SSIIISIK",
-      "n": 1
+      "t": "IIIIIISI",
+      "n": 2
     },
     {
-      "t": "IISSIISI",
-      "n": 1
+      "t": "ISIIISSS",
+      "n": 2
     },
     {
-      "t": "SIKSIISI",
-      "n": 1
+      "t": "SISSSKSS",
+      "n": 2
     },
     {
-      "t": "IIIIISSI",
-      "n": 1
+      "t": "SISSIKII",
+      "n": 2
     },
     {
-      "t": "KSSSSIII",
-      "n": 1
+      "t": "SISSSSSI",
+      "n": 2
     },
     {
-      "t": "SKKISISS",
-      "n": 1
-    },
-    {
-      "t": "SSSSKSIS",
-      "n": 1
-    },
-    {
-      "t": "SSKISSKS",
-      "n": 1
-    },
-    {
-      "t": "KSSSISSS",
-      "n": 1
-    },
-    {
-      "t": "SKSSISKS",
-      "n": 1
-    },
-    {
-      "t": "SKSIIIII",
-      "n": 1
+      "t": "SSISSSII",
+      "n": 2
     },
     {
       "t": "IIIISISI",
-      "n": 1
+      "n": 2
     },
     {
-      "t": "SIIIIKIS",
-      "n": 1
+      "t": "SIIISSSK",
+      "n": 2
     },
     {
-      "t": "SSSIISSK",
-      "n": 1
+      "t": "SSSSISSS",
+      "n": 2
     },
     {
-      "t": "ISSSISSI",
-      "n": 1
+      "t": "SIIIKSSI",
+      "n": 2
     },
     {
-      "t": "SSSIKSII",
-      "n": 1
-    },
-    {
-      "t": "SSSIISKS",
-      "n": 1
-    },
-    {
-      "t": "KSSSSKSS",
-      "n": 1
-    },
-    {
-      "t": "SSSISKII",
-      "n": 1
-    },
-    {
-      "t": "IKIISSIS",
-      "n": 1
-    },
-    {
-      "t": "SISSSISI",
-      "n": 1
-    },
-    {
-      "t": "SSIIISIS",
-      "n": 1
-    },
-    {
-      "t": "SIKISIIK",
-      "n": 1
-    },
-    {
-      "t": "SSKSSSSK",
-      "n": 1
-    },
-    {
-      "t": "SSSISSKS",
-      "n": 1
-    },
-    {
-      "t": "KSKKISSS",
-      "n": 1
-    },
-    {
-      "t": "KSIKSKII",
-      "n": 1
-    },
-    {
-      "t": "KSSSIIII",
-      "n": 1
-    },
-    {
-      "t": "KISISSIK",
-      "n": 1
-    },
-    {
-      "t": "ISIKKISS",
-      "n": 1
-    },
-    {
-      "t": "ISSKISKK",
-      "n": 1
-    },
-    {
-      "t": "ISISSIIK",
-      "n": 1
-    },
-    {
-      "t": "SSISKSSS",
-      "n": 1
-    },
-    {
-      "t": "SKSSSISI",
-      "n": 1
-    },
-    {
-      "t": "SISKISII",
-      "n": 1
-    },
-    {
-      "t": "SSSSIIKS",
-      "n": 1
-    },
-    {
-      "t": "SIISKKII",
-      "n": 1
-    },
-    {
-      "t": "ISSSKIII",
-      "n": 1
-    },
-    {
-      "t": "SISIIIIS",
-      "n": 1
-    },
-    {
-      "t": "SKSSSKIS",
-      "n": 1
-    },
-    {
-      "t": "IISKISSI",
-      "n": 1
-    },
-    {
-      "t": "ISSIIIKI",
-      "n": 1
-    },
-    {
-      "t": "ISSIIISI",
-      "n": 1
-    },
-    {
-      "t": "KIKSIIIS",
-      "n": 1
-    },
-    {
-      "t": "SSSKSKKK",
-      "n": 1
-    },
-    {
-      "t": "IIKKKSKI",
-      "n": 1
-    },
-    {
-      "t": "IIIISSII",
-      "n": 1
-    },
-    {
-      "t": "SIKISSSK",
-      "n": 1
-    },
-    {
-      "t": "SKSSISSS",
-      "n": 1
-    },
-    {
-      "t": "SISISSKI",
-      "n": 1
-    },
-    {
-      "t": "KIIKKSII",
-      "n": 1
-    },
-    {
-      "t": "SSKSKISS",
-      "n": 1
-    },
-    {
-      "t": "SISKKSSI",
-      "n": 1
-    },
-    {
-      "t": "KSSIIIII",
-      "n": 1
-    },
-    {
-      "t": "ISISIIKK",
-      "n": 1
-    },
-    {
-      "t": "IISSSSII",
-      "n": 1
-    },
-    {
-      "t": "SKKISKSI",
-      "n": 1
-    },
-    {
-      "t": "SKSIIKKS",
-      "n": 1
-    },
-    {
-      "t": "SIKIKSSS",
-      "n": 1
-    },
-    {
-      "t": "SSSSIKKI",
-      "n": 1
-    },
-    {
-      "t": "IIIISISK",
-      "n": 1
-    },
-    {
-      "t": "SIKIIKIS",
-      "n": 1
-    },
-    {
-      "t": "SSSKIKII",
-      "n": 1
-    },
-    {
-      "t": "ISSISIIS",
-      "n": 1
-    },
-    {
-      "t": "SSSIKSKI",
-      "n": 1
-    },
-    {
-      "t": "SKIISIII",
-      "n": 1
-    },
-    {
-      "t": "ISISSSSK",
-      "n": 1
-    },
-    {
-      "t": "SIKSSIIS",
-      "n": 1
-    },
-    {
-      "t": "SSSSSKKS",
-      "n": 1
-    },
-    {
-      "t": "KSSKIISI",
-      "n": 1
-    },
-    {
-      "t": "SKSIKSII",
-      "n": 1
-    },
-    {
-      "t": "KSSSSISI",
-      "n": 1
-    },
-    {
-      "t": "SKSIISII",
-      "n": 1
-    },
-    {
-      "t": "IISISIII",
-      "n": 1
-    },
-    {
-      "t": "KSISSIKS",
-      "n": 1
-    },
-    {
-      "t": "KISIIKKS",
-      "n": 1
-    },
-    {
-      "t": "ISISKSSK",
-      "n": 1
-    },
-    {
-      "t": "SSISISSK",
-      "n": 1
-    },
-    {
-      "t": "SSIKISSI",
-      "n": 1
-    },
-    {
-      "t": "SIISKSSK",
-      "n": 1
-    },
-    {
-      "t": "KISISISI",
-      "n": 1
-    },
-    {
-      "t": "KSSISIII",
-      "n": 1
-    },
-    {
-      "t": "IIISISIS",
-      "n": 1
-    },
-    {
-      "t": "KKIIKIIS",
-      "n": 1
-    },
-    {
-      "t": "SIISIIKS",
-      "n": 1
-    },
-    {
-      "t": "IKSIISSI",
-      "n": 1
-    },
-    {
-      "t": "KISKSSII",
-      "n": 1
-    },
-    {
-      "t": "SISSSISK",
-      "n": 1
-    },
-    {
-      "t": "IIIISIII",
-      "n": 1
-    },
-    {
-      "t": "ISIISSSI",
-      "n": 1
-    },
-    {
-      "t": "KIISIISS",
-      "n": 1
-    },
-    {
-      "t": "SSSIKSSS",
-      "n": 1
-    },
-    {
-      "t": "SSSSIKII",
-      "n": 1
-    },
-    {
-      "t": "KISKKSSS",
-      "n": 1
-    },
-    {
-      "t": "KSIKIKII",
-      "n": 1
-    },
-    {
-      "t": "SISIKSIK",
-      "n": 1
-    },
-    {
-      "t": "SSIKSSSS",
-      "n": 1
-    },
-    {
-      "t": "SISISIII",
-      "n": 1
-    },
-    {
-      "t": "KISISSSS",
-      "n": 1
-    },
-    {
-      "t": "SSSSIIKI",
-      "n": 1
-    },
-    {
-      "t": "ISIKIISS",
-      "n": 1
-    },
-    {
-      "t": "SKSSSKII",
-      "n": 1
-    },
-    {
-      "t": "SKSISSSI",
-      "n": 1
-    },
-    {
-      "t": "SIIISIII",
-      "n": 1
-    },
-    {
-      "t": "SSSKKIIS",
-      "n": 1
-    },
-    {
-      "t": "ISSISKSI",
-      "n": 1
-    },
-    {
-      "t": "SIIISKSI",
-      "n": 1
-    },
-    {
-      "t": "SSIKSSII",
-      "n": 1
-    },
-    {
-      "t": "KISSSSIS",
-      "n": 1
-    },
-    {
-      "t": "SSKIIKIS",
-      "n": 1
-    },
-    {
-      "t": "SSKSSSIS",
-      "n": 1
-    },
-    {
-      "t": "SIIISSSS",
-      "n": 1
-    },
-    {
-      "t": "KSSISIIS",
-      "n": 1
-    },
-    {
-      "t": "SSISSSKK",
-      "n": 1
-    },
-    {
-      "t": "SSSSSSSK",
-      "n": 1
-    },
-    {
-      "t": "SSSKKSSK",
-      "n": 1
-    },
-    {
-      "t": "KSISKIII",
+      "t": "SIKISISK",
       "n": 1
     },
     {
@@ -1741,1139 +1233,19 @@
       "n": 1
     },
     {
-      "t": "SSSSKIIS",
+      "t": "IIKISKII",
       "n": 1
     },
     {
-      "t": "SKSIISIK",
+      "t": "KKKKSSSS",
       "n": 1
     },
     {
-      "t": "SIIIKSKI",
+      "t": "KIIISKKS",
       "n": 1
     },
     {
-      "t": "SKIKISSI",
-      "n": 1
-    },
-    {
-      "t": "KSSKSSII",
-      "n": 1
-    },
-    {
-      "t": "KIIKISSS",
-      "n": 1
-    },
-    {
-      "t": "SSISIKII",
-      "n": 1
-    },
-    {
-      "t": "SKSIIKSI",
-      "n": 1
-    },
-    {
-      "t": "KSSISSSI",
-      "n": 1
-    },
-    {
-      "t": "SISSIIII",
-      "n": 1
-    },
-    {
-      "t": "ISISISKS",
-      "n": 1
-    },
-    {
-      "t": "KIIKIIIS",
-      "n": 1
-    },
-    {
-      "t": "SIISISKS",
-      "n": 1
-    },
-    {
-      "t": "SKISSISI",
-      "n": 1
-    },
-    {
-      "t": "KSSSSSSS",
-      "n": 1
-    },
-    {
-      "t": "SISKISSI",
-      "n": 1
-    },
-    {
-      "t": "SIIKSSKK",
-      "n": 1
-    },
-    {
-      "t": "SSIKISII",
-      "n": 1
-    },
-    {
-      "t": "SSIIKSSS",
-      "n": 1
-    },
-    {
-      "t": "IIIISISS",
-      "n": 1
-    },
-    {
-      "t": "SKIISSSI",
-      "n": 1
-    },
-    {
-      "t": "SKKKKSIS",
-      "n": 1
-    },
-    {
-      "t": "SSSKISIK",
-      "n": 1
-    },
-    {
-      "t": "SIKIKIIK",
-      "n": 1
-    },
-    {
-      "t": "IIKISSIS",
-      "n": 1
-    },
-    {
-      "t": "SSISISKI",
-      "n": 1
-    },
-    {
-      "t": "SISIIKKS",
-      "n": 1
-    },
-    {
-      "t": "KSIIIISI",
-      "n": 1
-    },
-    {
-      "t": "SSSKSSSS",
-      "n": 1
-    },
-    {
-      "t": "SISIISSS",
-      "n": 1
-    },
-    {
-      "t": "ISIKISSS",
-      "n": 1
-    },
-    {
-      "t": "KISKKKSI",
-      "n": 1
-    },
-    {
-      "t": "KISISSII",
-      "n": 1
-    },
-    {
-      "t": "IISSIIKS",
-      "n": 1
-    },
-    {
-      "t": "SKKSKSSS",
-      "n": 1
-    },
-    {
-      "t": "SSSKSSIK",
-      "n": 1
-    },
-    {
-      "t": "SIIISSII",
-      "n": 1
-    },
-    {
-      "t": "SIISKSKI",
-      "n": 1
-    },
-    {
-      "t": "SSSKSIIS",
-      "n": 1
-    },
-    {
-      "t": "SSKSSSSI",
-      "n": 1
-    },
-    {
-      "t": "KSISSIIS",
-      "n": 1
-    },
-    {
-      "t": "SSKIIIIS",
-      "n": 1
-    },
-    {
-      "t": "SSISSSSS",
-      "n": 1
-    },
-    {
-      "t": "KSSSSISS",
-      "n": 1
-    },
-    {
-      "t": "KKISSKIS",
-      "n": 1
-    },
-    {
-      "t": "KSSISKSI",
-      "n": 1
-    },
-    {
-      "t": "IISIKSII",
-      "n": 1
-    },
-    {
-      "t": "SKISISIS",
-      "n": 1
-    },
-    {
-      "t": "KISSSSSI",
-      "n": 1
-    },
-    {
-      "t": "KKKSKISK",
-      "n": 1
-    },
-    {
-      "t": "IISSKIIS",
-      "n": 1
-    },
-    {
-      "t": "SKKSSSSI",
-      "n": 1
-    },
-    {
-      "t": "IIISSIIS",
-      "n": 1
-    },
-    {
-      "t": "ISKSSSIS",
-      "n": 1
-    },
-    {
-      "t": "SSKSSISI",
-      "n": 1
-    },
-    {
-      "t": "SSIKISSS",
-      "n": 1
-    },
-    {
-      "t": "SSKSSISS",
-      "n": 1
-    },
-    {
-      "t": "SKIISSII",
-      "n": 1
-    },
-    {
-      "t": "ISSISSSS",
-      "n": 1
-    },
-    {
-      "t": "SIISISSS",
-      "n": 1
-    },
-    {
-      "t": "ISSISSSI",
-      "n": 1
-    },
-    {
-      "t": "KKIISKIS",
-      "n": 1
-    },
-    {
-      "t": "IISKIIIS",
-      "n": 1
-    },
-    {
-      "t": "SISIKIKK",
-      "n": 1
-    },
-    {
-      "t": "ISISKSSS",
-      "n": 1
-    },
-    {
-      "t": "SKISIISS",
-      "n": 1
-    },
-    {
-      "t": "SISIIKSS",
-      "n": 1
-    },
-    {
-      "t": "SKSIIKIS",
-      "n": 1
-    },
-    {
-      "t": "SSSKSKKS",
-      "n": 1
-    },
-    {
-      "t": "KKISIKKS",
-      "n": 1
-    },
-    {
-      "t": "KISSSSII",
-      "n": 1
-    },
-    {
-      "t": "SKISSISS",
-      "n": 1
-    },
-    {
-      "t": "SSSIIISS",
-      "n": 1
-    },
-    {
-      "t": "SSKSISII",
-      "n": 1
-    },
-    {
-      "t": "IIIIKISI",
-      "n": 1
-    },
-    {
-      "t": "KSIKISIS",
-      "n": 1
-    },
-    {
-      "t": "SKISSIKK",
-      "n": 1
-    },
-    {
-      "t": "SSISIKSS",
-      "n": 1
-    },
-    {
-      "t": "IISISSII",
-      "n": 1
-    },
-    {
-      "t": "SSSSKISS",
-      "n": 1
-    },
-    {
-      "t": "ISISSSSS",
-      "n": 1
-    },
-    {
-      "t": "ISISISSI",
-      "n": 1
-    },
-    {
-      "t": "SIISISIS",
-      "n": 1
-    },
-    {
-      "t": "SISIISSK",
-      "n": 1
-    },
-    {
-      "t": "SSISSIKK",
-      "n": 1
-    },
-    {
-      "t": "KIIKKSSS",
-      "n": 1
-    },
-    {
-      "t": "SSISIIII",
-      "n": 1
-    },
-    {
-      "t": "KKSIIKII",
-      "n": 1
-    },
-    {
-      "t": "SIISSSKI",
-      "n": 1
-    },
-    {
-      "t": "SKSKSKSK",
-      "n": 1
-    },
-    {
-      "t": "IKSKKIII",
-      "n": 1
-    },
-    {
-      "t": "SSKSIIIS",
-      "n": 1
-    },
-    {
-      "t": "ISIIKKSI",
-      "n": 1
-    },
-    {
-      "t": "IIKISSKS",
-      "n": 1
-    },
-    {
-      "t": "SSSIIIIK",
-      "n": 1
-    },
-    {
-      "t": "SIIIISSI",
-      "n": 1
-    },
-    {
-      "t": "IISKKIII",
-      "n": 1
-    },
-    {
-      "t": "SSSKIIII",
-      "n": 1
-    },
-    {
-      "t": "SISIKSKI",
-      "n": 1
-    },
-    {
-      "t": "SKISSIII",
-      "n": 1
-    },
-    {
-      "t": "SSIISSIK",
-      "n": 1
-    },
-    {
-      "t": "ISKISISS",
-      "n": 1
-    },
-    {
-      "t": "SKISKSII",
-      "n": 1
-    },
-    {
-      "t": "SKSIKSIK",
-      "n": 1
-    },
-    {
-      "t": "KIKSKSSI",
-      "n": 1
-    },
-    {
-      "t": "IIIISIKS",
-      "n": 1
-    },
-    {
-      "t": "SKSKIKSS",
-      "n": 1
-    },
-    {
-      "t": "IKISSIIS",
-      "n": 1
-    },
-    {
-      "t": "KKSKSISI",
-      "n": 1
-    },
-    {
-      "t": "SIISSSKK",
-      "n": 1
-    },
-    {
-      "t": "IIISSKIS",
-      "n": 1
-    },
-    {
-      "t": "SIKSIISS",
-      "n": 1
-    },
-    {
-      "t": "SSKSSKSS",
-      "n": 1
-    },
-    {
-      "t": "SSKSSKII",
-      "n": 1
-    },
-    {
-      "t": "IISKISKI",
-      "n": 1
-    },
-    {
-      "t": "KSKSIIII",
-      "n": 1
-    },
-    {
-      "t": "ISSSKISS",
-      "n": 1
-    },
-    {
-      "t": "KISKIKIK",
-      "n": 1
-    },
-    {
-      "t": "SIISIISI",
-      "n": 1
-    },
-    {
-      "t": "SSIISSSK",
-      "n": 1
-    },
-    {
-      "t": "SIKSISSS",
-      "n": 1
-    },
-    {
-      "t": "KIISIKSI",
-      "n": 1
-    },
-    {
-      "t": "IKKISSKS",
-      "n": 1
-    },
-    {
-      "t": "SSSSSIKK",
-      "n": 1
-    },
-    {
-      "t": "SSSIKSKS",
-      "n": 1
-    },
-    {
-      "t": "IKKISKIS",
-      "n": 1
-    },
-    {
-      "t": "ISSKSSIS",
-      "n": 1
-    },
-    {
-      "t": "SIIIISKS",
-      "n": 1
-    },
-    {
-      "t": "KKSIISSS",
-      "n": 1
-    },
-    {
-      "t": "SKISISSS",
-      "n": 1
-    },
-    {
-      "t": "SSSSKSII",
-      "n": 1
-    },
-    {
-      "t": "SIISKSIS",
-      "n": 1
-    },
-    {
-      "t": "SSKISSKI",
-      "n": 1
-    },
-    {
-      "t": "SISIIISS",
-      "n": 1
-    },
-    {
-      "t": "SSSSIISI",
-      "n": 1
-    },
-    {
-      "t": "ISSKSSKS",
-      "n": 1
-    },
-    {
-      "t": "ISSISSIK",
-      "n": 1
-    },
-    {
-      "t": "SKKIIISI",
-      "n": 1
-    },
-    {
-      "t": "SSKISIIS",
-      "n": 1
-    },
-    {
-      "t": "SSISKKSK",
-      "n": 1
-    },
-    {
-      "t": "SSSSISIK",
-      "n": 1
-    },
-    {
-      "t": "SSSSIKSS",
-      "n": 1
-    },
-    {
-      "t": "SSISSKSI",
-      "n": 1
-    },
-    {
-      "t": "SIIKSSKI",
-      "n": 1
-    },
-    {
-      "t": "ISIKSIII",
-      "n": 1
-    },
-    {
-      "t": "KSISIIII",
-      "n": 1
-    },
-    {
-      "t": "SSSSISIS",
-      "n": 1
-    },
-    {
-      "t": "KSISSISK",
-      "n": 1
-    },
-    {
-      "t": "IISISKIK",
-      "n": 1
-    },
-    {
-      "t": "IKISISIS",
-      "n": 1
-    },
-    {
-      "t": "SIIIIIIK",
-      "n": 1
-    },
-    {
-      "t": "SSIIISII",
-      "n": 1
-    },
-    {
-      "t": "SSSISSSI",
-      "n": 1
-    },
-    {
-      "t": "SSSKIKSS",
-      "n": 1
-    },
-    {
-      "t": "SISSSSII",
-      "n": 1
-    },
-    {
-      "t": "SIIIISII",
-      "n": 1
-    },
-    {
-      "t": "SSSKIISS",
-      "n": 1
-    },
-    {
-      "t": "IISSISSK",
-      "n": 1
-    },
-    {
-      "t": "ISSSIIII",
-      "n": 1
-    },
-    {
-      "t": "SKSISSIS",
-      "n": 1
-    },
-    {
-      "t": "ISSSIISS",
-      "n": 1
-    },
-    {
-      "t": "ISSIISIS",
-      "n": 1
-    },
-    {
-      "t": "SSKISISS",
-      "n": 1
-    },
-    {
-      "t": "KKSSSISS",
-      "n": 1
-    },
-    {
-      "t": "KISIIIIS",
-      "n": 1
-    },
-    {
-      "t": "SSKSSKIK",
-      "n": 1
-    },
-    {
-      "t": "SISIKKSS",
-      "n": 1
-    },
-    {
-      "t": "KIKIIKII",
-      "n": 1
-    },
-    {
-      "t": "SSSIISSI",
-      "n": 1
-    },
-    {
-      "t": "SSKSIISI",
-      "n": 1
-    },
-    {
-      "t": "SISKIIIK",
-      "n": 1
-    },
-    {
-      "t": "SISKSSKS",
-      "n": 1
-    },
-    {
-      "t": "SISKSSSS",
-      "n": 1
-    },
-    {
-      "t": "SKISIIII",
-      "n": 1
-    },
-    {
-      "t": "SSSSSSKK",
-      "n": 1
-    },
-    {
-      "t": "SSSISIII",
-      "n": 1
-    },
-    {
-      "t": "KISSIISI",
-      "n": 1
-    },
-    {
-      "t": "SKSKIIIS",
-      "n": 1
-    },
-    {
-      "t": "SKIISKII",
-      "n": 1
-    },
-    {
-      "t": "SIIKKSSI",
-      "n": 1
-    },
-    {
-      "t": "IKSSSSIS",
-      "n": 1
-    },
-    {
-      "t": "SSKSISIK",
-      "n": 1
-    },
-    {
-      "t": "KKKSKSSI",
-      "n": 1
-    },
-    {
-      "t": "SSSSSISK",
-      "n": 1
-    },
-    {
-      "t": "SIIISKKI",
-      "n": 1
-    },
-    {
-      "t": "ISKIIISS",
-      "n": 1
-    },
-    {
-      "t": "SIKIISIS",
-      "n": 1
-    },
-    {
-      "t": "ISKSKIIS",
-      "n": 1
-    },
-    {
-      "t": "IKSIIIII",
-      "n": 1
-    },
-    {
-      "t": "SIIISKSS",
-      "n": 1
-    },
-    {
-      "t": "IIIISSSS",
-      "n": 1
-    },
-    {
-      "t": "SKSSKSKI",
-      "n": 1
-    },
-    {
-      "t": "ISSSSKII",
-      "n": 1
-    },
-    {
-      "t": "KKSISISS",
-      "n": 1
-    },
-    {
-      "t": "SIISIIKI",
-      "n": 1
-    },
-    {
-      "t": "IISIISSK",
-      "n": 1
-    },
-    {
-      "t": "ISKSIISI",
-      "n": 1
-    },
-    {
-      "t": "IIIISSSI",
-      "n": 1
-    },
-    {
-      "t": "SKSSIIIK",
-      "n": 1
-    },
-    {
-      "t": "KKSSSSIS",
-      "n": 1
-    },
-    {
-      "t": "ISISIIIS",
-      "n": 1
-    },
-    {
-      "t": "IISSIIII",
-      "n": 1
-    },
-    {
-      "t": "KSSIKSSS",
-      "n": 1
-    },
-    {
-      "t": "SSSSISII",
-      "n": 1
-    },
-    {
-      "t": "IIIIKIII",
-      "n": 1
-    },
-    {
-      "t": "ISISSKSS",
-      "n": 1
-    },
-    {
-      "t": "SISISKIS",
-      "n": 1
-    },
-    {
-      "t": "SSSSSIIK",
-      "n": 1
-    },
-    {
-      "t": "SIIKISSI",
-      "n": 1
-    },
-    {
-      "t": "IKISKIIS",
-      "n": 1
-    },
-    {
-      "t": "ISSIKIII",
-      "n": 1
-    },
-    {
-      "t": "ISIIKIIS",
-      "n": 1
-    },
-    {
-      "t": "SIKIIIIS",
-      "n": 1
-    },
-    {
-      "t": "ISSSIIKS",
-      "n": 1
-    },
-    {
-      "t": "SSKKIIKI",
-      "n": 1
-    },
-    {
-      "t": "ISIISIII",
-      "n": 1
-    },
-    {
-      "t": "ISSKSIII",
-      "n": 1
-    },
-    {
-      "t": "SISSSSSS",
-      "n": 1
-    },
-    {
-      "t": "SKKSISII",
-      "n": 1
-    },
-    {
-      "t": "SKKKIIKS",
-      "n": 1
-    },
-    {
-      "t": "SSSSSISI",
-      "n": 1
-    },
-    {
-      "t": "SSSSIISS",
-      "n": 1
-    },
-    {
-      "t": "SSSSKIKS",
-      "n": 1
-    },
-    {
-      "t": "ISSISISI",
-      "n": 1
-    },
-    {
-      "t": "SSISSSII",
-      "n": 1
-    },
-    {
-      "t": "KSIISIII",
-      "n": 1
-    },
-    {
-      "t": "SSISSIKI",
-      "n": 1
-    },
-    {
-      "t": "SSSSKKSI",
-      "n": 1
-    },
-    {
-      "t": "SIISSISK",
-      "n": 1
-    },
-    {
-      "t": "ISSKKSSS",
-      "n": 1
-    },
-    {
-      "t": "IKSKIIII",
-      "n": 1
-    },
-    {
-      "t": "SSISKSII",
-      "n": 1
-    },
-    {
-      "t": "SSSKIISI",
-      "n": 1
-    },
-    {
-      "t": "IKSIIIIS",
-      "n": 1
-    },
-    {
-      "t": "IIKISSSS",
-      "n": 1
-    },
-    {
-      "t": "SIKISKSI",
-      "n": 1
-    },
-    {
-      "t": "SSKKKSSK",
-      "n": 1
-    },
-    {
-      "t": "IIKKSIII",
-      "n": 1
-    },
-    {
-      "t": "IISIIIKI",
-      "n": 1
-    },
-    {
-      "t": "SSSSSSIK",
-      "n": 1
-    },
-    {
-      "t": "KISISIII",
-      "n": 1
-    },
-    {
-      "t": "KIISISKK",
-      "n": 1
-    },
-    {
-      "t": "KISSKSII",
-      "n": 1
-    },
-    {
-      "t": "SSIKIISS",
-      "n": 1
-    },
-    {
-      "t": "SIISIKIS",
-      "n": 1
-    },
-    {
-      "t": "ISISKISK",
-      "n": 1
-    },
-    {
-      "t": "KKKSSISI",
-      "n": 1
-    },
-    {
-      "t": "KSSKIIII",
-      "n": 1
-    },
-    {
-      "t": "SKKISIII",
-      "n": 1
-    },
-    {
-      "t": "KISIIKSI",
-      "n": 1
-    },
-    {
-      "t": "ISIIIIII",
-      "n": 1
-    },
-    {
-      "t": "ISSSSISK",
-      "n": 1
-    },
-    {
-      "t": "SISSIISI",
-      "n": 1
-    },
-    {
-      "t": "IISISIIS",
-      "n": 1
-    },
-    {
-      "t": "SKSKSKSS",
-      "n": 1
-    },
-    {
-      "t": "KSISSSIS",
-      "n": 1
-    },
-    {
-      "t": "KIKSSSII",
-      "n": 1
-    },
-    {
-      "t": "ISKISISI",
-      "n": 1
-    },
-    {
-      "t": "IIKSSKSS",
-      "n": 1
-    },
-    {
-      "t": "ISKSKISI",
-      "n": 1
-    },
-    {
-      "t": "ISSSSKSS",
-      "n": 1
-    },
-    {
-      "t": "IKIIISIS",
-      "n": 1
-    },
-    {
-      "t": "IIKSSSIS",
-      "n": 1
-    },
-    {
-      "t": "SSISIISI",
-      "n": 1
-    },
-    {
-      "t": "SISSKKSI",
-      "n": 1
-    },
-    {
-      "t": "SKIKSSKI",
-      "n": 1
-    },
-    {
-      "t": "SSSISKSS",
-      "n": 1
-    },
-    {
-      "t": "ISKIKSIS",
-      "n": 1
-    },
-    {
-      "t": "ISSKKKKS",
-      "n": 1
-    },
-    {
-      "t": "KISISSIS",
-      "n": 1
-    },
-    {
-      "t": "ISSIISSK",
-      "n": 1
-    },
-    {
-      "t": "IIISIKII",
-      "n": 1
-    },
-    {
-      "t": "KSSKSIKK",
-      "n": 1
-    },
-    {
-      "t": "SSSISKIS",
-      "n": 1
-    },
-    {
-      "t": "KKKSIKSS",
-      "n": 1
-    },
-    {
-      "t": "KSIIISSS",
-      "n": 1
-    },
-    {
-      "t": "SSKISSSS",
-      "n": 1
-    },
-    {
-      "t": "SSISISKS",
-      "n": 1
-    },
-    {
-      "t": "SISSIKKS",
-      "n": 1
-    },
-    {
-      "t": "ISKIISIK",
-      "n": 1
-    },
-    {
-      "t": "ISSKISIS",
-      "n": 1
-    },
-    {
-      "t": "SSISIIKK",
-      "n": 1
-    },
-    {
-      "t": "SIKSKSSI",
-      "n": 1
-    },
-    {
-      "t": "SISISKII",
+      "t": "SSIISSKI",
       "n": 1
     },
     {
@@ -2881,371 +1253,151 @@
       "n": 1
     },
     {
-      "t": "KIISSIII",
-      "n": 1
-    },
-    {
-      "t": "KIKIIKSK",
-      "n": 1
-    },
-    {
-      "t": "SKSSKSIK",
-      "n": 1
-    },
-    {
-      "t": "IIKSIISS",
-      "n": 1
-    },
-    {
-      "t": "SISKSIIS",
-      "n": 1
-    },
-    {
-      "t": "SKIIIISS",
-      "n": 1
-    },
-    {
-      "t": "SKSKSKSI",
-      "n": 1
-    },
-    {
-      "t": "SIISIIII",
-      "n": 1
-    },
-    {
-      "t": "IKSISSKI",
-      "n": 1
-    },
-    {
-      "t": "SSKKSIKS",
-      "n": 1
-    },
-    {
-      "t": "KIIKISIS",
-      "n": 1
-    },
-    {
-      "t": "KIKKSIIK",
-      "n": 1
-    },
-    {
-      "t": "SSIISSIS",
-      "n": 1
-    },
-    {
-      "t": "IISIKSIS",
-      "n": 1
-    },
-    {
-      "t": "ISISIISS",
-      "n": 1
-    },
-    {
-      "t": "SSSSIKSI",
-      "n": 1
-    },
-    {
-      "t": "IIIISKII",
-      "n": 1
-    },
-    {
-      "t": "IISISSKS",
-      "n": 1
-    },
-    {
-      "t": "ISISIIII",
-      "n": 1
-    },
-    {
-      "t": "SKSKKSSS",
-      "n": 1
-    },
-    {
-      "t": "SIISKIKS",
-      "n": 1
-    },
-    {
-      "t": "IIIIIISI",
-      "n": 1
-    },
-    {
-      "t": "SISISKSS",
-      "n": 1
-    },
-    {
       "t": "SSSKSIIK",
       "n": 1
     },
     {
-      "t": "ISSSISII",
+      "t": "SSSSSISK",
       "n": 1
     },
     {
-      "t": "SISIIISK",
+      "t": "IIIIKISI",
       "n": 1
     },
     {
-      "t": "SISSSSIS",
+      "t": "ISISIKKS",
       "n": 1
     },
     {
-      "t": "IKISIISI",
+      "t": "KIIISSSS",
       "n": 1
     },
     {
-      "t": "KKIISSII",
+      "t": "IIKIISIS",
       "n": 1
     },
     {
-      "t": "KKSIKISK",
+      "t": "SSISSKSI",
       "n": 1
     },
     {
-      "t": "SSKIKSII",
+      "t": "IIIKKSSI",
       "n": 1
     },
     {
-      "t": "SIKSSSSS",
+      "t": "SIISKISS",
       "n": 1
     },
     {
-      "t": "SIKIISSS",
+      "t": "KSSISSIS",
       "n": 1
     },
     {
-      "t": "SSIIKISI",
+      "t": "IISISSIK",
       "n": 1
     },
     {
-      "t": "SIISSKII",
+      "t": "IIIIISIS",
       "n": 1
     },
     {
-      "t": "ISISKIIS",
+      "t": "IISSSSIS",
       "n": 1
     },
     {
-      "t": "IKSISIIK",
+      "t": "KIKSKSSI",
       "n": 1
     },
     {
-      "t": "SSIKIKSS",
+      "t": "SSIIIIII",
       "n": 1
     },
     {
-      "t": "SIIKSSIS",
+      "t": "SIKISISI",
       "n": 1
     },
     {
-      "t": "KSISSIII",
+      "t": "IISSIISS",
       "n": 1
     },
     {
-      "t": "SSISIKSI",
+      "t": "IKSSSSII",
       "n": 1
     },
     {
-      "t": "IISKIISS",
+      "t": "SKKIKISI",
       "n": 1
     },
     {
-      "t": "ISKSSKSS",
+      "t": "SSKSIKSS",
       "n": 1
     },
     {
-      "t": "ISISSIIS",
+      "t": "SKSKSSIK",
       "n": 1
     },
     {
-      "t": "SSSSIIIK",
+      "t": "SSKSSIII",
       "n": 1
     },
     {
-      "t": "KISIISSK",
+      "t": "SKKKIIIK",
       "n": 1
     },
     {
-      "t": "SSSIKIIS",
+      "t": "SKSSSIKI",
       "n": 1
     },
     {
-      "t": "SISIKIIK",
+      "t": "KKSKSSIS",
       "n": 1
     },
     {
-      "t": "SSKSKIII",
+      "t": "SIIIIKIS",
       "n": 1
     },
     {
-      "t": "IISSSIIS",
+      "t": "SSSISKKI",
       "n": 1
     },
     {
-      "t": "IISISSIS",
+      "t": "KSSIIIIS",
       "n": 1
     },
     {
-      "t": "KISISSSI",
+      "t": "SSIKISSS",
       "n": 1
     },
     {
-      "t": "ISSIIIIS",
+      "t": "SSIIISII",
       "n": 1
     },
     {
-      "t": "SSSSISSK",
+      "t": "SIISISSI",
       "n": 1
     },
     {
-      "t": "ISSISIKS",
+      "t": "KKISKIKK",
       "n": 1
     },
     {
-      "t": "IKISSSSS",
+      "t": "SSISKSKS",
       "n": 1
     },
     {
-      "t": "KKSSIIIK",
+      "t": "SIKSIIKI",
       "n": 1
     },
     {
-      "t": "KKIIISKS",
+      "t": "IKIIIISS",
       "n": 1
     },
     {
-      "t": "KIIISSKS",
+      "t": "IKIIIIII",
       "n": 1
     },
     {
-      "t": "ISIIISIS",
-      "n": 1
-    },
-    {
-      "t": "KSIKSISS",
-      "n": 1
-    },
-    {
-      "t": "IISSIISK",
-      "n": 1
-    },
-    {
-      "t": "KSKKISIK",
-      "n": 1
-    },
-    {
-      "t": "SSISSSKS",
-      "n": 1
-    },
-    {
-      "t": "SIKSSISK",
-      "n": 1
-    },
-    {
-      "t": "SIIISIIS",
-      "n": 1
-    },
-    {
-      "t": "KSSIISSS",
-      "n": 1
-    },
-    {
-      "t": "IIIISIIS",
-      "n": 1
-    },
-    {
-      "t": "SIIIIIKI",
-      "n": 1
-    },
-    {
-      "t": "SIISSSIK",
-      "n": 1
-    },
-    {
-      "t": "SISSSSIK",
-      "n": 1
-    },
-    {
-      "t": "SIKSKIIS",
-      "n": 1
-    },
-    {
-      "t": "IIISIIIS",
-      "n": 1
-    },
-    {
-      "t": "SSKISSIK",
-      "n": 1
-    },
-    {
-      "t": "KKKISSKS",
-      "n": 1
-    },
-    {
-      "t": "SKSSKSKS",
-      "n": 1
-    },
-    {
-      "t": "IISSIKKS",
-      "n": 1
-    },
-    {
-      "t": "SIISIIIS",
-      "n": 1
-    },
-    {
-      "t": "SISISSII",
-      "n": 1
-    },
-    {
-      "t": "SIISISIK",
-      "n": 1
-    },
-    {
-      "t": "IISKSSSS",
-      "n": 1
-    },
-    {
-      "t": "IISSKKIS",
-      "n": 1
-    },
-    {
-      "t": "ISKSIIII",
-      "n": 1
-    },
-    {
-      "t": "KSKKKSIS",
-      "n": 1
-    },
-    {
-      "t": "ISSISKIS",
-      "n": 1
-    },
-    {
-      "t": "SISISIKI",
-      "n": 1
-    },
-    {
-      "t": "SIKSKSIS",
-      "n": 1
-    },
-    {
-      "t": "IKKSKKSI",
-      "n": 1
-    },
-    {
-      "t": "ISSSISIK",
-      "n": 1
-    },
-    {
-      "t": "SKSKIISI",
-      "n": 1
-    },
-    {
-      "t": "SKSKIISS",
-      "n": 1
-    },
-    {
-      "t": "SSSSSSKS",
+      "t": "KIISISIS",
       "n": 1
     },
     {
@@ -3253,23 +1405,219 @@
       "n": 1
     },
     {
-      "t": "SKISKIKS",
+      "t": "KKKISIII",
       "n": 1
     },
     {
-      "t": "IKKSIISI",
+      "t": "IIISKSSS",
       "n": 1
     },
     {
-      "t": "SSIIIKIK",
+      "t": "SSSIKISI",
       "n": 1
     },
     {
-      "t": "SISSIKSS",
+      "t": "SSSIKIIK",
       "n": 1
     },
     {
-      "t": "SSISISSI",
+      "t": "ISSISSII",
+      "n": 1
+    },
+    {
+      "t": "KKSIISSI",
+      "n": 1
+    },
+    {
+      "t": "KSIIKISI",
+      "n": 1
+    },
+    {
+      "t": "IISIIISI",
+      "n": 1
+    },
+    {
+      "t": "IISIISSS",
+      "n": 1
+    },
+    {
+      "t": "SSKSSKSS",
+      "n": 1
+    },
+    {
+      "t": "ISIKSISI",
+      "n": 1
+    },
+    {
+      "t": "SISIKIKI",
+      "n": 1
+    },
+    {
+      "t": "SKSISSIS",
+      "n": 1
+    },
+    {
+      "t": "SIIKIIII",
+      "n": 1
+    },
+    {
+      "t": "SSISIKSK",
+      "n": 1
+    },
+    {
+      "t": "IISKKSIS",
+      "n": 1
+    },
+    {
+      "t": "IKIKSSII",
+      "n": 1
+    },
+    {
+      "t": "KSSSSSIS",
+      "n": 1
+    },
+    {
+      "t": "SSSIISIS",
+      "n": 1
+    },
+    {
+      "t": "IISSKIIS",
+      "n": 1
+    },
+    {
+      "t": "ISSIKIKK",
+      "n": 1
+    },
+    {
+      "t": "SISIIKSS",
+      "n": 1
+    },
+    {
+      "t": "ISSIIIIS",
+      "n": 1
+    },
+    {
+      "t": "IIKIISSI",
+      "n": 1
+    },
+    {
+      "t": "SIKIISIS",
+      "n": 1
+    },
+    {
+      "t": "SSIIKIIS",
+      "n": 1
+    },
+    {
+      "t": "SIKSIIII",
+      "n": 1
+    },
+    {
+      "t": "KISIISSS",
+      "n": 1
+    },
+    {
+      "t": "ISKSKSSK",
+      "n": 1
+    },
+    {
+      "t": "SISSISII",
+      "n": 1
+    },
+    {
+      "t": "ISSSKSSK",
+      "n": 1
+    },
+    {
+      "t": "IIIISIII",
+      "n": 1
+    },
+    {
+      "t": "ISSKKSKK",
+      "n": 1
+    },
+    {
+      "t": "SIIKSSSK",
+      "n": 1
+    },
+    {
+      "t": "IIKSSIIS",
+      "n": 1
+    },
+    {
+      "t": "KIKISISS",
+      "n": 1
+    },
+    {
+      "t": "SSIISIII",
+      "n": 1
+    },
+    {
+      "t": "SSSSIKKI",
+      "n": 1
+    },
+    {
+      "t": "KKSISIKS",
+      "n": 1
+    },
+    {
+      "t": "IIIKSSSI",
+      "n": 1
+    },
+    {
+      "t": "SSKISIKI",
+      "n": 1
+    },
+    {
+      "t": "IIISSSSS",
+      "n": 1
+    },
+    {
+      "t": "SIIIKKKS",
+      "n": 1
+    },
+    {
+      "t": "IIKSSSIK",
+      "n": 1
+    },
+    {
+      "t": "KSSSIISI",
+      "n": 1
+    },
+    {
+      "t": "SIKIKIKS",
+      "n": 1
+    },
+    {
+      "t": "SISKSIII",
+      "n": 1
+    },
+    {
+      "t": "KSIIISKS",
+      "n": 1
+    },
+    {
+      "t": "KISISIII",
+      "n": 1
+    },
+    {
+      "t": "SIIIIKKS",
+      "n": 1
+    },
+    {
+      "t": "ISKIIKSS",
+      "n": 1
+    },
+    {
+      "t": "ISISKKSS",
+      "n": 1
+    },
+    {
+      "t": "KKSSSSSI",
+      "n": 1
+    },
+    {
+      "t": "SSSSSKSK",
       "n": 1
     },
     {
@@ -3277,7 +1625,1459 @@
       "n": 1
     },
     {
-      "t": "SIIISKII",
+      "t": "SSSSSSIK",
+      "n": 1
+    },
+    {
+      "t": "SSKSSSII",
+      "n": 1
+    },
+    {
+      "t": "IIIIISII",
+      "n": 1
+    },
+    {
+      "t": "SSIIIKKS",
+      "n": 1
+    },
+    {
+      "t": "KSKSSIII",
+      "n": 1
+    },
+    {
+      "t": "ISKKSSKI",
+      "n": 1
+    },
+    {
+      "t": "IKSIIIIS",
+      "n": 1
+    },
+    {
+      "t": "SIKIISII",
+      "n": 1
+    },
+    {
+      "t": "KSSSSISS",
+      "n": 1
+    },
+    {
+      "t": "IISSISSS",
+      "n": 1
+    },
+    {
+      "t": "SIIISSKS",
+      "n": 1
+    },
+    {
+      "t": "SSKSSISI",
+      "n": 1
+    },
+    {
+      "t": "SSSSIKIS",
+      "n": 1
+    },
+    {
+      "t": "ISKISIII",
+      "n": 1
+    },
+    {
+      "t": "KSISIKII",
+      "n": 1
+    },
+    {
+      "t": "SSKSIIII",
+      "n": 1
+    },
+    {
+      "t": "KSIISISS",
+      "n": 1
+    },
+    {
+      "t": "ISKIISKI",
+      "n": 1
+    },
+    {
+      "t": "SIKIIIKI",
+      "n": 1
+    },
+    {
+      "t": "KIISSSII",
+      "n": 1
+    },
+    {
+      "t": "ISIIIIIS",
+      "n": 1
+    },
+    {
+      "t": "SSSSISKI",
+      "n": 1
+    },
+    {
+      "t": "KSIISKIK",
+      "n": 1
+    },
+    {
+      "t": "IIKIISKS",
+      "n": 1
+    },
+    {
+      "t": "SISIKIIS",
+      "n": 1
+    },
+    {
+      "t": "ISKIIIII",
+      "n": 1
+    },
+    {
+      "t": "ISKIKKKS",
+      "n": 1
+    },
+    {
+      "t": "KSIKSSSI",
+      "n": 1
+    },
+    {
+      "t": "IKIIISIK",
+      "n": 1
+    },
+    {
+      "t": "SIISSSIK",
+      "n": 1
+    },
+    {
+      "t": "SIIIIISI",
+      "n": 1
+    },
+    {
+      "t": "KKIIIIIS",
+      "n": 1
+    },
+    {
+      "t": "SIKISKKS",
+      "n": 1
+    },
+    {
+      "t": "SKSISKIS",
+      "n": 1
+    },
+    {
+      "t": "KSSISSKK",
+      "n": 1
+    },
+    {
+      "t": "IISISIKI",
+      "n": 1
+    },
+    {
+      "t": "SSSIKIIS",
+      "n": 1
+    },
+    {
+      "t": "SKSSSSSS",
+      "n": 1
+    },
+    {
+      "t": "SSSKSISS",
+      "n": 1
+    },
+    {
+      "t": "IKSSIISS",
+      "n": 1
+    },
+    {
+      "t": "IIIISSII",
+      "n": 1
+    },
+    {
+      "t": "ISKIKKIS",
+      "n": 1
+    },
+    {
+      "t": "SSSSISIS",
+      "n": 1
+    },
+    {
+      "t": "SISKSISK",
+      "n": 1
+    },
+    {
+      "t": "SKSKSIIS",
+      "n": 1
+    },
+    {
+      "t": "ISSIKSKI",
+      "n": 1
+    },
+    {
+      "t": "SISSISIK",
+      "n": 1
+    },
+    {
+      "t": "ISSISSSS",
+      "n": 1
+    },
+    {
+      "t": "SISIIISS",
+      "n": 1
+    },
+    {
+      "t": "KSSSKSKI",
+      "n": 1
+    },
+    {
+      "t": "KSSKIIIK",
+      "n": 1
+    },
+    {
+      "t": "SSSIIIIK",
+      "n": 1
+    },
+    {
+      "t": "KISISKSI",
+      "n": 1
+    },
+    {
+      "t": "KIIIIIII",
+      "n": 1
+    },
+    {
+      "t": "SSISISKK",
+      "n": 1
+    },
+    {
+      "t": "KSIKIIII",
+      "n": 1
+    },
+    {
+      "t": "SSSSISSK",
+      "n": 1
+    },
+    {
+      "t": "IKIIIISI",
+      "n": 1
+    },
+    {
+      "t": "SKSSISIK",
+      "n": 1
+    },
+    {
+      "t": "KKSKSISI",
+      "n": 1
+    },
+    {
+      "t": "KSISISIK",
+      "n": 1
+    },
+    {
+      "t": "IIIKIIKI",
+      "n": 1
+    },
+    {
+      "t": "SSISSKIS",
+      "n": 1
+    },
+    {
+      "t": "ISSSIIIS",
+      "n": 1
+    },
+    {
+      "t": "SKSSKISS",
+      "n": 1
+    },
+    {
+      "t": "IISSSSII",
+      "n": 1
+    },
+    {
+      "t": "SISIIIKK",
+      "n": 1
+    },
+    {
+      "t": "SSSSIISK",
+      "n": 1
+    },
+    {
+      "t": "IISISKSK",
+      "n": 1
+    },
+    {
+      "t": "SSSSKIIS",
+      "n": 1
+    },
+    {
+      "t": "IISSIISK",
+      "n": 1
+    },
+    {
+      "t": "SSKSSKKS",
+      "n": 1
+    },
+    {
+      "t": "SKSKSKKI",
+      "n": 1
+    },
+    {
+      "t": "SIIKSKSS",
+      "n": 1
+    },
+    {
+      "t": "IKIKIIII",
+      "n": 1
+    },
+    {
+      "t": "ISSSSSIS",
+      "n": 1
+    },
+    {
+      "t": "SISSKIKI",
+      "n": 1
+    },
+    {
+      "t": "SIISSIII",
+      "n": 1
+    },
+    {
+      "t": "SSIIIIKS",
+      "n": 1
+    },
+    {
+      "t": "KSIKSIII",
+      "n": 1
+    },
+    {
+      "t": "SIISSSSS",
+      "n": 1
+    },
+    {
+      "t": "SSKISISK",
+      "n": 1
+    },
+    {
+      "t": "ISIKSSSS",
+      "n": 1
+    },
+    {
+      "t": "SSKSISSI",
+      "n": 1
+    },
+    {
+      "t": "IIISISIS",
+      "n": 1
+    },
+    {
+      "t": "SISSISKI",
+      "n": 1
+    },
+    {
+      "t": "SIIKIIIK",
+      "n": 1
+    },
+    {
+      "t": "SIIISIII",
+      "n": 1
+    },
+    {
+      "t": "SIIIISKS",
+      "n": 1
+    },
+    {
+      "t": "KIIIISSI",
+      "n": 1
+    },
+    {
+      "t": "IIISSSIK",
+      "n": 1
+    },
+    {
+      "t": "KSISSISI",
+      "n": 1
+    },
+    {
+      "t": "SIIKSIIS",
+      "n": 1
+    },
+    {
+      "t": "ISIIKKKS",
+      "n": 1
+    },
+    {
+      "t": "KKSIISSS",
+      "n": 1
+    },
+    {
+      "t": "SIISSISK",
+      "n": 1
+    },
+    {
+      "t": "SSSISIIS",
+      "n": 1
+    },
+    {
+      "t": "KIIIIIIS",
+      "n": 1
+    },
+    {
+      "t": "SKIKKSIS",
+      "n": 1
+    },
+    {
+      "t": "SIIKSIII",
+      "n": 1
+    },
+    {
+      "t": "SIKSISKI",
+      "n": 1
+    },
+    {
+      "t": "KKSSISIK",
+      "n": 1
+    },
+    {
+      "t": "KIISSISI",
+      "n": 1
+    },
+    {
+      "t": "IIKSISIK",
+      "n": 1
+    },
+    {
+      "t": "SIISIISS",
+      "n": 1
+    },
+    {
+      "t": "IKSIISIK",
+      "n": 1
+    },
+    {
+      "t": "ISKISIKS",
+      "n": 1
+    },
+    {
+      "t": "SKIKIISS",
+      "n": 1
+    },
+    {
+      "t": "ISIISIII",
+      "n": 1
+    },
+    {
+      "t": "SISISSII",
+      "n": 1
+    },
+    {
+      "t": "SKSISSSS",
+      "n": 1
+    },
+    {
+      "t": "IIKSIKIS",
+      "n": 1
+    },
+    {
+      "t": "SSSIIKIS",
+      "n": 1
+    },
+    {
+      "t": "SIISISSK",
+      "n": 1
+    },
+    {
+      "t": "SSKSSISK",
+      "n": 1
+    },
+    {
+      "t": "KSSIKISI",
+      "n": 1
+    },
+    {
+      "t": "KIKIISKI",
+      "n": 1
+    },
+    {
+      "t": "ISSSIKII",
+      "n": 1
+    },
+    {
+      "t": "KISIKISK",
+      "n": 1
+    },
+    {
+      "t": "KSIKKSSI",
+      "n": 1
+    },
+    {
+      "t": "SISSKSSK",
+      "n": 1
+    },
+    {
+      "t": "ISISSISS",
+      "n": 1
+    },
+    {
+      "t": "IIKIKIII",
+      "n": 1
+    },
+    {
+      "t": "SISSSKII",
+      "n": 1
+    },
+    {
+      "t": "SIIIISSS",
+      "n": 1
+    },
+    {
+      "t": "ISKSKSIS",
+      "n": 1
+    },
+    {
+      "t": "SISIKSII",
+      "n": 1
+    },
+    {
+      "t": "SKSSIISS",
+      "n": 1
+    },
+    {
+      "t": "IISKIKIK",
+      "n": 1
+    },
+    {
+      "t": "SSIIISKI",
+      "n": 1
+    },
+    {
+      "t": "IIISKSIS",
+      "n": 1
+    },
+    {
+      "t": "ISIKISIK",
+      "n": 1
+    },
+    {
+      "t": "IKISIKIS",
+      "n": 1
+    },
+    {
+      "t": "SSSSISSI",
+      "n": 1
+    },
+    {
+      "t": "KSSSIIIS",
+      "n": 1
+    },
+    {
+      "t": "IIIKSKSS",
+      "n": 1
+    },
+    {
+      "t": "SIKKSSSS",
+      "n": 1
+    },
+    {
+      "t": "IISSSSKI",
+      "n": 1
+    },
+    {
+      "t": "IIISSISI",
+      "n": 1
+    },
+    {
+      "t": "SISSSKKS",
+      "n": 1
+    },
+    {
+      "t": "IKISSISS",
+      "n": 1
+    },
+    {
+      "t": "IIKIISKI",
+      "n": 1
+    },
+    {
+      "t": "KKSSKSSI",
+      "n": 1
+    },
+    {
+      "t": "KSISSSIS",
+      "n": 1
+    },
+    {
+      "t": "KIIIIISI",
+      "n": 1
+    },
+    {
+      "t": "KSKISIIS",
+      "n": 1
+    },
+    {
+      "t": "SSSSIIKS",
+      "n": 1
+    },
+    {
+      "t": "SSISISIK",
+      "n": 1
+    },
+    {
+      "t": "SSIKIKSS",
+      "n": 1
+    },
+    {
+      "t": "SSIISIIS",
+      "n": 1
+    },
+    {
+      "t": "IISIIKSS",
+      "n": 1
+    },
+    {
+      "t": "ISIIIISK",
+      "n": 1
+    },
+    {
+      "t": "SSIISSII",
+      "n": 1
+    },
+    {
+      "t": "IIKKSISI",
+      "n": 1
+    },
+    {
+      "t": "IIIIIKIS",
+      "n": 1
+    },
+    {
+      "t": "SKISSSIS",
+      "n": 1
+    },
+    {
+      "t": "ISSSSISI",
+      "n": 1
+    },
+    {
+      "t": "IIKKKSII",
+      "n": 1
+    },
+    {
+      "t": "SIISKISK",
+      "n": 1
+    },
+    {
+      "t": "IISIIIII",
+      "n": 1
+    },
+    {
+      "t": "SSISSSKK",
+      "n": 1
+    },
+    {
+      "t": "SISKIKII",
+      "n": 1
+    },
+    {
+      "t": "IKIIKIKS",
+      "n": 1
+    },
+    {
+      "t": "KISSIISS",
+      "n": 1
+    },
+    {
+      "t": "SISSIIII",
+      "n": 1
+    },
+    {
+      "t": "IIISISKI",
+      "n": 1
+    },
+    {
+      "t": "SISIIISI",
+      "n": 1
+    },
+    {
+      "t": "KIIISIIS",
+      "n": 1
+    },
+    {
+      "t": "IIKIIIII",
+      "n": 1
+    },
+    {
+      "t": "SSSIISSS",
+      "n": 1
+    },
+    {
+      "t": "SIISSSKI",
+      "n": 1
+    },
+    {
+      "t": "SSISSSIS",
+      "n": 1
+    },
+    {
+      "t": "ISSKSSII",
+      "n": 1
+    },
+    {
+      "t": "SKISKISI",
+      "n": 1
+    },
+    {
+      "t": "SKIIIISI",
+      "n": 1
+    },
+    {
+      "t": "SSISISSK",
+      "n": 1
+    },
+    {
+      "t": "SKIIIISK",
+      "n": 1
+    },
+    {
+      "t": "SIKISSSI",
+      "n": 1
+    },
+    {
+      "t": "SSISISII",
+      "n": 1
+    },
+    {
+      "t": "ISSISKKI",
+      "n": 1
+    },
+    {
+      "t": "SISKISIK",
+      "n": 1
+    },
+    {
+      "t": "KSSSSIII",
+      "n": 1
+    },
+    {
+      "t": "ISSIIIIK",
+      "n": 1
+    },
+    {
+      "t": "SKISSKII",
+      "n": 1
+    },
+    {
+      "t": "KKKSISKK",
+      "n": 1
+    },
+    {
+      "t": "KSIIKIII",
+      "n": 1
+    },
+    {
+      "t": "SIISIKSI",
+      "n": 1
+    },
+    {
+      "t": "SKIIIISS",
+      "n": 1
+    },
+    {
+      "t": "SIKSSISI",
+      "n": 1
+    },
+    {
+      "t": "ISKSIKSK",
+      "n": 1
+    },
+    {
+      "t": "KSSSSSII",
+      "n": 1
+    },
+    {
+      "t": "SKSIISKS",
+      "n": 1
+    },
+    {
+      "t": "IIIIISIK",
+      "n": 1
+    },
+    {
+      "t": "ISIISIIK",
+      "n": 1
+    },
+    {
+      "t": "ISSSISIS",
+      "n": 1
+    },
+    {
+      "t": "SISSSISI",
+      "n": 1
+    },
+    {
+      "t": "SIKIISSI",
+      "n": 1
+    },
+    {
+      "t": "IIISIISS",
+      "n": 1
+    },
+    {
+      "t": "IKSSSSSI",
+      "n": 1
+    },
+    {
+      "t": "SIIIIKSS",
+      "n": 1
+    },
+    {
+      "t": "KIIIKSIK",
+      "n": 1
+    },
+    {
+      "t": "KSIIIISI",
+      "n": 1
+    },
+    {
+      "t": "IKSSISSI",
+      "n": 1
+    },
+    {
+      "t": "KSIISSSI",
+      "n": 1
+    },
+    {
+      "t": "SKISISKI",
+      "n": 1
+    },
+    {
+      "t": "SSIISKSI",
+      "n": 1
+    },
+    {
+      "t": "KSSSKSSS",
+      "n": 1
+    },
+    {
+      "t": "IIISSIII",
+      "n": 1
+    },
+    {
+      "t": "IKSSSIIS",
+      "n": 1
+    },
+    {
+      "t": "IKKKSSSI",
+      "n": 1
+    },
+    {
+      "t": "SIKSIISI",
+      "n": 1
+    },
+    {
+      "t": "SISISIIK",
+      "n": 1
+    },
+    {
+      "t": "SSKIISII",
+      "n": 1
+    },
+    {
+      "t": "IIIISISS",
+      "n": 1
+    },
+    {
+      "t": "SSIISIKI",
+      "n": 1
+    },
+    {
+      "t": "SKSISSSI",
+      "n": 1
+    },
+    {
+      "t": "SSISIIKS",
+      "n": 1
+    },
+    {
+      "t": "ISSISSKS",
+      "n": 1
+    },
+    {
+      "t": "IKISSISI",
+      "n": 1
+    },
+    {
+      "t": "IIISISKK",
+      "n": 1
+    },
+    {
+      "t": "SISIIIIS",
+      "n": 1
+    },
+    {
+      "t": "IIISSSIS",
+      "n": 1
+    },
+    {
+      "t": "ISIIIKSS",
+      "n": 1
+    },
+    {
+      "t": "SSIIIIKI",
+      "n": 1
+    },
+    {
+      "t": "ISSSIISK",
+      "n": 1
+    },
+    {
+      "t": "IIIIIIKI",
+      "n": 1
+    },
+    {
+      "t": "SISSIISS",
+      "n": 1
+    },
+    {
+      "t": "IIISISII",
+      "n": 1
+    },
+    {
+      "t": "ISISIKII",
+      "n": 1
+    },
+    {
+      "t": "SIISKIIS",
+      "n": 1
+    },
+    {
+      "t": "IKSISSSS",
+      "n": 1
+    },
+    {
+      "t": "KSIIIIII",
+      "n": 1
+    },
+    {
+      "t": "KSKKSISI",
+      "n": 1
+    },
+    {
+      "t": "KISIIIIS",
+      "n": 1
+    },
+    {
+      "t": "IIIISSSS",
+      "n": 1
+    },
+    {
+      "t": "SISISIII",
+      "n": 1
+    },
+    {
+      "t": "SKSISISI",
+      "n": 1
+    },
+    {
+      "t": "SSIIISIS",
+      "n": 1
+    },
+    {
+      "t": "IIIKKSKI",
+      "n": 1
+    },
+    {
+      "t": "SIISISKS",
+      "n": 1
+    },
+    {
+      "t": "SKISSSSI",
+      "n": 1
+    },
+    {
+      "t": "SISIKKSS",
+      "n": 1
+    },
+    {
+      "t": "SSISISSI",
+      "n": 1
+    },
+    {
+      "t": "SISISSSK",
+      "n": 1
+    },
+    {
+      "t": "SIKSSIIS",
+      "n": 1
+    },
+    {
+      "t": "IIIIIKKI",
+      "n": 1
+    },
+    {
+      "t": "KKISKSII",
+      "n": 1
+    },
+    {
+      "t": "ISSSKIKK",
+      "n": 1
+    },
+    {
+      "t": "SSKIKISS",
+      "n": 1
+    },
+    {
+      "t": "KSSKSSKK",
+      "n": 1
+    },
+    {
+      "t": "IISISSSS",
+      "n": 1
+    },
+    {
+      "t": "IIIIKSKI",
+      "n": 1
+    },
+    {
+      "t": "SIIISSII",
+      "n": 1
+    },
+    {
+      "t": "SIKSSIII",
+      "n": 1
+    },
+    {
+      "t": "SSSKKIIK",
+      "n": 1
+    },
+    {
+      "t": "IISIKISK",
+      "n": 1
+    },
+    {
+      "t": "SKSIIKSI",
+      "n": 1
+    },
+    {
+      "t": "KSSISKSS",
+      "n": 1
+    },
+    {
+      "t": "IKIIKKSI",
+      "n": 1
+    },
+    {
+      "t": "SSSIKSSK",
+      "n": 1
+    },
+    {
+      "t": "ISIKIIIS",
+      "n": 1
+    },
+    {
+      "t": "SSSSIKKK",
+      "n": 1
+    },
+    {
+      "t": "SKKSKKSK",
+      "n": 1
+    },
+    {
+      "t": "SSSSKISI",
+      "n": 1
+    },
+    {
+      "t": "SIISIKKS",
+      "n": 1
+    },
+    {
+      "t": "SSSSIISI",
+      "n": 1
+    },
+    {
+      "t": "IKSKSSSS",
+      "n": 1
+    },
+    {
+      "t": "SSIKIISI",
+      "n": 1
+    },
+    {
+      "t": "SIISIKSS",
+      "n": 1
+    },
+    {
+      "t": "SSKISSSS",
+      "n": 1
+    },
+    {
+      "t": "SKIIIKKI",
+      "n": 1
+    },
+    {
+      "t": "KIKIKIIS",
+      "n": 1
+    },
+    {
+      "t": "SIISIIII",
+      "n": 1
+    },
+    {
+      "t": "SIISSKSS",
+      "n": 1
+    },
+    {
+      "t": "ISSKSISK",
+      "n": 1
+    },
+    {
+      "t": "SSSISIKS",
+      "n": 1
+    },
+    {
+      "t": "SIIIIIKI",
+      "n": 1
+    },
+    {
+      "t": "SSIIIIIS",
+      "n": 1
+    },
+    {
+      "t": "SISISSSI",
+      "n": 1
+    },
+    {
+      "t": "SIISKIKI",
+      "n": 1
+    },
+    {
+      "t": "SSKSIKKI",
+      "n": 1
+    },
+    {
+      "t": "ISISSSSS",
+      "n": 1
+    },
+    {
+      "t": "ISISISIS",
+      "n": 1
+    },
+    {
+      "t": "SSISIKSI",
+      "n": 1
+    },
+    {
+      "t": "SSKIIIII",
+      "n": 1
+    },
+    {
+      "t": "KISSISSS",
+      "n": 1
+    },
+    {
+      "t": "SKIISSII",
+      "n": 1
+    },
+    {
+      "t": "SISSSKIS",
+      "n": 1
+    },
+    {
+      "t": "KISISSIS",
+      "n": 1
+    },
+    {
+      "t": "ISIISSSS",
+      "n": 1
+    },
+    {
+      "t": "SKISISSI",
+      "n": 1
+    },
+    {
+      "t": "KIISSSSK",
+      "n": 1
+    },
+    {
+      "t": "SKIIISSI",
+      "n": 1
+    },
+    {
+      "t": "IISSISII",
+      "n": 1
+    },
+    {
+      "t": "SIISSSII",
+      "n": 1
+    },
+    {
+      "t": "KISSISIS",
+      "n": 1
+    },
+    {
+      "t": "SSSKIIII",
+      "n": 1
+    },
+    {
+      "t": "ISISSKSI",
+      "n": 1
+    },
+    {
+      "t": "ISISIIIS",
+      "n": 1
+    },
+    {
+      "t": "KKSISSIK",
+      "n": 1
+    },
+    {
+      "t": "KSSKSIIS",
+      "n": 1
+    },
+    {
+      "t": "KISISSSS",
+      "n": 1
+    },
+    {
+      "t": "SIISIKIS",
+      "n": 1
+    },
+    {
+      "t": "SSKIIIIS",
+      "n": 1
+    },
+    {
+      "t": "KSSSISSI",
+      "n": 1
+    },
+    {
+      "t": "KIKSSIII",
+      "n": 1
+    },
+    {
+      "t": "KISIKKII",
+      "n": 1
+    },
+    {
+      "t": "SKSKIKKS",
+      "n": 1
+    },
+    {
+      "t": "SIISIIIS",
+      "n": 1
+    },
+    {
+      "t": "KSISISSI",
+      "n": 1
+    },
+    {
+      "t": "ISKSSSII",
+      "n": 1
+    },
+    {
+      "t": "IISIIIIK",
+      "n": 1
+    },
+    {
+      "t": "SSIIIISS",
+      "n": 1
+    },
+    {
+      "t": "KSSIKKSS",
+      "n": 1
+    },
+    {
+      "t": "SSIKIKIS",
+      "n": 1
+    },
+    {
+      "t": "IKIKKSSI",
+      "n": 1
+    },
+    {
+      "t": "SKIKIIIS",
+      "n": 1
+    },
+    {
+      "t": "SKISIIIK",
+      "n": 1
+    },
+    {
+      "t": "SISIKISK",
+      "n": 1
+    },
+    {
+      "t": "SSISKIIS",
+      "n": 1
+    },
+    {
+      "t": "SISIISII",
+      "n": 1
+    },
+    {
+      "t": "SSSIISSI",
+      "n": 1
+    },
+    {
+      "t": "IIIKKIKK",
+      "n": 1
+    },
+    {
+      "t": "ISSKISIS",
+      "n": 1
+    },
+    {
+      "t": "ISSSIIKS",
+      "n": 1
+    },
+    {
+      "t": "SIISKIII",
+      "n": 1
+    },
+    {
+      "t": "SSKKSKSI",
+      "n": 1
+    },
+    {
+      "t": "SIISSSSI",
+      "n": 1
+    },
+    {
+      "t": "SKSKSKSI",
+      "n": 1
+    },
+    {
+      "t": "SIIIIISS",
+      "n": 1
+    },
+    {
+      "t": "KIKIIISS",
+      "n": 1
+    },
+    {
+      "t": "SSKISISI",
+      "n": 1
+    },
+    {
+      "t": "ISSSKIIS",
+      "n": 1
+    },
+    {
+      "t": "IISIKIII",
+      "n": 1
+    },
+    {
+      "t": "SKSIIISS",
+      "n": 1
+    },
+    {
+      "t": "SSIISKSS",
+      "n": 1
+    },
+    {
+      "t": "SSSSSIKI",
+      "n": 1
+    },
+    {
+      "t": "KISISKSK",
+      "n": 1
+    },
+    {
+      "t": "ISSSISSS",
+      "n": 1
+    },
+    {
+      "t": "IIIIKIKS",
+      "n": 1
+    },
+    {
+      "t": "KSIISSIK",
+      "n": 1
+    },
+    {
+      "t": "KSKSIISI",
+      "n": 1
+    },
+    {
+      "t": "KSSIISSS",
+      "n": 1
+    },
+    {
+      "t": "KKSSIIIS",
+      "n": 1
+    },
+    {
+      "t": "SIIIKKSK",
+      "n": 1
+    },
+    {
+      "t": "IISISISS",
+      "n": 1
+    },
+    {
+      "t": "SIISISII",
+      "n": 1
+    },
+    {
+      "t": "IKSIIISS",
+      "n": 1
+    },
+    {
+      "t": "KSKSISIS",
+      "n": 1
+    },
+    {
+      "t": "ISIIIKIK",
+      "n": 1
+    },
+    {
+      "t": "KSSIIIIK",
+      "n": 1
+    },
+    {
+      "t": "SKSKSSKK",
+      "n": 1
+    },
+    {
+      "t": "SIKSSKII",
+      "n": 1
+    },
+    {
+      "t": "SSSSKSSS",
+      "n": 1
+    },
+    {
+      "t": "IISKIIII",
+      "n": 1
+    },
+    {
+      "t": "KISISIIK",
+      "n": 1
+    },
+    {
+      "t": "SKISIISS",
+      "n": 1
+    },
+    {
+      "t": "SIIISSSS",
+      "n": 1
+    },
+    {
+      "t": "SISSSSSK",
+      "n": 1
+    },
+    {
+      "t": "SSISSIIS",
+      "n": 1
+    },
+    {
+      "t": "SSIIISSS",
+      "n": 1
+    },
+    {
+      "t": "SSKKSSKS",
+      "n": 1
+    },
+    {
+      "t": "KIISISKI",
+      "n": 1
+    },
+    {
+      "t": "IIKSSISK",
       "n": 1
     }
   ],
