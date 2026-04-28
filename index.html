@@ -97,11 +97,11 @@ canvas { display:block; position:fixed; inset:0; }
 
 <div id="side">
   <div>
-    <div class="side-label">phase portrait — H vs ops/int</div>
+    <div class="side-label">limit cycle — entropy (x) vs ops/int (y) · purple dot = mega-charge</div>
     <canvas id="phase-canvas" width="250" height="180"></canvas>
   </div>
   <div>
-    <div class="side-label">tape pool — real sequences (S=green K=blue W=orange B=red I=gray)</div>
+    <div class="side-label">real tapes from pool · each row = one tape (8 combinators) · S=green K=blue W=orange B=red I=gray</div>
     <canvas id="genome-canvas" width="250" height="130"></canvas>
   </div>
 </div>
@@ -146,12 +146,27 @@ const N = 280, particles = [];
 function mkParticle(i) {
   const angle = Math.random() * Math.PI * 2;
   const r = Math.random() * 0.35 + 0.05;
+  const initKind = i < N*.65 ? 'prey' : i < N*.85 ? 'catalyst' : 'core';
   return { x:.5+Math.cos(angle)*r*.8, y:.5+Math.sin(angle)*r*.8,
            vx:(Math.random()-.5)*.002, vy:(Math.random()-.5)*.002,
            phase:Math.random()*Math.PI*2, freq:.3+Math.random()*.7,
-           baseR:1.5+Math.random()*3, kind:'prey' };
+           baseR:1.5+Math.random()*3, kind:initKind,
+           trail:[], tape:null, tapeHue:200 };
 }
 for (let i=0;i<N;i++) particles.push(mkParticle(i));
+
+// Real tape coloring: dominant combinator → hue
+const COMB_HUE = {S:140, K:220, W:30, B:0, I:180};
+function applyTapes(tapes) {
+  for (let i=0;i<Math.min(tapes.length,N);i++) {
+    const tape=tapes[i];
+    particles[i].tape=tape;
+    const counts={};
+    for (const c of tape) counts[c]=(counts[c]||0)+1;
+    const dom=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0];
+    particles[i].tapeHue=COMB_HUE[dom]??200;
+  }
+}
 
 function poolCX() { return W*.5; }
 function poolCY() { return H_px*.5; }
@@ -160,6 +175,10 @@ function hsl(h,s,l,a=1) { return `hsla(${h},${s}%,${l}%,${a})`; }
 
 function particleColor(p, t) {
   const hSpread = Math.min(state.H/4,1);
+  if (p.tape) {
+    const s=60+hSpread*30, l=p.kind==='core'?68:p.kind==='catalyst'?58:48;
+    return hsl(p.tapeHue,s,l);
+  }
   if (p.kind==='prey')     return hsl(200+hSpread*(Math.sin(p.phase+t*.0003)*80),70,55+Math.sin(p.phase+t*.001)*10);
   if (p.kind==='catalyst') return hsl(270+hSpread*(Math.sin(p.phase)*40),80,60);
   const intensity = Math.min(state.cyc/30,1);
@@ -273,15 +292,19 @@ function stepParticles(dt) {
   const cx=poolCX(),cy=poolCY(),pr=poolR();
   const speedMul=.5+(state.ops-95)/40;
   const rafFrac=Math.min(state.raf/2000,1);
+  const hDrive=Math.min(state.H/3,1);
   for (const p of particles) {
     const i=particles.indexOf(p);
     const preyFrac=1-rafFrac;
     p.kind = i<preyFrac*.65*N?'prey': i<(preyFrac*.65+rafFrac*.25)*N?'catalyst':'core';
+    p.trail.push({x:p.x,y:p.y});
+    if (p.trail.length>6) p.trail.shift();
     p.vx+=(Math.random()-.5)*.0004*speedMul;
     p.vy+=(Math.random()-.5)*.0004*speedMul;
     const px=(p.x-.5)*pr*2, py=(p.y-.5)*pr*2;
     const dist=Math.sqrt(px*px+py*py);
-    const maxD=pr*(p.kind==='core'?.45:p.kind==='catalyst'?.7:.92);
+    const preyOrbit=.65+hDrive*.27;
+    const maxD=pr*(p.kind==='core'?.45:p.kind==='catalyst'?.7:preyOrbit);
     if (dist>maxD) { p.vx-=px/dist*.0003; p.vy-=py/dist*.0003; }
     if (p.kind==='catalyst'&&rafFrac>.3) { p.vx-=px/(dist+1)*rafFrac*.00015; p.vy-=py/(dist+1)*rafFrac*.00015; }
     p.vx*=.97; p.vy*=.97; p.x+=p.vx; p.y+=p.vy;
@@ -290,16 +313,59 @@ function stepParticles(dt) {
 
 function drawParticles(t) {
   const cx=poolCX(),cy=poolCY(),pr=poolR();
+  const catGlow=Math.min(state.cat*4,1);
+  const opsFrac=Math.max(0,Math.min((state.ops-95)/30,1));
   for (const p of particles) {
     const px=cx+(p.x-.5)*pr*2, py=cy+(p.y-.5)*pr*2;
-    const breath=.7+.3*Math.sin(p.phase+t*p.freq*.001);
+    const col=particleColor(p,t);
+    // Velocity trail
+    if (p.trail.length>1) {
+      for (let i=1;i<p.trail.length;i++) {
+        const a=p.trail[i-1],b=p.trail[i];
+        const alpha=(i/p.trail.length)*(p.kind==='prey'?.10:.28);
+        ctx.beginPath();
+        ctx.moveTo(cx+(a.x-.5)*pr*2,cy+(a.y-.5)*pr*2);
+        ctx.lineTo(cx+(b.x-.5)*pr*2,cy+(b.y-.5)*pr*2);
+        ctx.strokeStyle=col.replace(/,\s*[\d.]+\)$/,`,${alpha})`);
+        ctx.lineWidth=p.kind==='prey'?.4:.9; ctx.stroke();
+      }
+    }
+    // Glow bloom driven by cat score
+    if (p.kind!=='prey') {
+      ctx.shadowBlur=6+catGlow*20; ctx.shadowColor=col;
+    }
+    // Pulse amplitude grows with ops/int
+    const breathSwing=.28+opsFrac*.52;
+    const breath=1-breathSwing+breathSwing*Math.abs(Math.sin(p.phase+t*p.freq*.001));
     const r=p.baseR*breath*(p.kind==='core'?2.2:p.kind==='catalyst'?1.6:1);
     ctx.beginPath(); ctx.arc(px,py,r,0,Math.PI*2);
-    ctx.fillStyle=particleColor(p,t); ctx.fill();
+    ctx.fillStyle=col; ctx.fill();
+    ctx.shadowBlur=0;
     if (p.kind!=='prey') {
       ctx.beginPath(); ctx.arc(px,py,r*2.5,0,Math.PI*2);
-      ctx.fillStyle=particleColor(p,t).replace(/,\s*[\d.]+\)$/,',0.08)'); ctx.fill();
+      ctx.fillStyle=col.replace(/,\s*[\d.]+\)$/,',0.08)'); ctx.fill();
     }
+  }
+}
+
+// ── Interaction sparks ─────────────────────────────────────────────────────────
+function drawSparks() {
+  if (state.ops<97) return;
+  const cx=poolCX(),cy=poolCY(),pr=poolR();
+  const cats=particles.filter(p=>p.kind!=='prey');
+  const n=Math.round((state.ops-96)*0.8);
+  for (let iter=0;iter<n&&cats.length>1;iter++) {
+    const i=Math.floor(Math.random()*cats.length);
+    const j=(i+1+Math.floor(Math.random()*(cats.length-1)))%cats.length;
+    const a=cats[i],b=cats[j];
+    const ax=cx+(a.x-.5)*pr*2,ay=cy+(a.y-.5)*pr*2;
+    const bx=cx+(b.x-.5)*pr*2,by=cy+(b.y-.5)*pr*2;
+    const d=Math.hypot(ax-bx,ay-by);
+    if (d>pr*.28) continue;
+    const alpha=(1-d/(pr*.28))*.2;
+    ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by);
+    ctx.strokeStyle=`rgba(180,240,255,${alpha})`;
+    ctx.lineWidth=.5; ctx.stroke();
   }
 }
 
@@ -316,6 +382,7 @@ function frame(now) {
   drawCycRing(t);
   stepParticles(dt);
   drawParticles(t);
+  drawSparks();
   drawShockwaves();
   if (megaLabelTimer>0&&--megaLabelTimer===0) document.getElementById('mega-label').style.opacity='0';
 }
@@ -454,7 +521,7 @@ async function fetchData() {
     if (d.latest) ingestPoint(d.latest);
     updateRatchetHUD();
     if (d.history) drawPhasePortrait(d.history);
-    if (d.sample_tapes) drawGenome(d.sample_tapes);
+    if (d.sample_tapes) { applyTapes(d.sample_tapes); drawGenome(d.sample_tapes); }
   } catch(e) { console.warn('fetch error',e); }
 }
 
