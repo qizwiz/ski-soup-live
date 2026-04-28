@@ -202,6 +202,21 @@ function applyTapes(tapes) {
   }
 }
 
+function applyDistribution(dist) {
+  // dist = [{t:"SSSSSSSS", n:3443}, ...] sorted by count desc (prey first, rare last)
+  // Assign each dot its exact real tape color — common tapes fill low indices (prey),
+  // rarest tapes end up at high indices (core/catalyst).
+  let idx = 0;
+  for (const {t, n} of dist) {
+    const tape = t.split('');
+    const {h,s,l} = tapeToHSL(tape);
+    for (let i=0; i<n && idx<N_POOL; i++, idx++) {
+      const d = dots[idx];
+      d.tape = tape; d.h=h; d.s=s; d.l=l;
+    }
+  }
+}
+
 function updateKinds() {
   const rafFrac = Math.min(state.raf/2000, 1);
   const nCore = Math.max(8, Math.round(rafFrac * N_POOL * 0.006));
@@ -619,7 +634,9 @@ async function fetchData() {
     if (d.latest) ingestPoint(d.latest);
     updateRatchetHUD();
     if (d.history) drawPhasePortrait(d.history);
-    if (d.sample_tapes) { applyTapes(d.sample_tapes); drawGenome(d.sample_tapes); }
+    if (d.tape_distribution) applyDistribution(d.tape_distribution);
+    else if (d.sample_tapes) applyTapes(d.sample_tapes);
+    if (d.sample_tapes) drawGenome(d.sample_tapes);
   } catch(e) { console.warn('fetch error',e); }
 }
 
