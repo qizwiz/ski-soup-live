@@ -15,9 +15,9 @@ canvas { display:block; position:fixed; inset:0; }
   display:flex; gap:6px; z-index:30; pointer-events:all;
 }
 .vt-btn {
-  font:700 8px 'Space Mono',monospace; letter-spacing:.1em; text-transform:uppercase;
-  padding:4px 10px; border:1px solid rgba(80,60,160,0.5); border-radius:3px;
-  background:rgba(0,0,16,0.85); color:rgba(140,120,220,0.7); cursor:pointer;
+  font:700 10px 'Space Mono',monospace; letter-spacing:.08em; text-transform:uppercase;
+  padding:5px 12px; border:1px solid rgba(80,60,160,0.5); border-radius:3px;
+  background:rgba(0,0,16,0.85); color:rgba(160,140,235,0.85); cursor:pointer;
   transition:all .15s;
 }
 .vt-btn.active { background:rgba(80,40,160,0.4); color:#c090ff; border-color:rgba(160,80,255,0.7); }
@@ -35,14 +35,14 @@ canvas { display:block; position:fixed; inset:0; }
   pointer-events:none; z-index:10;
 }
 .hud-item { display:flex; flex-direction:column; }
-.hud-label { font-size:9px; color:rgba(180,210,255,0.95); text-transform:uppercase; letter-spacing:.12em; margin-bottom:3px; text-shadow:0 1px 4px rgba(0,0,20,0.9); }
-.hud-val { font-size:15px; font-weight:700; text-shadow:0 0 12px currentColor, 0 1px 3px rgba(0,0,0,0.9); }
+.hud-label { font-size:11px; color:rgba(210,228,255,1.0); text-transform:uppercase; letter-spacing:.12em; margin-bottom:3px; text-shadow:0 1px 8px rgba(0,0,40,1.0); }
+.hud-val { font-size:19px; font-weight:700; text-shadow:0 0 16px currentColor, 0 1px 5px rgba(0,0,0,1.0); }
 #ops-v  { color:#ffb050; }
 #H-v    { color:#50dcff; }
 #raf-v  { color:#70ff90; }
 #cyc-v  { color:#f070ff; }
-#epoch-v{ color:#9090ff; font-size:13px; }
-#rate-v { color:rgba(200,165,255,0.95); font-size:12px; }
+#epoch-v{ color:#b0b8ff; font-size:15px; }
+#rate-v { color:rgba(220,185,255,1.0); font-size:14px; }
 
 #side {
   position:fixed; right:0; top:48px; bottom:80px;
@@ -55,14 +55,15 @@ canvas { display:block; position:fixed; inset:0; }
   pointer-events:none;
 }
 @media(max-width:600px){ #side{ display:none; } }
-.side-label { font-size:9px; color:rgba(180,210,255,0.95); text-transform:uppercase; letter-spacing:.1em; margin-bottom:4px; line-height:1.4; text-shadow:0 1px 4px rgba(0,0,20,0.9); }
+.side-label { font-size:10px; color:rgba(210,228,255,1.0); text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; line-height:1.5; text-shadow:0 1px 6px rgba(0,0,40,1.0); }
 #phase-canvas { width:250px; height:180px; }
 #genome-canvas { width:250px; height:130px; }
 
 #updated {
-  position:fixed; top:10px; right:286px;
-  font-size:9px; color:rgba(100,100,160,0.6);
+  position:fixed; top:11px; right:286px;
+  font-size:10px; color:rgba(170,182,230,0.95);
   pointer-events:none; z-index:10;
+  text-shadow:0 1px 4px rgba(0,0,20,0.9);
 }
 
 #mega-label {
@@ -77,37 +78,39 @@ canvas { display:block; position:fixed; inset:0; }
 #panel {
   position:fixed; bottom:0; left:0; right:0;
   padding:12px 20px 14px;
-  background:linear-gradient(to top,rgba(0,0,12,0.95) 60%,transparent 100%);
+  background:linear-gradient(to top,rgba(0,0,14,0.98) 50%,rgba(0,0,10,0.8) 80%,transparent 100%);
   z-index:10; pointer-events:none;
 }
 #charges {
-  font-size:9px; color:rgba(180,100,255,0.8);
-  letter-spacing:.08em; margin-bottom:6px;
+  font-size:10px; color:rgba(220,145,255,0.98);
+  letter-spacing:.07em; margin-bottom:6px;
+  text-shadow:0 1px 4px rgba(0,0,20,0.9);
 }
 #story {
-  font-size:11px; line-height:1.7;
-  color:rgba(195,210,248,0.95);
-  max-width:700px;
-  text-shadow:0 1px 3px rgba(0,0,16,0.95);
+  font-size:13px; line-height:1.75;
+  color:rgba(220,232,255,1.0);
+  max-width:720px;
+  text-shadow:0 1px 5px rgba(0,0,20,1.0);
 }
-#story strong { color:rgba(230,195,255,0.99); }
+#story strong { color:rgba(245,215,255,1.0); }
 
 #ratchet {
   position:fixed; bottom:14px; right:20px;
-  font-size:10px; color:rgba(180,155,225,0.95);
+  font-size:11px; color:rgba(218,195,255,1.0);
   pointer-events:none; z-index:11; text-align:right;
-  line-height:1.6; text-shadow:0 1px 4px rgba(0,0,16,0.95);
+  line-height:1.7; text-shadow:0 1px 5px rgba(0,0,20,0.95);
 }
-#ratchet span { color:rgba(220,175,255,0.99); text-shadow:0 0 8px rgba(180,80,255,0.5); }
+#ratchet span { color:rgba(230,185,255,1.0); text-shadow:0 0 10px rgba(180,80,255,0.55); }
 
 #subtitle {
-  position:fixed; top:0; left:0; right:0;
+  position:fixed; top:54px; left:0; right:0;
   text-align:center;
-  padding-top:11px;
-  font-family:'Syne',sans-serif; font-size:10px; font-weight:400; letter-spacing:.22em;
+  padding:4px 20px;
+  font-family:'Syne',sans-serif; font-size:12px; font-weight:400; letter-spacing:.16em;
   text-transform:uppercase;
-  color:rgba(130,155,220,0.55);
-  pointer-events:none; z-index:9;
+  color:rgba(185,210,255,0.90);
+  text-shadow:0 1px 10px rgba(0,0,40,1.0), 0 0 28px rgba(80,60,180,0.35);
+  pointer-events:none; z-index:12;
 }
 </style>
 </head>
@@ -116,14 +119,16 @@ canvas { display:block; position:fixed; inset:0; }
 <canvas id="ts-canvas"></canvas>
 <canvas id="gr-canvas"></canvas>
 <canvas id="hist-canvas"></canvas>
+<canvas id="chem-canvas" style="display:none; position:fixed; inset:0; background:#000008; z-index:5;"></canvas>
 
-<div id="subtitle">4096 SKI combinator programs evolving toward autocatalysis — a digital abiogenesis experiment</div>
+<div id="subtitle">Can random programs bootstrap life? · 4096 SKI combinators competing for replication — live abiogenesis</div>
 
 <div id="view-toggle">
   <button class="vt-btn active" id="btn-pool" onclick="setView('pool')">Pool</button>
   <button class="vt-btn" id="btn-tape" onclick="setView('tape')">Tape Space</button>
   <button class="vt-btn" id="btn-graph" onclick="setView('graph')">Graph</button>
   <button class="vt-btn" id="btn-hist" onclick="setView('hist')">History</button>
+  <button class="vt-btn" id="btn-chem" onclick="setView('chem')">Chem</button>
 </div>
 
 <div id="hud">
@@ -586,7 +591,7 @@ function drawPhasePortrait(history, hFloor) {
     phaseCtx.beginPath(); phaseCtx.moveTo(padL,ceilY); phaseCtx.lineTo(CW-padR,ceilY);
     phaseCtx.strokeStyle='rgba(255,160,60,0.35)'; phaseCtx.lineWidth=1; phaseCtx.stroke();
     phaseCtx.setLineDash([]);
-    phaseCtx.fillStyle='rgba(255,160,60,0.5)'; phaseCtx.font='7px monospace';
+    phaseCtx.fillStyle='rgba(255,160,60,0.5)'; phaseCtx.font='9px monospace';
     phaseCtx.fillText('121 ceiling',padL+2,ceilY-3);
   }
   const step=Math.max(1,Math.round((opsMax-opsMin)/4));
@@ -594,7 +599,7 @@ function drawPhasePortrait(history, hFloor) {
     const y=toY(v);
     phaseCtx.beginPath(); phaseCtx.moveTo(padL,y); phaseCtx.lineTo(CW-padR,y);
     phaseCtx.strokeStyle='rgba(50,55,90,0.5)'; phaseCtx.lineWidth=.5; phaseCtx.stroke();
-    phaseCtx.fillStyle='rgba(110,120,180,0.7)'; phaseCtx.font='8px monospace';
+    phaseCtx.fillStyle='rgba(110,120,180,0.7)'; phaseCtx.font='10px monospace';
     phaseCtx.textAlign='right'; phaseCtx.fillText(v,padL-3,y+3);
   }
   phaseCtx.beginPath();
@@ -615,7 +620,7 @@ function drawPhasePortrait(history, hFloor) {
   const ccx=toX(ops.length-1), ccy=toY(cur);
   phaseCtx.beginPath(); phaseCtx.arc(ccx,ccy,5,0,Math.PI*2);
   phaseCtx.fillStyle='rgba(255,220,60,0.95)'; phaseCtx.fill();
-  phaseCtx.fillStyle='rgba(255,220,60,0.9)'; phaseCtx.font='bold 9px monospace';
+  phaseCtx.fillStyle='rgba(255,220,60,0.9)'; phaseCtx.font='bold 11px monospace';
   phaseCtx.textAlign='right'; phaseCtx.fillText(cur.toFixed(1),CW-padR,padT+10);
   // H ratchet floor line
   if (hFloor != null) {
@@ -633,10 +638,10 @@ function drawPhasePortrait(history, hFloor) {
     phaseCtx.beginPath(); phaseCtx.moveTo(padL,floorY); phaseCtx.lineTo(CW-padR,floorY);
     phaseCtx.strokeStyle='rgba(64,220,255,0.55)'; phaseCtx.lineWidth=1; phaseCtx.setLineDash([2,5]); phaseCtx.stroke();
     phaseCtx.setLineDash([]);
-    phaseCtx.fillStyle='rgba(64,220,255,0.8)'; phaseCtx.font='7px monospace';
+    phaseCtx.fillStyle='rgba(64,220,255,0.8)'; phaseCtx.font='9px monospace';
     phaseCtx.textAlign='right'; phaseCtx.fillText('H⌊'+hFloor.toFixed(3),CW-padR,floorY-2);
   }
-  phaseCtx.fillStyle='rgba(100,140,200,0.5)'; phaseCtx.font='7px monospace';
+  phaseCtx.fillStyle='rgba(100,140,200,0.5)'; phaseCtx.font='9px monospace';
   phaseCtx.textAlign='center'; phaseCtx.fillText('ops/int — reductions per interaction',CW/2+padL/2,CH-4);
   phaseCtx.textAlign='left';
 }
@@ -660,9 +665,9 @@ function drawGenome(tapes) {
     const barW=Math.round(frac*barArea);
     genomeCtx.fillStyle='rgba(30,32,50,0.7)'; genomeCtx.fillRect(padL,y+3,barArea,rowH-6);
     genomeCtx.fillStyle=TAPE_COLORS[c]; genomeCtx.fillRect(padL,y+3,barW,rowH-6);
-    genomeCtx.fillStyle='rgba(200,210,240,0.85)'; genomeCtx.font='8px monospace';
+    genomeCtx.fillStyle='rgba(200,210,240,0.85)'; genomeCtx.font='10px monospace';
     genomeCtx.textAlign='right'; genomeCtx.fillText(COMB_NAMES[c],padL-4,y+rowH/2+3);
-    genomeCtx.fillStyle='rgba(220,230,255,0.7)'; genomeCtx.font='8px monospace';
+    genomeCtx.fillStyle='rgba(220,230,255,0.7)'; genomeCtx.font='10px monospace';
     genomeCtx.textAlign='left'; genomeCtx.fillText((frac*100).toFixed(0)+'%',padL+barW+3,y+rowH/2+3);
   });
   genomeCtx.textAlign='left';
@@ -713,7 +718,7 @@ async function fetchData() {
       applyDistribution(d.tape_distribution);
       if (currentView==='tape') drawTapeSpace(d.tape_distribution);
     } else if (d.sample_tapes) applyTapes(d.sample_tapes);
-    if (d.sample_tapes) drawGenome(d.sample_tapes);
+    if (d.sample_tapes) { drawGenome(d.sample_tapes); lastSampleTapes = d.sample_tapes; if (currentView==='chem') startChemLambda(d.sample_tapes); }
   } catch(e) { console.warn('fetch error',e); }
 }
 
@@ -735,14 +740,28 @@ function setView(v) {
   document.getElementById('btn-tape').classList.toggle('active',  v==='tape');
   document.getElementById('btn-graph').classList.toggle('active', v==='graph');
   document.getElementById('btn-hist').classList.toggle('active',  v==='hist');
+  document.getElementById('btn-chem').classList.toggle('active',  v==='chem');
   document.getElementById('c').style.display    = v==='pool'  ? '' : 'none';
   tsCanvas.style.display   = v==='tape'  ? 'block' : 'none';
   grCanvas.style.display   = v==='graph' ? 'block' : 'none';
   histCanvas.style.display = v==='hist'  ? 'block' : 'none';
+  chemCanvas.style.display = v==='chem'  ? 'block' : 'none';
   document.getElementById('side').style.display = v==='pool'  ? '' : 'none';
-  if (v==='tape'  && lastDist)    drawTapeSpace(lastDist);
-  if (v==='graph' && lastGraph)   drawPoincareGraph(lastGraph);
-  if (v==='hist'  && lastHistory) drawHistoryView(lastHistory);
+  if (v==='tape'  && lastDist)        drawTapeSpace(lastDist);
+  if (v==='graph' && lastGraph)       drawPoincareGraph(lastGraph);
+  if (v==='hist'  && lastHistory)     drawHistoryView(lastHistory);
+  if (v==='chem') {
+    if (lastSampleTapes) {
+      startChemLambda(lastSampleTapes);
+    } else {
+      chemCanvas.width = window.innerWidth; chemCanvas.height = window.innerHeight;
+      chemCtx.fillStyle='#000008'; chemCtx.fillRect(0,0,chemCanvas.width,chemCanvas.height);
+      chemCtx.fillStyle='rgba(120,100,180,0.6)'; chemCtx.font='13px SF Mono,monospace';
+      chemCtx.textAlign='center'; chemCtx.textBaseline='middle';
+      chemCtx.fillText('Loading combinator trees…', chemCanvas.width/2, chemCanvas.height/2);
+      fetchData();
+    }
+  }
 }
 
 // ── Tape Space ─────────────────────────────────────────────────────────────────
@@ -764,7 +783,7 @@ function drawTapeSpace(dist) {
     tsCtx.strokeStyle='rgba(40,45,80,0.6)'; tsCtx.lineWidth=.5; tsCtx.stroke();
     tsCtx.beginPath(); tsCtx.moveTo(padL, y); tsCtx.lineTo(padL+plotW, y);
     tsCtx.stroke();
-    tsCtx.fillStyle='rgba(80,90,140,0.6)'; tsCtx.font='8px SF Mono,monospace';
+    tsCtx.fillStyle='rgba(80,90,140,0.6)'; tsCtx.font='10px SF Mono,monospace';
     tsCtx.textAlign='center';
     tsCtx.fillText((v*100).toFixed(0)+'%', x, padT+plotH+14);
     tsCtx.textAlign='right';
@@ -772,7 +791,7 @@ function drawTapeSpace(dist) {
   }
 
   // Axis labels
-  tsCtx.fillStyle='rgba(100,140,200,0.6)'; tsCtx.font='9px SF Mono,monospace';
+  tsCtx.fillStyle='rgba(100,140,200,0.6)'; tsCtx.font='10px SF Mono,monospace';
   tsCtx.textAlign='center';
   tsCtx.fillText('← diverse  ·  S fraction  ·  prey →', padL + plotW/2, padT+plotH+30);
   tsCtx.save(); tsCtx.translate(16, padT+plotH/2);
@@ -786,7 +805,7 @@ function drawTapeSpace(dist) {
   tsCtx.fillText('TAPE SPACE  ·  each point = one tape type  ·  size = log(population)', padL, 22);
 
   // Corner labels
-  tsCtx.fillStyle='rgba(60,200,90,0.5)'; tsCtx.font='8px SF Mono,monospace';
+  tsCtx.fillStyle='rgba(60,200,90,0.5)'; tsCtx.font='10px SF Mono,monospace';
   tsCtx.textAlign='right';
   tsCtx.fillText('SSSSSSSS (prey)', padL+plotW-4, padT+plotH-6);
   tsCtx.fillStyle='rgba(60,120,220,0.5)';
@@ -836,12 +855,12 @@ function drawTapeSpace(dist) {
   tsCtx.setLineDash([]);
   tsCtx.beginPath(); tsCtx.arc(centX,centY,4,0,Math.PI*2);
   tsCtx.fillStyle='rgba(255,220,60,0.9)'; tsCtx.fill();
-  tsCtx.fillStyle='rgba(255,220,60,0.8)'; tsCtx.font='8px SF Mono,monospace';
+  tsCtx.fillStyle='rgba(255,220,60,0.8)'; tsCtx.font='10px SF Mono,monospace';
   tsCtx.textAlign='left';
   tsCtx.fillText(`centroid  H=${state.H.toFixed(3)}`, centX+8, centY-6);
 
   // Unique count
-  tsCtx.fillStyle='rgba(100,140,200,0.5)'; tsCtx.font='8px SF Mono,monospace';
+  tsCtx.fillStyle='rgba(100,140,200,0.5)'; tsCtx.font='10px SF Mono,monospace';
   tsCtx.textAlign='right';
   tsCtx.fillText(`${dist.length} unique tapes  ·  ${totalN} total`, padL+plotW, padT-8);
 }
@@ -884,7 +903,7 @@ function drawHistoryView(history) {
     const y = toYH(v);
     histCtx.beginPath(); histCtx.moveTo(padL, y); histCtx.lineTo(padL + plotW, y);
     histCtx.strokeStyle = 'rgba(40,50,90,0.5)'; histCtx.lineWidth = 0.5; histCtx.stroke();
-    histCtx.fillStyle = 'rgba(140,165,220,0.85)'; histCtx.font = '9px Space Mono,monospace';
+    histCtx.fillStyle = 'rgba(140,165,220,0.85)'; histCtx.font = '10px Space Mono,monospace';
     histCtx.textAlign = 'right'; histCtx.fillText(v.toFixed(2), padL - 5, y + 3);
   }
 
@@ -894,7 +913,7 @@ function drawHistoryView(history) {
     histCtx.beginPath(); histCtx.moveTo(x, padT); histCtx.lineTo(x, panH_top - padB);
     histCtx.strokeStyle = 'rgba(80,190,255,0.3)'; histCtx.lineWidth = 1;
     histCtx.setLineDash([3,4]); histCtx.stroke(); histCtx.setLineDash([]);
-    histCtx.fillStyle = 'rgba(80,200,255,0.85)'; histCtx.font = '7px Space Mono,monospace';
+    histCtx.fillStyle = 'rgba(80,200,255,0.85)'; histCtx.font = '10px Space Mono,monospace';
     histCtx.textAlign = 'center';
     histCtx.fillText('H⌊' + p.H.toFixed(3), x, panH_top - padB + 13);
   }
@@ -903,7 +922,7 @@ function drawHistoryView(history) {
     histCtx.beginPath(); histCtx.moveTo(x, padT); histCtx.lineTo(x, panH_top - padB);
     histCtx.strokeStyle = 'rgba(80,255,130,0.25)'; histCtx.lineWidth = 1;
     histCtx.setLineDash([3,4]); histCtx.stroke(); histCtx.setLineDash([]);
-    histCtx.fillStyle = 'rgba(100,255,150,0.85)'; histCtx.font = '7px Space Mono,monospace';
+    histCtx.fillStyle = 'rgba(100,255,150,0.85)'; histCtx.font = '10px Space Mono,monospace';
     histCtx.textAlign = 'center';
     histCtx.fillText('H⌈' + p.H.toFixed(3), x, padT - 5);
   }
@@ -929,7 +948,7 @@ function drawHistoryView(history) {
   histCtx.beginPath(); histCtx.arc(toX(Hs.length-1), toYH(Hs[Hs.length-1]), 6, 0, Math.PI*2);
   histCtx.fillStyle = 'rgba(255,220,60,0.95)'; histCtx.fill();
 
-  histCtx.fillStyle = 'rgba(80,210,255,0.9)'; histCtx.font = 'bold 11px Space Mono,monospace';
+  histCtx.fillStyle = 'rgba(80,210,255,0.9)'; histCtx.font = 'bold 13px Space Mono,monospace';
   histCtx.textAlign = 'left'; histCtx.fillText('ENTROPY  H  ·  compression ↓  dispersal ↑', padL, 24);
 
   // ── Bottom panel: RAF ─────────────────────────────────────────────────────
@@ -946,7 +965,7 @@ function drawHistoryView(history) {
     const y = toYR(v);
     histCtx.beginPath(); histCtx.moveTo(padL, y); histCtx.lineTo(padL + plotW, y);
     histCtx.strokeStyle = 'rgba(40,50,90,0.5)'; histCtx.lineWidth = 0.5; histCtx.stroke();
-    histCtx.fillStyle = 'rgba(140,165,220,0.85)'; histCtx.font = '9px Space Mono,monospace';
+    histCtx.fillStyle = 'rgba(140,165,220,0.85)'; histCtx.font = '10px Space Mono,monospace';
     histCtx.textAlign = 'right'; histCtx.fillText(v.toFixed(0), padL - 5, y + 3);
   }
 
@@ -999,7 +1018,7 @@ function drawHistoryView(history) {
   histCtx.beginPath(); histCtx.arc(toX(RAFs.length-1), toYR(RAFs[RAFs.length-1]), 6, 0, Math.PI*2);
   histCtx.fillStyle = 'rgba(255,220,60,0.95)'; histCtx.fill();
 
-  histCtx.fillStyle = 'rgba(90,255,130,0.9)'; histCtx.font = 'bold 11px Space Mono,monospace';
+  histCtx.fillStyle = 'rgba(90,255,130,0.9)'; histCtx.font = 'bold 13px Space Mono,monospace';
   histCtx.textAlign = 'left'; histCtx.fillText('RAF  ·  autocatalytic core strength  ·  dashed = ratchet floor', padL, botY0 + 16);
 
   // ── Shared epoch axis ─────────────────────────────────────────────────────
@@ -1017,12 +1036,12 @@ function drawHistoryView(history) {
   const rowH = 13;
   function rLine(txt, color) {
     histCtx.fillStyle = color || 'rgba(190,200,240,0.9)';
-    histCtx.font = '9px Space Mono,monospace';
+    histCtx.font = '10px Space Mono,monospace';
     histCtx.textAlign = 'left';
     histCtx.fillText(txt, rx, ry); ry += rowH;
   }
   function rHead(txt) {
-    histCtx.fillStyle = 'rgba(180,140,255,0.95)'; histCtx.font = 'bold 10px Space Mono,monospace';
+    histCtx.fillStyle = 'rgba(180,140,255,0.95)'; histCtx.font = 'bold 13px Space Mono,monospace';
     histCtx.textAlign = 'left'; histCtx.fillText(txt, rx, ry); ry += rowH + 2;
   }
 
@@ -1136,7 +1155,7 @@ function drawPoincareGraph(nodes) {
   grCtx.fillStyle='rgba(160,120,255,0.8)'; grCtx.font='bold 11px SF Mono,monospace';
   grCtx.textAlign='left';
   grCtx.fillText('POINCARÉ DISK  ·  actual graph topology  ·  center = most connected', 20, 22);
-  grCtx.fillStyle='rgba(100,140,200,0.5)'; grCtx.font='8px SF Mono,monospace';
+  grCtx.fillStyle='rgba(100,140,200,0.5)'; grCtx.font='10px SF Mono,monospace';
   grCtx.fillText(`${connected.length} connected  ·  ${boundary.length} isolated  ·  center node = max degree ${Math.max(...nodes.map(n=>n.d))}`, 20, 36);
 
   // Center crosshair
@@ -1147,6 +1166,119 @@ function drawPoincareGraph(nodes) {
     grCtx.beginPath(); grCtx.moveTo(cx,cy-diskR*.95); grCtx.lineTo(cx,cy+diskR*.95); grCtx.stroke();
     grCtx.setLineDash([]);
   }
+}
+
+// ── ChemLambda View ───────────────────────────────────────────────────────────
+const chemCanvas = document.getElementById('chem-canvas');
+const chemCtx = chemCanvas.getContext('2d');
+let lastSampleTapes = null;
+let chemNodes = [], chemEdges = [];
+let chemAnimId = null;
+
+const CHEM_COL  = { S:'#9060ff', K:'#ff7030', I:'#30d8b0', W:'#ff9020', B:'#50d060', '@':'rgba(90,70,140,0.7)' };
+const CHEM_GLOW = { S:'rgba(144,96,255,0.25)', K:'rgba(255,112,48,0.25)', I:'rgba(48,216,176,0.25)',
+                    W:'rgba(255,144,32,0.25)', B:'rgba(80,208,96,0.25)', '@':'rgba(0,0,0,0)' };
+
+function parseTapeTree(tape, ox, oy) {
+  const ns = [], es = [];
+  let nid = 0;
+  const mkLeaf = ch => { const n={id:nid++,type:ch,isApp:false,x:ox+(Math.random()-.5)*50,y:oy+(Math.random()-.5)*50,vx:0,vy:0}; ns.push(n); return n.id; };
+  const mkApp  = (l,r) => { const n={id:nid++,type:'@',isApp:true,x:ox+(Math.random()-.5)*20,y:oy+(Math.random()-.5)*20,vx:0,vy:0}; ns.push(n); es.push({a:n.id,b:l,side:'L'}); es.push({a:n.id,b:r,side:'R'}); return n.id; };
+  let cur = mkLeaf(tape[0]);
+  for (let i=1; i<tape.length; i++) cur = mkApp(cur, mkLeaf(tape[i]));
+  return {ns, es};
+}
+
+function buildChemGraph(tapes) {
+  const W = chemCanvas.width = window.innerWidth;
+  const H = chemCanvas.height = window.innerHeight;
+  const counts = {};
+  for (const t of tapes) counts[t] = (counts[t]||0)+1;
+  const uniq = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  chemNodes = []; chemEdges = [];
+  const cols = Math.ceil(Math.sqrt(uniq.length * 1.5));
+  const rows = Math.ceil(uniq.length / cols);
+  const cw = W/(cols+1), ch = H/(rows+1);
+  uniq.forEach(([tape, freq], i) => {
+    const ox = cw*((i%cols)+1), oy = ch*(Math.floor(i/cols)+1);
+    const {ns, es} = parseTapeTree(tape, ox, oy);
+    const off = chemNodes.length;
+    for (const n of ns) { n.id+=off; n.freq=freq; chemNodes.push(n); }
+    for (const e of es) { e.a+=off; e.b+=off; chemEdges.push(e); }
+  });
+}
+
+function stepChem() {
+  const K=0.032, REST=58, REP=2200, DAMP=0.87, GRAV=0.0009;
+  const cx=chemCanvas.width/2, cy=chemCanvas.height/2;
+  for (const n of chemNodes) { n.fx=0; n.fy=0; }
+  for (const e of chemEdges) {
+    const a=chemNodes[e.a], b=chemNodes[e.b]; if(!a||!b) continue;
+    const dx=b.x-a.x, dy=b.y-a.y, d=Math.sqrt(dx*dx+dy*dy)||1;
+    const f=K*(d-REST); const fx=f*dx/d, fy=f*dy/d;
+    a.fx+=fx; a.fy+=fy; b.fx-=fx; b.fy-=fy;
+  }
+  for (let i=0;i<chemNodes.length;i++) for (let j=i+1;j<chemNodes.length;j++) {
+    const a=chemNodes[i], b=chemNodes[j];
+    const dx=b.x-a.x, dy=b.y-a.y, d2=dx*dx+dy*dy+80, d=Math.sqrt(d2);
+    const f=REP/d2; const fx=f*dx/d, fy=f*dy/d;
+    a.fx-=fx; a.fy-=fy; b.fx+=fx; b.fy+=fy;
+  }
+  for (const n of chemNodes) {
+    n.fx -= GRAV*(n.x-cx); n.fy -= GRAV*(n.y-cy);
+    n.vx = (n.vx+n.fx)*DAMP; n.vy = (n.vy+n.fy)*DAMP;
+    n.x += n.vx; n.y += n.vy;
+  }
+}
+
+function drawChemFrame() {
+  const W=chemCanvas.width, H=chemCanvas.height;
+  chemCtx.fillStyle='#000008'; chemCtx.fillRect(0,0,W,H);
+  // edges
+  for (const e of chemEdges) {
+    const a=chemNodes[e.a], b=chemNodes[e.b]; if(!a||!b) continue;
+    chemCtx.beginPath(); chemCtx.moveTo(a.x,a.y); chemCtx.lineTo(b.x,b.y);
+    chemCtx.strokeStyle = b.isApp ? 'rgba(60,50,100,0.35)' : CHEM_GLOW[b.type];
+    chemCtx.lineWidth = e.side==='L' ? 1.5 : 0.8;
+    chemCtx.stroke();
+  }
+  // nodes
+  for (const n of chemNodes) {
+    const r = n.isApp ? 3.5 : Math.max(6, 6 + Math.log(n.freq+1)*2);
+    if (!n.isApp) {
+      const g=chemCtx.createRadialGradient(n.x,n.y,0,n.x,n.y,r*3.5);
+      g.addColorStop(0, CHEM_GLOW[n.type]); g.addColorStop(1,'rgba(0,0,0,0)');
+      chemCtx.beginPath(); chemCtx.arc(n.x,n.y,r*3.5,0,Math.PI*2);
+      chemCtx.fillStyle=g; chemCtx.fill();
+    }
+    chemCtx.beginPath(); chemCtx.arc(n.x,n.y,r,0,Math.PI*2);
+    chemCtx.fillStyle=CHEM_COL[n.type]||'#888'; chemCtx.fill();
+    if (!n.isApp) {
+      chemCtx.fillStyle='#00000a'; chemCtx.font='bold 8px monospace';
+      chemCtx.textAlign='center'; chemCtx.textBaseline='middle';
+      chemCtx.fillText(n.type,n.x,n.y);
+    }
+  }
+  // header
+  chemCtx.fillStyle='rgba(120,100,180,0.75)'; chemCtx.font='11px SF Mono,monospace';
+  chemCtx.textAlign='left'; chemCtx.textBaseline='top';
+  chemCtx.fillText('CHEMLAMBDA  ·  live combinator trees  ·  force-directed  ·  left-edge=thick',20,20);
+  chemCtx.fillStyle='rgba(80,70,110,0.55)'; chemCtx.font='10px SF Mono,monospace';
+  chemCtx.fillText('each tree = one unique tape  ·  node size ∝ frequency  ·  @ = application',20,35);
+  const leg=[['S','#9060ff'],['K','#ff7030'],['I','#30d8b0'],['W','#ff9020'],['B','#50d060']];
+  leg.forEach(([l,c],i)=>{ chemCtx.fillStyle=c; chemCtx.fillText(l,20+i*28,50); });
+}
+
+function chemLoop() {
+  if (currentView!=='chem') { chemAnimId=null; return; }
+  stepChem(); drawChemFrame();
+  chemAnimId = requestAnimationFrame(chemLoop);
+}
+
+function startChemLambda(tapes) {
+  if (chemAnimId) cancelAnimationFrame(chemAnimId);
+  buildChemGraph(tapes);
+  chemLoop();
 }
 
 fetchData();

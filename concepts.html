@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SKI Soup — Viz Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#000; color:#fff; font-family:'Space Mono',monospace; height:100vh; overflow:hidden; }
+
+/* ── Nav ── */
+#nav {
+  position:fixed; top:0; left:0; right:0; height:46px;
+  display:flex; align-items:center; gap:4px; padding:0 24px;
+  background:rgba(0,0,10,0.98); border-bottom:1px solid rgba(80,60,160,0.3);
+  z-index:100;
+}
+.nav-title {
+  font-family:'Syne',sans-serif; font-size:11px; font-weight:800;
+  letter-spacing:.28em; text-transform:uppercase; color:rgba(140,175,235,0.45);
+  margin-right:24px;
+}
+.tab-btn {
+  font-family:'Space Mono',monospace; font-size:9px; font-weight:700;
+  letter-spacing:.14em; text-transform:uppercase;
+  padding:6px 18px; border:1px solid rgba(80,60,160,0.4); border-radius:3px;
+  background:transparent; color:rgba(130,110,190,0.6); cursor:pointer;
+  transition:all .15s;
+}
+.tab-btn.active { background:rgba(80,40,160,0.3); color:#c090ff; border-color:rgba(160,80,255,0.65); }
+.tab-btn:hover:not(.active) { color:#a070e0; }
+.concept-desc {
+  margin-left:auto; margin-right:8px;
+  font-size:9px; color:rgba(120,140,200,0.45); letter-spacing:.06em;
+  max-width:360px; text-align:right;
+}
+
+/* ── Panels ── */
+.panel { position:fixed; top:46px; left:0; right:0; bottom:0; display:none; }
+.panel.active { display:flex; }
+
+/* ── A: Microscope ── */
+#panel-a { flex-direction:row; }
+#pool-a-wrap { flex:1; position:relative; overflow:hidden; }
+#pool-canvas-a { width:100%; height:100%; display:block; }
+#pool-hint-a {
+  position:absolute; bottom:16px; left:20px;
+  font-size:8px; letter-spacing:.12em; text-transform:uppercase;
+  color:rgba(130,150,210,0.4); pointer-events:none;
+}
+#micro {
+  width:360px; background:rgba(0,0,14,0.97);
+  border-left:1px solid rgba(80,60,160,0.22);
+  display:flex; flex-direction:column; gap:0; overflow:hidden;
+}
+.micro-section { padding:18px 20px; border-bottom:1px solid rgba(60,50,120,0.2); }
+.micro-label {
+  font-size:8px; letter-spacing:.15em; text-transform:uppercase;
+  color:rgba(140,175,235,0.65); margin-bottom:10px;
+}
+.tape-strip { display:flex; gap:4px; flex-wrap:wrap; }
+.tape-cell {
+  width:30px; height:30px; border-radius:5px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; color:#000;
+  transition:all .3s; flex-shrink:0;
+}
+#tree-svg { width:100%; height:210px; display:block; }
+.interact-btn {
+  width:100%; padding:10px;
+  border:1px solid rgba(160,80,255,0.5); border-radius:4px;
+  background:rgba(70,35,140,0.18); color:#b880ff;
+  font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.14em;
+  text-transform:uppercase; cursor:pointer; transition:all .15s;
+}
+.interact-btn:hover { background:rgba(70,35,140,0.38); border-color:rgba(180,100,255,0.8); }
+.result-label {
+  font-size:8px; letter-spacing:.12em; text-transform:uppercase;
+  color:rgba(100,200,140,0.7); margin-bottom:10px;
+}
+
+/* ── B: Feed ── */
+#panel-b { flex-direction:column; }
+#pool-b-wrap { height:170px; flex-shrink:0; position:relative; border-bottom:1px solid rgba(80,60,160,0.2); }
+#pool-canvas-b { width:100%; height:100%; display:block; }
+#pool-b-label {
+  position:absolute; top:12px; left:16px;
+  font-size:8px; letter-spacing:.12em; text-transform:uppercase;
+  color:rgba(130,150,210,0.4); pointer-events:none;
+}
+#feed-wrap { flex:1; overflow:hidden; position:relative; }
+#feed-header {
+  padding:10px 20px 6px;
+  font-size:8px; letter-spacing:.14em; text-transform:uppercase;
+  color:rgba(140,175,235,0.5); border-bottom:1px solid rgba(60,50,120,0.15);
+  display:flex; gap:20px;
+}
+#feed-list {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:8px 20px 14px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.feed-row {
+  display:flex; align-items:center; gap:10px;
+  opacity:0; animation:riseIn .4s forwards;
+}
+@keyframes riseIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.feed-tape { display:flex; gap:2px; }
+.feed-cell {
+  width:18px; height:18px; border-radius:3px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:7px; font-weight:700; color:#000;
+}
+.feed-sep { font-size:11px; color:rgba(140,120,200,0.5); }
+.feed-arrow { font-size:13px; color:rgba(200,100,255,0.8); }
+.feed-epoch { font-size:8px; color:rgba(100,120,180,0.4); min-width:50px; text-align:right; }
+.feed-rule { font-size:8px; color:rgba(100,180,120,0.6); min-width:30px; }
+
+/* ── C: Chemlambda ── */
+#panel-c { }
+#chem-canvas { width:100%; height:100%; display:block; }
+#chem-hud {
+  position:fixed; bottom:18px; left:20px;
+  font-size:9px; line-height:1.8;
+  color:rgba(120,140,200,0.5); pointer-events:none;
+}
+#chem-hud span { color:rgba(190,150,255,0.9); }
+#chem-legend {
+  position:fixed; bottom:18px; right:20px;
+  display:flex; flex-direction:column; gap:5px; pointer-events:none;
+}
+.legend-row { display:flex; align-items:center; gap:8px; font-size:8px; letter-spacing:.08em; color:rgba(120,140,200,0.5); }
+.legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<div id="nav">
+  <div class="nav-title">SKI SOUP · VIZ CONCEPTS</div>
+  <button class="tab-btn active" id="btn-a" onclick="switchTab('a',this)">A · MICROSCOPE</button>
+  <button class="tab-btn" id="btn-b" onclick="switchTab('b',this)">B · LIVE FEED</button>
+  <button class="tab-btn" id="btn-c" onclick="switchTab('c',this)">C · CHEMLAMBDA</button>
+  <div class="concept-desc" id="concept-desc">Click any dot — inspect its tape as a combinator tree — trigger an interaction and watch the graph rewrite.</div>
+</div>
+
+<!-- A: MICROSCOPE -->
+<div class="panel active" id="panel-a">
+  <div id="pool-a-wrap">
+    <canvas id="pool-canvas-a"></canvas>
+    <div id="pool-hint-a">click any dot to inspect</div>
+  </div>
+  <div id="micro">
+    <div class="micro-section">
+      <div class="micro-label">Selected tape</div>
+      <div class="tape-strip" id="tape-a"></div>
+    </div>
+    <div class="micro-section" style="flex:1">
+      <div class="micro-label">Combinator tree — application structure</div>
+      <svg id="tree-svg" viewBox="0 0 320 210"></svg>
+    </div>
+    <div class="micro-section">
+      <div class="micro-label">Interaction partner</div>
+      <div class="tape-strip" id="tape-b"></div>
+    </div>
+    <div class="micro-section">
+      <button class="interact-btn" onclick="triggerInteract()">↯ TRIGGER INTERACTION</button>
+    </div>
+    <div class="micro-section" style="flex:0">
+      <div class="result-label" id="result-label">result —</div>
+      <div class="tape-strip" id="tape-r"></div>
+    </div>
+  </div>
+</div>
+
+<!-- B: LIVE FEED -->
+<div class="panel" id="panel-b">
+  <div id="pool-b-wrap">
+    <canvas id="pool-canvas-b"></canvas>
+    <div id="pool-b-label">4096 programs · live</div>
+  </div>
+  <div id="feed-wrap">
+    <div id="feed-header">
+      <span>tape A</span><span style="padding-left:148px">tape B</span><span style="padding-left:124px">result</span><span style="margin-left:auto">rule</span>
+    </div>
+    <div id="feed-list"></div>
+  </div>
+</div>
+
+<!-- C: CHEMLAMBDA -->
+<div class="panel" id="panel-c">
+  <canvas id="chem-canvas"></canvas>
+  <div id="chem-hud">
+    combinator nodes: <span id="c-nodes">—</span><br>
+    application edges: <span id="c-edges">—</span><br>
+    rewrites fired: <span id="c-rewrites">—</span><br>
+    active nodes: <span id="c-active">—</span>
+  </div>
+  <div id="chem-legend">
+    <div class="legend-row"><div class="legend-dot" style="background:#3cb854"></div>S — copy/branch</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#4070e0"></div>K — discard</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#909098"></div>I — identity</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#dc8c28"></div>W — duplicate</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#c03c3c"></div>B — compose</div>
+    <div class="legend-row"><div class="legend-dot" style="background:#1a1a30;border:1px solid rgba(140,120,220,0.4)"></div>@ — application</div>
+  </div>
+</div>
+
+<script>
+// ── Combinator colors ──────────────────────────────────────────────────────────
+const COL = {S:'#3cb854',K:'#4070e0',I:'#909098',W:'#dc8c28',B:'#c03c3c'};
+function cc(s) { return COL[s]||'#888'; }
+
+const SYMS = ['S','K','I','W','B'];
+const DESCS = {
+  a: 'Click any dot — inspect its tape as a combinator tree — trigger an interaction and watch the graph rewrite.',
+  b: 'Every interaction logged in real-time. Scrolling reaction feed below the pool — each line shows two tapes combining and producing a result.',
+  c: 'The full soup rendered as a combinator graph. Each symbol is a node. Application edges connect them. Watch rewrites fire — nodes flash as graph surgery happens.'
+};
+
+// ── Tab switching ──────────────────────────────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('concept-desc').textContent = DESCS[id];
+  if (id === 'b' && !poolBInit) initPoolB();
+  if (id === 'c' && !chemInit) initChem();
+}
+
+// ── Tape utilities ─────────────────────────────────────────────────────────────
+function randTape(seed) {
+  const bag = ['S','S','S','S','K','K','I','W','B'];
+  return Array.from({length:8},(_,i)=>{
+    const r=((Math.imul((seed*7919+i*2654435761)|0,1664525)|0)>>>0)/0x100000000;
+    return bag[Math.floor(r*bag.length)];
+  });
+}
+function preyTape() { return Array(8).fill('S'); }
+
+function renderStrip(elId, tape, highlight) {
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  tape.forEach((s,i)=>{
+    const d = document.createElement('div');
+    d.className = 'tape-cell';
+    d.style.background = cc(s);
+    d.style.opacity = highlight && !highlight.includes(i) ? '0.3' : '1';
+    d.style.transform = highlight && highlight.includes(i) ? 'scale(1.15)' : '';
+    d.textContent = s;
+    el.appendChild(d);
+  });
+}
+
+// ── Draw combinator tree (SVG) ─────────────────────────────────────────────────
+// Left-linear tree: t[0..7] → App(App(...App(t0,t1)...,t6),t7)
+// Diagonal spine: root top-right, leaves fan bottom-left
+function drawTree(tape, svgId, highlightNodes) {
+  const svg = document.getElementById(svgId);
+  const W=320, H=210;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.innerHTML='';
+  const ns='http://www.w3.org/2000/svg';
+
+  function el(tag,attrs,text) {
+    const e=document.createElementNS(ns,tag);
+    Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));
+    if(text!==undefined) e.textContent=text;
+    return e;
+  }
+
+  // Positions: diagonal spine from (260,20) descending left
+  // App[i] sits at depth i (0=root), spine goes ↙
+  const n=tape.length; // 8
+  const appX=i=>260-i*30, appY=i=>18+i*26;
+  // Right child leaves hang to the right
+  const leafRX=i=>appX(i)+36, leafRY=i=>appY(i)+8;
+  // Leftmost two leaves at bottom of spine
+  const leaf0X=appX(n-2)-2,  leaf0Y=appY(n-2)+32;
+  const leaf1X=appX(n-2)+28, leaf1Y=appY(n-2)+32;
+
+  // Helper: glow check
+  const hl = highlightNodes || [];
+
+  // Draw edges first
+  // Spine edges: App[i] → App[i+1] (left child)
+  for(let i=0;i<n-2;i++){
+    svg.appendChild(el('line',{x1:appX(i),y1:appY(i),x2:appX(i+1),y2:appY(i+1),
+      stroke:`rgba(90,80,180,0.35)`,strokeWidth:'1.2'}));
+  }
+  // App[n-2] → leaf0, leaf1
+  svg.appendChild(el('line',{x1:appX(n-2),y1:appY(n-2),x2:leaf0X,y2:leaf0Y,
+    stroke:`rgba(90,80,180,0.35)`,strokeWidth:'1.2'}));
+  svg.appendChild(el('line',{x1:appX(n-2),y1:appY(n-2),x2:leaf1X,y2:leaf1Y,
+    stroke:`rgba(90,80,180,0.35)`,strokeWidth:'1.2'}));
+  // Right-child leaf edges: App[i] → leafR[i]
+  for(let i=0;i<n-2;i++){
+    svg.appendChild(el('line',{x1:appX(i),y1:appY(i),x2:leafRX(i),y2:leafRY(i),
+      stroke:`rgba(90,80,180,0.3)`,strokeWidth:'1'}));
+  }
+
+  // Draw app nodes (spine)
+  for(let i=0;i<n-1;i++){
+    const glow=hl.includes('app'+i);
+    svg.appendChild(el('circle',{cx:appX(i),cy:appY(i),r:'7',
+      fill:glow?'rgba(160,80,255,0.6)':'#0d0d22',
+      stroke:glow?'rgba(200,120,255,0.9)':'rgba(120,100,200,0.4)',
+      strokeWidth:'1.2'}));
+    svg.appendChild(el('text',{x:appX(i),y:appY(i)+3,'text-anchor':'middle',
+      'font-size':'6','font-family':'Space Mono,monospace',
+      fill:glow?'#e0b0ff':'rgba(140,120,220,0.65)'},'@'));
+  }
+
+  // Draw leaf nodes: t7..t2 on right side, t0+t1 at bottom
+  for(let i=0;i<n-2;i++){
+    const s=tape[n-1-i]; // t7, t6, t5, ...
+    const glow=hl.includes('leaf'+(n-1-i));
+    const x=leafRX(i),y=leafRY(i);
+    svg.appendChild(el('circle',{cx:x,cy:y,r:'9',
+      fill:cc(s),opacity:glow?'1':'0.85',
+      filter:glow?'url(#glow)':''}));
+    svg.appendChild(el('text',{x,y:y+4,'text-anchor':'middle',
+      'font-size':'8','font-weight':'bold','font-family':'Space Mono,monospace',fill:'#000'},s));
+  }
+  // t0
+  const gl0=hl.includes('leaf0');
+  svg.appendChild(el('circle',{cx:leaf0X,cy:leaf0Y,r:'9',fill:cc(tape[0]),opacity:gl0?'1':'0.85'}));
+  svg.appendChild(el('text',{x:leaf0X,y:leaf0Y+4,'text-anchor':'middle','font-size':'8','font-weight':'bold','font-family':'Space Mono,monospace',fill:'#000'},tape[0]));
+  // t1
+  const gl1=hl.includes('leaf1');
+  svg.appendChild(el('circle',{cx:leaf1X,cy:leaf1Y,r:'9',fill:cc(tape[1]),opacity:gl1?'1':'0.85'}));
+  svg.appendChild(el('text',{x:leaf1X,y:leaf1Y+4,'text-anchor':'middle','font-size':'8','font-weight':'bold','font-family':'Space Mono,monospace',fill:'#000'},tape[1]));
+}
+
+// ── SKI reduction (one step, simplified) ──────────────────────────────────────
+function skiStep(a, b) {
+  // Try S-rule: S x y z ... => (x z)(y z)
+  if(a[0]==='S' && a.length>=3){
+    const x=a[1],y=a[2],rest=a.slice(3);
+    const newHead=[x,...b.slice(0,1)]; // (x z)
+    const tail=[y,...b.slice(0,1),...rest,...b.slice(1)].slice(0,8);
+    return {result:newHead.concat(tail).slice(0,8), rule:'S'};
+  }
+  // K-rule: K x y => x
+  if(a[0]==='K' && b.length>=1){
+    return {result:[a[1],...a.slice(2),...b.slice(1)].slice(0,8), rule:'K'};
+  }
+  // I-rule: I x => x
+  if(a[0]==='I'){
+    return {result:[...b,...a.slice(1)].slice(0,8), rule:'I'};
+  }
+  // W-rule: W x y => x y y
+  if(a[0]==='W' && a.length>=2){
+    return {result:[a[1],...b,...b].slice(0,8), rule:'W'};
+  }
+  // B-rule: B x y z => x (y z)
+  if(a[0]==='B' && a.length>=3){
+    return {result:[a[1],a[2],...b,...a.slice(3)].slice(0,8), rule:'B'};
+  }
+  return {result:[...b.slice(0,4),...a.slice(0,4)].slice(0,8), rule:'?'};
+}
+
+// ── OPTION A: Microscope ───────────────────────────────────────────────────────
+let selIdx=0, dotsA=[], tapeA=[], tapeB=[];
+
+function initPoolA(){
+  const canvas=document.getElementById('pool-canvas-a');
+  function resize(){ canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetHeight; }
+  resize(); window.addEventListener('resize',resize);
+  const ctx=canvas.getContext('2d');
+
+  // Dots
+  for(let i=0;i<120;i++){
+    const isPrey=i<95, isCore=i>=95;
+    const angle=Math.random()*Math.PI*2;
+    const r=Math.sqrt(Math.random())*(isPrey?0.42:0.22)*Math.min(canvas.offsetWidth,canvas.offsetHeight-46);
+    dotsA.push({
+      x:canvas.width/2+Math.cos(angle)*r, y:canvas.height/2+Math.sin(angle)*r,
+      vx:(Math.random()-.5)*(isPrey?.3:.7), vy:(Math.random()-.5)*(isPrey?.3:.7),
+      tape:isPrey?preyTape():randTape(i*9973+1337),
+      isPrey,isCore,phase:Math.random()*Math.PI*2,size:isPrey?2.5:4.5
+    });
+  }
+
+  canvas.addEventListener('click',e=>{
+    const rect=canvas.getBoundingClientRect();
+    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    let best=-1,bestD=30;
+    dotsA.forEach((d,i)=>{const dist=Math.hypot(d.x-mx,d.y-my);if(dist<bestD){bestD=dist;best=i;}});
+    if(best>=0){selIdx=best;updateMicro();}
+  });
+
+  // Select a core dot by default
+  selIdx=97; updateMicro();
+
+  function loop(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const t=Date.now()/1000;
+    dotsA.forEach((d,i)=>{
+      d.x+=d.vx; d.y+=d.vy;
+      if(d.x<8||d.x>canvas.width-8) d.vx*=-1;
+      if(d.y<8||d.y>canvas.height-8) d.vy*=-1;
+      const sel=i===selIdx;
+      const pulse=sel?1+.5*Math.sin(t*5):1;
+      const r=d.size*pulse;
+      if(d.isPrey){
+        ctx.fillStyle=sel?'#80ffb0':'rgba(60,184,84,0.42)';
+      } else {
+        const hue=(i*53+t*15)%360;
+        ctx.fillStyle=sel?'#fff':`hsla(${hue},68%,62%,0.85)`;
+        if(!sel) { ctx.shadowColor=`hsl(${hue},68%,62%)`; ctx.shadowBlur=8; }
+      }
+      ctx.beginPath(); ctx.arc(d.x,d.y,r,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0;
+      if(sel){ctx.strokeStyle='rgba(255,255,255,0.7)';ctx.lineWidth=1.5;ctx.stroke();}
+    });
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+function updateMicro(){
+  tapeA=dotsA[selIdx].tape;
+  tapeB=dotsA[(selIdx+13)%dotsA.length].tape;
+  renderStrip('tape-a',tapeA);
+  renderStrip('tape-b',tapeB);
+  document.getElementById('tape-r').innerHTML='';
+  document.getElementById('result-label').textContent='result —';
+  drawTree(tapeA,'tree-svg');
+}
+
+function triggerInteract(){
+  // Highlight the root app + top leaves briefly, then show result
+  const highlights=['app0','leaf7','leaf6','leaf5'];
+  drawTree(tapeA,'tree-svg',highlights);
+  renderStrip('tape-a',tapeA,highlights.includes('leaf0')?[]:[0,1,2]);
+
+  setTimeout(()=>{
+    const {result,rule}=skiStep(tapeA,tapeB);
+    renderStrip('tape-r',result);
+    document.getElementById('result-label').textContent=`result — ${rule}-rule applied`;
+    drawTree(result,'tree-svg');
+  },600);
+}
+
+// ── OPTION B: Live Feed ────────────────────────────────────────────────────────
+let poolBInit=false, dotsB=[], poolBCtx, poolBCanvas, epochCounter=360_000_000;
+
+function initPoolB(){
+  poolBInit=true;
+  poolBCanvas=document.getElementById('pool-canvas-b');
+  function resize(){ poolBCanvas.width=poolBCanvas.offsetWidth; poolBCanvas.height=poolBCanvas.offsetHeight; }
+  resize(); window.addEventListener('resize',resize);
+  poolBCtx=poolBCanvas.getContext('2d');
+  for(let i=0;i<140;i++){
+    const isPrey=i<105;
+    const angle=Math.random()*Math.PI*2;
+    const r=Math.sqrt(Math.random())*(isPrey?.45:.2)*Math.min(poolBCanvas.offsetWidth,poolBCanvas.offsetHeight);
+    dotsB.push({
+      x:poolBCanvas.width/2+Math.cos(angle)*r, y:poolBCanvas.height/2+Math.sin(angle)*r,
+      vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4,
+      tape:isPrey?preyTape():randTape(i*7331),isPrey,flash:0
+    });
+  }
+  animateB(); setInterval(addFeedRow,900);
+}
+
+function animateB(){
+  const ctx=poolBCtx, canvas=poolBCanvas;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  dotsB.forEach(d=>{
+    d.x+=d.vx; d.y+=d.vy;
+    if(d.x<6||d.x>canvas.width-6) d.vx*=-1;
+    if(d.y<6||d.y>canvas.height-6) d.vy*=-1;
+    d.flash=Math.max(0,d.flash-.04);
+    const size=d.isPrey?2.2:3.8;
+    ctx.fillStyle=d.isPrey
+      ?`rgba(60,184,84,${0.3+d.flash*.5})`
+      :`rgba(180,100,255,${0.5+d.flash*.5})`;
+    if(d.flash>.5){ctx.shadowColor=d.isPrey?'#3cb854':'#c060ff';ctx.shadowBlur=8;}
+    ctx.beginPath(); ctx.arc(d.x,d.y,size*(1+d.flash*.5),0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0;
+  });
+  requestAnimationFrame(animateB);
+}
+
+const RULES=['S','S','S','K','K','I','W','B'];
+function addFeedRow(){
+  epochCounter+=1000;
+  const seed=Date.now();
+  const tA=Math.random()<.7?preyTape():randTape(seed);
+  const tB=randTape(seed+4567);
+  const {result,rule}=skiStep(tA,tB);
+
+  // Flash a random dot
+  const flashDot=dotsB[Math.floor(Math.random()*dotsB.length)];
+  flashDot.flash=1;
+
+  const feedList=document.getElementById('feed-list');
+  const row=document.createElement('div');
+  row.className='feed-row';
+
+  function tapeHtml(t){
+    return '<div class="feed-tape">'+t.map(s=>`<div class="feed-cell" style="background:${cc(s)}">${s}</div>`).join('')+'</div>';
+  }
+  const ruleColors={S:'#60c880',K:'#6080e0',I:'#909090',W:'#d08030',B:'#c04040','?':'#808080'};
+  row.innerHTML=tapeHtml(tA)
+    +'<span class="feed-sep">×</span>'+tapeHtml(tB)
+    +'<span class="feed-arrow">→</span>'+tapeHtml(result)
+    +`<span class="feed-rule" style="color:${ruleColors[rule]||'#888'}">${rule}</span>`;
+
+  feedList.appendChild(row);
+  while(feedList.children.length>14) feedList.removeChild(feedList.firstChild);
+}
+
+// ── OPTION C: Chemlambda full graph ───────────────────────────────────────────
+let chemInit=false, chemNodes=[], chemEdges=[], chemRewriteCount=0;
+
+function initChem(){
+  chemInit=true;
+  const canvas=document.getElementById('chem-canvas');
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight-46;}
+  resize(); window.addEventListener('resize',resize);
+  const ctx=canvas.getContext('2d');
+  const W=()=>canvas.width, H=()=>canvas.height;
+
+  // Build combinator graph for 18 tapes
+  const tapes=[
+    ...Array(10).fill(null).map(()=>preyTape()),
+    ...Array(8).fill(null).map((_,i)=>randTape(i*6173+42))
+  ];
+
+  let nid=0;
+  tapes.forEach((tape,ti)=>{
+    const angle=(ti/tapes.length)*Math.PI*2;
+    const rad=(ti<10)?W()*.3:W()*.12;
+    const cx=W()/2+Math.cos(angle)*rad+(Math.random()-.5)*60;
+    const cy=H()/2+Math.sin(angle)*rad+(Math.random()-.5)*60;
+    const isCore=ti>=10;
+    const tapeStart=nid;
+
+    // App nodes
+    const appIds=[];
+    for(let i=0;i<tape.length-1;i++){
+      chemNodes.push({id:nid++,type:'app',x:cx+(Math.random()-.5)*35,y:cy+(Math.random()-.5)*35,
+        vx:0,vy:0,glow:0,isCore,tapeIdx:ti});
+      appIds.push(nid-1);
+    }
+    // Sym nodes
+    const symIds=[];
+    tape.forEach(sym=>{
+      chemNodes.push({id:nid++,type:'sym',sym,x:cx+(Math.random()-.5)*50,y:cy+(Math.random()-.5)*50,
+        vx:0,vy:0,glow:0,isCore,tapeIdx:ti});
+      symIds.push(nid-1);
+    });
+    // Edges: left-linear tree
+    if(appIds.length>0){
+      chemEdges.push({from:appIds[0],to:symIds[0]});
+      chemEdges.push({from:appIds[0],to:symIds[1]});
+      for(let i=1;i<appIds.length;i++){
+        chemEdges.push({from:appIds[i],to:appIds[i-1]});
+        chemEdges.push({from:appIds[i],to:symIds[i+1]});
+      }
+    }
+  });
+
+  // Physics loop
+  function physics(){
+    const repK=600, springK=0.06, targetLen=32, damping=0.87;
+    const cx=W()/2, cy=H()/2;
+    chemNodes.forEach(n=>{ n.glow=Math.max(0,n.glow-.018); });
+    chemNodes.forEach((n,i)=>{
+      let fx=0,fy=0;
+      for(let j=i+1;j<chemNodes.length;j++){
+        const m=chemNodes[j];
+        const dx=n.x-m.x,dy=n.y-m.y;
+        const d2=dx*dx+dy*dy+1;
+        if(d2>80000) continue;
+        const f=repK/d2;
+        fx+=f*dx; fy+=f*dy;
+        m.vx-=f*dx; m.vy-=f*dy;
+      }
+      n.vx+=fx; n.vy+=fy;
+      n.vx+=(cx-n.x)*0.001; n.vy+=(cy-n.y)*0.001;
+      n.vx*=damping; n.vy*=damping;
+      n.x+=n.vx; n.y+=n.vy;
+    });
+    chemEdges.forEach(e=>{
+      const a=chemNodes[e.from],b=chemNodes[e.to];
+      if(!a||!b) return;
+      const dx=b.x-a.x,dy=b.y-a.y;
+      const d=Math.sqrt(dx*dx+dy*dy)||1;
+      const f=(d-targetLen)*springK;
+      const fx=(dx/d)*f,fy=(dy/d)*f;
+      a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+    });
+  }
+
+  function fireRewrite(){
+    // Pick a tape group, flash it, re-jiggle positions
+    const ti=Math.floor(Math.random()*18);
+    const group=chemNodes.filter(n=>n.tapeIdx===ti);
+    group.forEach(n=>{ n.glow=1; n.vx+=(Math.random()-.5)*3; n.vy+=(Math.random()-.5)*3; });
+    chemRewriteCount++;
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // Edges
+    chemEdges.forEach(e=>{
+      const a=chemNodes[e.from],b=chemNodes[e.to];
+      if(!a||!b) return;
+      const g=Math.max(a.glow,b.glow);
+      ctx.strokeStyle=g>.1?`rgba(160,80,255,${0.08+g*.35})`:'rgba(50,40,110,0.2)';
+      ctx.lineWidth=g>.1?1.5:.7;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    });
+
+    // Nodes
+    let activeCount=0;
+    chemNodes.forEach(n=>{
+      if(n.glow>.05) activeCount++;
+      if(n.type==='app'){
+        ctx.fillStyle=n.glow>.1?`rgba(160,80,255,${.3+n.glow*.5})`
+          :n.isCore?'rgba(100,60,200,0.45)':'rgba(30,25,70,0.55)';
+        ctx.strokeStyle=n.glow>.1?`rgba(200,120,255,${.5+n.glow*.5})`
+          :'rgba(90,80,180,0.3)';
+        ctx.lineWidth=1;
+        ctx.beginPath(); ctx.arc(n.x,n.y,5,0,Math.PI*2);
+        ctx.fill(); ctx.stroke();
+      } else {
+        const base=cc(n.sym);
+        if(n.glow>.1){
+          ctx.shadowColor=base; ctx.shadowBlur=10+n.glow*15;
+        }
+        ctx.globalAlpha=n.isCore?1:(0.5+n.glow*.4);
+        ctx.fillStyle=base;
+        ctx.beginPath(); ctx.arc(n.x,n.y,6+n.glow*3,0,Math.PI*2); ctx.fill();
+        ctx.shadowBlur=0; ctx.globalAlpha=1;
+        if(n.glow>.2||n.isCore){
+          ctx.fillStyle='#000'; ctx.font='bold 6px Space Mono,monospace';
+          ctx.textAlign='center'; ctx.fillText(n.sym,n.x,n.y+2);
+        }
+      }
+    });
+
+    document.getElementById('c-nodes').textContent=chemNodes.length;
+    document.getElementById('c-edges').textContent=chemEdges.length;
+    document.getElementById('c-rewrites').textContent=chemRewriteCount;
+    document.getElementById('c-active').textContent=activeCount;
+  }
+
+  setInterval(fireRewrite,350);
+  function loop(){ physics(); draw(); requestAnimationFrame(loop); }
+  loop();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('load', initPoolA);
+</script>
+</body>
+</html>
